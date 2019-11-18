@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:README.md">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/App/App.xcodeproj">
+   </FileRef>
+   <Group
+      location = "container:"
+      name = "UIS">
+      <Group
+         location = "group:Modules/UIs/Modules"
+         name = "Modules">
+         <FileRef
+            location = "group:GameInformation">
+         </FileRef>
+         <FileRef
+            location = "group:Menu">
+         </FileRef>
+         <FileRef
+            location = "group:News">
+         </FileRef>
+         <FileRef
+            location = "group:Profile">
+         </FileRef>
+         <FileRef
+            location = "group:Settings">
+         </FileRef>
+         <FileRef
+            location = "group:Friends">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:Modules/UIs/UIComponents">
+      </FileRef>
+      <FileRef
+         location = "group:Modules/UIs/Design">
+      </FileRef>
+   </Group>
+   <Group
+      location = "container:"
+      name = "Infrastructure">
+      <FileRef
+         location = "group:Modules/Infrastructure/Network">
+      </FileRef>
+      <FileRef
+         location = "group:Modules/Infrastructure/Storage">
+      </FileRef>
+   </Group>
+   <Group
+      location = "container:"
+      name = "Domain">
+      <FileRef
+         location = "group:Modules/Domain/Models">
+      </FileRef>
+      <FileRef
+         location = "group:Modules/Domain/Services">
+      </FileRef>
+   </Group>
+   <FileRef
+      location = "group:Modules/Core">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Common">
+   </FileRef>
+</Workspace>
