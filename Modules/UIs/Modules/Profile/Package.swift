@@ -21,6 +21,6 @@ let package = Package(
             .product(name: "Design"),
             .product(name: "Core"),
             .product(name: "Common"),
-        ], path: "./Sources"),
+        ], path: "./Sources")
     ]
 )

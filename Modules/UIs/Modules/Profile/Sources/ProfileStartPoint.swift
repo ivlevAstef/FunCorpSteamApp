@@ -14,7 +14,7 @@ public final class ProfileStartPoint: UIStartPoint
 {
     public static let name: UIModuleName = .profile
 
-    //private var routerProvider = Provider<NewsRouter>()
+    private var routerProvider = Provider<ProfileRouter>()
 
     public init() {
 
@@ -25,8 +25,8 @@ public final class ProfileStartPoint: UIStartPoint
     }
 
     public func reg(container: DIContainer) {
-//        container.append(framework: NewsDependency.self)
-//        routerProvider = container.resolve()
+        container.append(framework: ProfileDependency.self)
+        routerProvider = container.resolve()
     }
 
     public func initialize() {
@@ -38,8 +38,7 @@ public final class ProfileStartPoint: UIStartPoint
     }
 
     public func makeRouter() -> IRouter {
-        fatalError("")
-//        return routerProvider.value
+        return routerProvider.value
     }
 
 }

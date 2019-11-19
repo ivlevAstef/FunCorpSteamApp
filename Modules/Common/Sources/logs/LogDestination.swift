@@ -3,6 +3,7 @@
 //  Logger
 //
 //  Created by Alexander Ivlev on 22/02/2019.
+//  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
 /// Протокол от которого должны наследоваться все потоки вывода.

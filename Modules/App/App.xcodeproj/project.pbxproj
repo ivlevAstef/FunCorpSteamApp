@@ -33,7 +33,21 @@
 		AB89F4E4238310D400E4BCFF /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4E3238310D400E4BCFF /* Storage */; };
 		AB89F4E6238310D400E4BCFF /* UIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4E5238310D400E4BCFF /* UIComponents */; };
 		AB89F4E7238311CB00E4BCFF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB89F4AC23830FDB00E4BCFF /* LaunchScreen.storyboard */; };
+		ABBADA8C2384A5330067EC78 /* AppAuthAPIImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBADA8B2384A5330067EC78 /* AppAuthAPIImpl.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		ABBADA422384689F0067EC78 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		AB2B60A623830464006BF72A /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,6 +64,7 @@
 		AB89F4B923830FDC00E4BCFF /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		AB89F4BA23830FDC00E4BCFF /* AppStartPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppStartPoint.swift; sourceTree = "<group>"; };
 		AB89F4BC23830FDC00E4BCFF /* AppRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		ABBADA8B2384A5330067EC78 /* AppAuthAPIImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppAuthAPIImpl.swift; path = ../../../../../../.Trash/AppAuthAPIImpl.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				AB89F4BC23830FDC00E4BCFF /* AppRouter.swift */,
+				ABBADA8B2384A5330067EC78 /* AppAuthAPIImpl.swift */,
 			);
 			path = routing;
 			sourceTree = "<group>";
@@ -163,6 +179,7 @@
 				AB2B60A223830464006BF72A /* Sources */,
 				AB2B60A323830464006BF72A /* Frameworks */,
 				AB2B60A423830464006BF72A /* Resources */,
+				ABBADA422384689F0067EC78 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -213,6 +230,8 @@
 				Base,
 			);
 			mainGroup = AB2B609D23830464006BF72A;
+			packageReferences = (
+			);
 			productRefGroup = AB2B60A723830464006BF72A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -239,6 +258,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABBADA8C2384A5330067EC78 /* AppAuthAPIImpl.swift in Sources */,
 				AB89F4C723830FDC00E4BCFF /* Application.swift in Sources */,
 				AB89F4C023830FDC00E4BCFF /* LogFileDestination.swift in Sources */,
 				AB89F4C423830FDC00E4BCFF /* AppDependency.swift in Sources */,
@@ -385,12 +405,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = W7V8BMGJZ4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ThirdParty/Carthage/Build/watchOS",
+					"$(PROJECT_DIR)/ThirdParty/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/ThirdParty/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/ThirdParty/Carthage/Build/tvOS",
+				);
 				INFOPLIST_FILE = Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "apostle-life.App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -403,12 +432,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = W7V8BMGJZ4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ThirdParty/Carthage/Build/watchOS",
+					"$(PROJECT_DIR)/ThirdParty/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/ThirdParty/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/ThirdParty/Carthage/Build/tvOS",
+				);
 				INFOPLIST_FILE = Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "apostle-life.App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

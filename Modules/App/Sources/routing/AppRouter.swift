@@ -58,9 +58,9 @@ final class AppRouter: IRouter
         StartPoints.menu.newsGetter.take(use: {
             return StartPoints.news.makeRouter().configure()
         })
-//        StartPoints.menu.myProfileGetter.take(use: {
-//            return StartPoints.profile.makeRouter().configure()
-//        })
+        StartPoints.menu.myProfileGetter.take(use: {
+            return StartPoints.profile.makeRouter().configure()
+        })
 //        StartPoints.menu.friendsGetter.take(use: {
 //            return StartPoints.friends.makeRouter().configure()
 //        })
