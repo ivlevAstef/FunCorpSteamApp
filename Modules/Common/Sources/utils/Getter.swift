@@ -6,8 +6,12 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
+protocol AbstractGetter: class {
+    func hasCallback() -> Bool
+}
+
 /// Need for simplify get value without real dependency - not need write more closures. Something like Provider.
-public final class Getter<Params, Value>
+public final class Getter<Params, Value>: AbstractGetter
 {
     private let name: String
     private let line: UInt
@@ -15,6 +19,7 @@ public final class Getter<Params, Value>
     private let locker = FastLock()
     private var callback: ((Params) -> Value?)?
     private var callbackPath: String?
+    private weak var parent: AbstractGetter?
 
     public init(file: String = #file, line: UInt = #line) {
         self.name = file.components(separatedBy: ["\\","/"]).last ?? "unknown"
@@ -32,6 +37,7 @@ public final class Getter<Params, Value>
         locker.lock()
         defer { locker.unlock() }
 
+        self.parent = nil
         self.callback = callback
         self.callbackPath = "Closure<\(name):\(line)>"
     }
@@ -42,6 +48,7 @@ public final class Getter<Params, Value>
         locker.lock()
         defer { locker.unlock() }
 
+        self.parent = from
         self.callback = { params in
             return from.get(params)
         }
@@ -58,10 +65,21 @@ public final class Getter<Params, Value>
         locker.lock()
         defer { locker.unlock() }
 
+        self.parent = from
         self.callback = { params in
             return valueMap(from.get(paramsMap(params)))
         }
         self.callbackPath = "\(from)"
+    }
+
+    public func take<FromValue>(from: Getter<Params, FromValue>,
+                                valueMap: @escaping (FromValue?) -> Value?) {
+        take(from: from, paramsMap: { $0 }, valueMap: valueMap)
+    }
+
+    public func take<FromParams>(from: Getter<FromParams, Value>,
+                                 paramsMap: @escaping (Params) -> FromParams) {
+        take(from: from, paramsMap: paramsMap, valueMap: { $0 })
     }
 
     // MARK: - get
@@ -86,6 +104,11 @@ public final class Getter<Params, Value>
     public func hasCallback() -> Bool {
         locker.lock()
         defer { locker.unlock() }
+
+        if let parent = parent {
+            return parent.hasCallback()
+        }
+
         return nil != callback
     }
 }

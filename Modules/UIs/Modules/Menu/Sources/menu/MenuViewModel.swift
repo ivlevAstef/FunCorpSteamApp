@@ -6,11 +6,12 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
+import Core
 import Common
 
 struct MenuViewModel {
     let icon: ConstImage
     let title: String
 
-    let show: Notifier<Void>
+    let viewGetter: Getter<Void, IRouter>
 }

@@ -52,30 +52,11 @@ final class MenuRouter: IRouter
     private func configure(_ screen: MenuScreen) {
         screen.setRouter(self)
         
-        // TODO: Can use `getter.hasCallback()` for configure menu...
-        screen.presenter.showNews.weakJoin(listener: { (self, showParams) in
-            self.showScreen(use: self.newsGetter)
-        }, owner: self)
-        screen.presenter.showMyProfile.weakJoin(listener: { (self, showParams) in
-            self.showScreen(use: self.myProfileGetter)
-        }, owner: self)
-        screen.presenter.showFriends.weakJoin(listener: { (self, showParams) in
-            self.showScreen(use: self.friendsGetter)
-        }, owner: self)
-        screen.presenter.showSettings.weakJoin(listener: { (self, showParams) in
-            self.showScreen(use: self.settingsGetter)
-        }, owner: self)
-    }
+        screen.presenter.newsGetter.take(from: self.newsGetter)
+        screen.presenter.myProfileGetter.take(from: self.myProfileGetter)
+        screen.presenter.friendsGetter.take(from: self.friendsGetter)
+        screen.presenter.settingsGetter.take(from: self.settingsGetter)
 
-    private func showScreen(use getter: Getter<Void, IRouter>) {
-        log.info("will show \(getter)")
-        guard let router = getter.get(()) else {
-            log.info("Not support show \(getter)")
-            return
-        }
-
-        navController.push(router, animated: true)
-        log.info("did show \(getter)")
+        screen.presenter.start()
     }
 }
-

@@ -6,6 +6,7 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
+import Core
 import Common
 
 protocol MenuScreenViewContract: class
@@ -15,16 +16,18 @@ protocol MenuScreenViewContract: class
 
 final class MenuScreenPresenter
 {
-    let showNews = Notifier<Void>()
-    let showMyProfile = Notifier<Void>()
-    let showFriends = Notifier<Void>()
-    let showSettings = Notifier<Void>()
+    let newsGetter = Getter<Void, IRouter>()
+    let myProfileGetter = Getter<Void, IRouter>()
+    let friendsGetter = Getter<Void, IRouter>()
+    let settingsGetter = Getter<Void, IRouter>()
 
     private let view: MenuScreenViewContract
 
     init(view: MenuScreenViewContract) {
         self.view = view
+    }
 
+    func start() {
         configure()
     }
 
@@ -33,22 +36,22 @@ final class MenuScreenPresenter
             MenuViewModel(
                 icon: ConstImage(image: nil),
                 title: "News",
-                show: showNews
+                viewGetter: newsGetter
             ),
             MenuViewModel(
                 icon: ConstImage(image: nil),
                 title: "MyProfile",
-                show: showMyProfile
+                viewGetter: myProfileGetter
             ),
             MenuViewModel(
                 icon: ConstImage(image: nil),
                 title: "Friends",
-                show: showFriends
+                viewGetter: friendsGetter
             ),
             MenuViewModel(
                 icon: ConstImage(image: nil),
                 title: "Settings",
-                show: showSettings
+                viewGetter: settingsGetter
             ),
         ]
     }
