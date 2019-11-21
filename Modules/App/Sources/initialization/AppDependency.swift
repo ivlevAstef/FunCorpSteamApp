@@ -27,7 +27,7 @@ final class AppDependency
     static func validate(container: DIContainer) {
         #if DEBUG
         if !container.validate(checkGraphCycles: false) {
-            fatalError("DI graph validation failed")
+            log.fatal("DI graph validation failed")
         }
         #endif
     }

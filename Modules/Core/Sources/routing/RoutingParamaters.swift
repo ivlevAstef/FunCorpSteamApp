@@ -8,16 +8,19 @@
 
 public struct RoutingParamaters
 {
-    public let isEmpty: Bool
+    public var isEmpty: Bool {
+        return moduleName != nil
+    }
     public let moduleName: UIModuleName?
+    public let options: [String: String]
 
     public init() {
-        self.isEmpty = true
         self.moduleName = nil
+        self.options = [:]
     }
 
-    public init(moduleName: UIModuleName) {
-        self.isEmpty = false
+    public init(moduleName: UIModuleName, options: [String: String] = [:]) {
         self.moduleName = moduleName
+        self.options = options
     }
 }

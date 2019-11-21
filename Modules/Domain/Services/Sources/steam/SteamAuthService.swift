@@ -8,14 +8,16 @@
 
 public typealias SteamID = Int64
 
-public enum SteamLoginError: Error {
+public enum SteamLoginError: Error
+{
     case yourLoggedIn
     case userCancel
     case applicationIncorrectConfigured
     case incorrectResponse
 }
 
-public enum SteamLogoutError: Error {
+public enum SteamLogoutError: Error
+{
     case yourLoggedOut
 }
 

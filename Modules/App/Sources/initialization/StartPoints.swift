@@ -9,6 +9,8 @@
 import Core
 import Design
 import UIComponents
+import Storage
+import Network
 import ServicesImpl
 
 import Menu
@@ -34,6 +36,8 @@ enum StartPoints
         CoreStartPoint(),
         DesignStartPoint(),
         UIComponentsStartPoint(),
+        StorageStartPoint(),
+        NetworkStartPoint(),
         ServicesImplStartPoint()
     ]
 

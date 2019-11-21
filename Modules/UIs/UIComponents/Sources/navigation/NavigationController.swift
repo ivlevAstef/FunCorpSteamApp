@@ -18,6 +18,12 @@ public final class NavigationController
         return vcRouterContainer.lastRouter
     }
 
+    public var useStandartNavigationBar: Bool = false {
+        didSet {
+            uiController.setNavigationBarHidden(!useStandartNavigationBar, animated: true)
+        }
+    }
+
     private var child: NavigationController?
 
     private let vcRouterContainer = VCRouterContainer()
@@ -42,23 +48,33 @@ public final class NavigationController
         vcRouterContainer.push(vc: vc, router: router)
 
         log.info("push router: \(type(of: router))")
-   }
+    }
 
     public func push(_ vc: UIViewController, animated: Bool = true) {
-        if self.uiController.viewControllers.isEmpty {
-            self.uiController.setViewControllers([vc], animated: animated)
+        if uiController.viewControllers.isEmpty {
+            uiController.setViewControllers([vc], animated: false)
         } else {
-            self.uiController.pushViewController(vc, animated: animated)
+            uiController.pushViewController(vc, animated: animated)
         }
 
         log.info("push view controller: \(type(of: vc))")
     }
 
+    public func setRoot(_ rootViewController: UIViewController) {
+        if uiController.viewControllers.isEmpty {
+            uiController.setViewControllers([rootViewController], animated: false)
+        } else {
+            uiController.setViewControllers([rootViewController], animated: true)
+        }
+
+        log.info("set root view controller: \(type(of: rootViewController))")
+    }
+
     public func pop(animated: Bool = true) {
-        if let popingVC = self.uiController.viewControllers.last {
+        if let popingVC = uiController.viewControllers.last {
             vcRouterContainer.pop(vc: popingVC)?.stop()
         }
-        self.uiController.popViewController(animated: animated)
+        uiController.popViewController(animated: animated)
 
         log.info("pop view controller")
     }
@@ -66,7 +82,7 @@ public final class NavigationController
     public func popTo(_ vc: UIViewController, animated: Bool = true) {
         var found: Bool = false
         var foundedVCs: [UIViewController] = []
-        for iterVC in self.uiController.viewControllers {
+        for iterVC in uiController.viewControllers {
             foundedVCs.append(iterVC)
             if iterVC === vc {
                 found = true
@@ -77,16 +93,16 @@ public final class NavigationController
         log.assert(found, "Call pop to vc, but view controller not found.")
         if found {
             vcRouterContainer.pop(vcs: foundedVCs).forEach { $0.stop() }
-            self.uiController.popToViewController(vc, animated: animated)
+            uiController.popToViewController(vc, animated: animated)
 
             log.info("pop to view controller: \(type(of: vc))")
         }
     }
 
     public func popToRoot(animated: Bool = true) {
-        let vcsWithoutRoot = Array(self.uiController.viewControllers.dropFirst())
+        let vcsWithoutRoot = Array(uiController.viewControllers.dropFirst())
         vcRouterContainer.pop(vcs: vcsWithoutRoot).forEach { $0.stop() }
-        self.uiController.popToRootViewController(animated: animated)
+        uiController.popToRootViewController(animated: animated)
 
         log.info("pop to root")
     }
@@ -108,7 +124,7 @@ public final class NavigationController
     }
 
     public func present(_ vc: UIViewController, animated: Bool = true) {
-        self.uiController.present(vc, animated: animated, completion: nil)
+        uiController.present(vc, animated: animated, completion: nil)
 
         log.info("present view controller: \(type(of: vc))")
     }

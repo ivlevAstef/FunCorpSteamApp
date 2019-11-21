@@ -20,7 +20,7 @@ final class MenuScreenView: ApTabBarController, UITabBarControllerDelegate, Menu
         }
     }
     // TODO: в идеале конечно надо было поделить функционал, так чтобы экран незнал о роутере. Но это много доп. кода
-    private var screensInfo: [(rootVC: ApNavigationController, router: IRouter)] = []
+    private var screensInfo: [(rootVC: UIViewController, router: IRouter)] = []
     private var selectedRouter: IRouter?
 
     override func styleDidChange(_ style: Style) {
@@ -51,7 +51,8 @@ final class MenuScreenView: ApTabBarController, UITabBarControllerDelegate, Menu
                 continue
             }
 
-            let rootVC = ApNavigationController(rootViewController: router.rootViewController)
+            let rootVC = router.rootViewController
+            
             let tag = screensInfo.count
             rootVC.tabBarItem = UITabBarItem(title: viewModel.title, image: viewModel.icon.image, tag: tag)
 

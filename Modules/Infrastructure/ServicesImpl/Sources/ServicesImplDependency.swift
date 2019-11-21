@@ -14,7 +14,7 @@ final class ServicesImplDependency: DIFramework
     static func load(container: DIContainer) {
         container.register(SteamAuthServiceImpl.init)
             .as(SteamAuthService.self)
-            .lifetime(.perRun(.strong))
+            .lifetime(.perRun(.weak))
     }
 }
 

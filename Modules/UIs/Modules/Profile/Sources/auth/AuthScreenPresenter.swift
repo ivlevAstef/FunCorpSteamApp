@@ -7,6 +7,7 @@
 //
 
 import Common
+import Core
 import Services
 
 protocol AuthScreenViewContract: class
@@ -22,21 +23,24 @@ protocol AuthScreenViewContract: class
 
 final class AuthScreenPresenter
 {
-    private let view: AuthScreenViewContract
-    private let steamAuthService: SteamAuthService
+    let authSuccessNotifier = Notifier<Void>()
 
-    init(view: AuthScreenViewContract, steamAuthService: SteamAuthService) {
+    private let view: AuthScreenViewContract
+    private let authService: SteamAuthService
+
+    init(view: AuthScreenViewContract, authService: SteamAuthService) {
         self.view = view
-        self.steamAuthService = steamAuthService
+        self.authService = authService
 
         subscribeOn(view)
-        view.setInformationText("Для того чтобы залогинится в стим надо нажать кнопку :)")
+        view.setInformationText(loc["SteamAuth.Information"])
     }
 
     private func subscribeOn(_ view: AuthScreenViewContract) {
-        view.startSteamAuthNotifier.join(listener: { [weak self, steamAuthService] in
+        view.startSteamAuthNotifier.join(listener: { [weak self, authService] in
             self?.view.blockUI()
-            steamAuthService.login { result in
+            log.info("Start authorization in steam")
+            authService.login { result in
                 self?.processLoginResult(result)
                 self?.view.unblockUI()
             }
@@ -45,18 +49,25 @@ final class AuthScreenPresenter
 
     private func processLoginResult(_ result: Result<SteamID, SteamLoginError>) {
         switch result {
-        case .success(let steamId):
-            print("Success")
+        case .success(_):
+            log.info("Success authorization in steam")
+            authSuccessNotifier.notify(())
+
         case .failure(.yourLoggedIn):
             log.assert("Call login, but your logged in")
-            view.showError("Вы уже залогинены")
+            view.showError(loc["SteamAuth.Error.YourLoggedIn"])
+            authSuccessNotifier.notify(())
+
         case .failure(.applicationIncorrectConfigured):
             log.assert("... but application correct configured :)")
-            view.showError("К сожалению функция входа в steam не доступна")
+            view.showError(loc["SteamAuth.Error.UnsupportAuth"])
+
         case .failure(.incorrectResponse):
-            view.showError("Steam Не смог вас авторизовать")
+            log.info("Failed authorization in steam")
+            view.showError(loc["SteamAuth.Error.FailedAuth"])
+
         case .failure(.userCancel):
-            break
+            log.info("Cancel authorization in steam")
         }
     }
 }

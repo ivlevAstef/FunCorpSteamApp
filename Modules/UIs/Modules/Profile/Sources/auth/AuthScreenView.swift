@@ -65,7 +65,7 @@ final class AuthScreenView: ApViewController, AuthScreenViewContract
     }
 
     func showError(_ text: String) {
-        print("\(text)")
+        ErrorAlert.show(text, on: self)
     }
 
     private func configureViews() {

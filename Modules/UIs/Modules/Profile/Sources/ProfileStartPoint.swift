@@ -12,6 +12,10 @@ import SwiftLazy
 
 public final class ProfileStartPoint: UIStartPoint
 {
+    public enum RoutingOptions {
+        public static let steamId = "ProfileSteamId"
+    }
+
     public static let name: UIModuleName = .profile
 
     private var routerProvider = Provider<ProfileRouter>()

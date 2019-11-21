@@ -10,8 +10,15 @@ let package = Package(
         .library(name: "Storage", targets: ["Storage"]),
     ],
     dependencies: [
+        .package(path: "../../Domain/Services"),
+        .package(path: "../../Core"),
+        .package(path: "../../Common"),
     ],
     targets: [
-        .target(name: "Storage", dependencies: [], path: "./Sources"),
+        .target(name: "Storage", dependencies: [
+            "Services",
+            "Core",
+            "Common"
+        ], path: "./Sources"),
     ]
 )
