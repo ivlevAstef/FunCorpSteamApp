@@ -9,6 +9,7 @@
 import Core
 import Design
 import UIComponents
+import ServicesImpl
 
 import Menu
 
@@ -28,10 +29,12 @@ enum StartPoints
     static let gameInfo = GameInfoStartPoint()
     static let settings = SettingsStartPoint()
 
+    // Порядок инициализации этих точек важен - всегда идем от низа к вверху
     static let common: [CommonStartPoint] = [
         CoreStartPoint(),
         DesignStartPoint(),
-        UIComponentsStartPoint()
+        UIComponentsStartPoint(),
+        ServicesImplStartPoint()
     ]
 
     static let ui: [UIModuleName: UIStartPoint] = [

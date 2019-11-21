@@ -16,6 +16,11 @@ public final class ConstImage
         self.image = image
     }
 
+    public init(named name: String) {
+        self.image = UIImage(named: name)
+        log.assert(self.image != nil, "Can't initialize image by name: \(name)")
+    }
+
     func apply(to imageView: UIImageView) {
         imageView.image = image
     }

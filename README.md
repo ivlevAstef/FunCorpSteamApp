@@ -13,14 +13,14 @@ Application for task from funcorp for show information from steam
 * модуль из слоя N может использовать любой нижлежащий слой, то есть модули слоёв (N...∞)
 * Все модули могут использовать Common. Common не может использовать никого, даже thirdparty
 
-1 слой - App
-2 слой - UIS/Modules
-2.5 слой - UIS/UIComponents и UIS/Design
-2 слой - Infrastructure/Network
-2 слой - Infrastructure/Storage
-3 слой - Domain/Services
-3.5 слой - Domain/Models
-4 слой - Core
+0 слой - App
+1 слой - Infrastructure/Network
+1 слой - Infrastructure/Storage
+1 слой - Infrastructure/ServicesImpl
+1 слой - UIS/Modules
+1.5 слой - UIS/UIComponents и UIS/Design
+2 слой - Domain/Services 
+3 слой - Core
 
 ### По модулям
 * App - центральное приложение. В нем происходят индивидуальные настройки под каждое приложение, и проброска необходимых методов. Также в нем находится AppRouter который разруливает все переходы между экранами, и создает начальный экран.
@@ -29,8 +29,7 @@ Application for task from funcorp for show information from steam
 * UIS/Design - хранятся базовые вещи необходимы для дизайна. И самое важное это стиль, который позволяет легко менять внешний вид приложения.
 * Infrastructure/Network - 
 * Infrastructure/Storage - 
-* Domain/Services -
-* Domain/Models -
+* Domain/Services - Содержит набор протоколов и данных. Entities не вынесены отдельно, дабы не загромождать простое приложение.
 * Core -
 * Common -
 

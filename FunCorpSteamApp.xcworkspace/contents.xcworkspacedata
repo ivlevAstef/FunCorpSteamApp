@@ -9,6 +9,19 @@
    </FileRef>
    <Group
       location = "container:"
+      name = "Infrastructure">
+      <FileRef
+         location = "group:Modules/Infrastructure/ServicesImpl">
+      </FileRef>
+      <FileRef
+         location = "group:Modules/Infrastructure/Network">
+      </FileRef>
+      <FileRef
+         location = "group:Modules/Infrastructure/Storage">
+      </FileRef>
+   </Group>
+   <Group
+      location = "container:"
       name = "UIS">
       <Group
          location = "group:Modules/UIs/Modules"
@@ -41,20 +54,7 @@
    </Group>
    <Group
       location = "container:"
-      name = "Infrastructure">
-      <FileRef
-         location = "group:Modules/Infrastructure/Network">
-      </FileRef>
-      <FileRef
-         location = "group:Modules/Infrastructure/Storage">
-      </FileRef>
-   </Group>
-   <Group
-      location = "container:"
       name = "Domain">
-      <FileRef
-         location = "group:Modules/Domain/Models">
-      </FileRef>
       <FileRef
          location = "group:Modules/Domain/Services">
       </FileRef>

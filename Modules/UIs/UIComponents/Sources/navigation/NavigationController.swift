@@ -10,8 +10,6 @@ import UIKit
 import Core
 import Common
 
-
-
 public final class NavigationController
 {
     public let uiController: UINavigationController

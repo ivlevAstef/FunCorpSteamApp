@@ -13,12 +13,14 @@ let package = Package(
         .package(path: "../Design"),
         .package(path: "../../Core"),
         .package(path: "../../Common"),
+        .package(url: "https://github.com/SnapKit/SnapKit.git", from: "5.0.1")
     ],
     targets: [
         .target(name: "UIComponents", dependencies: [
             .product(name: "Design"),
             .product(name: "Core"),
             .product(name: "Common"),
+            .product(name: "SnapKit"),
         ], path: "./Sources"),
     ]
 )

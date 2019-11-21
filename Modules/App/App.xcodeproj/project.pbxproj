@@ -24,7 +24,6 @@
 		AB89F4D2238310D400E4BCFF /* Friends in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D1238310D400E4BCFF /* Friends */; };
 		AB89F4D4238310D400E4BCFF /* GameInformation in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D3238310D400E4BCFF /* GameInformation */; };
 		AB89F4D6238310D400E4BCFF /* Menu in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D5238310D400E4BCFF /* Menu */; };
-		AB89F4D8238310D400E4BCFF /* Models in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D7238310D400E4BCFF /* Models */; };
 		AB89F4DA238310D400E4BCFF /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D9238310D400E4BCFF /* Network */; };
 		AB89F4DC238310D400E4BCFF /* News in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4DB238310D400E4BCFF /* News */; };
 		AB89F4DE238310D400E4BCFF /* Profile in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4DD238310D400E4BCFF /* Profile */; };
@@ -33,7 +32,7 @@
 		AB89F4E4238310D400E4BCFF /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4E3238310D400E4BCFF /* Storage */; };
 		AB89F4E6238310D400E4BCFF /* UIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4E5238310D400E4BCFF /* UIComponents */; };
 		AB89F4E7238311CB00E4BCFF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB89F4AC23830FDB00E4BCFF /* LaunchScreen.storyboard */; };
-		ABBADA8C2384A5330067EC78 /* AppAuthAPIImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABBADA8B2384A5330067EC78 /* AppAuthAPIImpl.swift */; };
+		ABD970602386375B00256437 /* ServicesImpl in Frameworks */ = {isa = PBXBuildFile; productRef = ABD9705F2386375B00256437 /* ServicesImpl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -64,7 +63,6 @@
 		AB89F4B923830FDC00E4BCFF /* Application.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		AB89F4BA23830FDC00E4BCFF /* AppStartPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppStartPoint.swift; sourceTree = "<group>"; };
 		AB89F4BC23830FDC00E4BCFF /* AppRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
-		ABBADA8B2384A5330067EC78 /* AppAuthAPIImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppAuthAPIImpl.swift; path = ../../../../../../.Trash/AppAuthAPIImpl.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,10 +74,10 @@
 				AB89F4DA238310D400E4BCFF /* Network in Frameworks */,
 				AB89F4DC238310D400E4BCFF /* News in Frameworks */,
 				AB89F4CC238310C500E4BCFF /* Common in Frameworks */,
+				ABD970602386375B00256437 /* ServicesImpl in Frameworks */,
 				AB89F4D2238310D400E4BCFF /* Friends in Frameworks */,
 				AB89F4CE238310C600E4BCFF /* Core in Frameworks */,
 				AB89F4D4238310D400E4BCFF /* GameInformation in Frameworks */,
-				AB89F4D8238310D400E4BCFF /* Models in Frameworks */,
 				AB89F4DE238310D400E4BCFF /* Profile in Frameworks */,
 				AB89F4E4238310D400E4BCFF /* Storage in Frameworks */,
 				AB89F4E6238310D400E4BCFF /* UIComponents in Frameworks */,
@@ -157,7 +155,6 @@
 			isa = PBXGroup;
 			children = (
 				AB89F4BC23830FDC00E4BCFF /* AppRouter.swift */,
-				ABBADA8B2384A5330067EC78 /* AppAuthAPIImpl.swift */,
 			);
 			path = routing;
 			sourceTree = "<group>";
@@ -193,7 +190,6 @@
 				AB89F4D1238310D400E4BCFF /* Friends */,
 				AB89F4D3238310D400E4BCFF /* GameInformation */,
 				AB89F4D5238310D400E4BCFF /* Menu */,
-				AB89F4D7238310D400E4BCFF /* Models */,
 				AB89F4D9238310D400E4BCFF /* Network */,
 				AB89F4DB238310D400E4BCFF /* News */,
 				AB89F4DD238310D400E4BCFF /* Profile */,
@@ -201,6 +197,7 @@
 				AB89F4E1238310D400E4BCFF /* Settings */,
 				AB89F4E3238310D400E4BCFF /* Storage */,
 				AB89F4E5238310D400E4BCFF /* UIComponents */,
+				ABD9705F2386375B00256437 /* ServicesImpl */,
 			);
 			productName = App;
 			productReference = AB2B60A623830464006BF72A /* App.app */;
@@ -258,7 +255,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ABBADA8C2384A5330067EC78 /* AppAuthAPIImpl.swift in Sources */,
 				AB89F4C723830FDC00E4BCFF /* Application.swift in Sources */,
 				AB89F4C023830FDC00E4BCFF /* LogFileDestination.swift in Sources */,
 				AB89F4C423830FDC00E4BCFF /* AppDependency.swift in Sources */,
@@ -502,10 +498,6 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Menu;
 		};
-		AB89F4D7238310D400E4BCFF /* Models */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Models;
-		};
 		AB89F4D9238310D400E4BCFF /* Network */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Network;
@@ -533,6 +525,10 @@
 		AB89F4E5238310D400E4BCFF /* UIComponents */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UIComponents;
+		};
+		ABD9705F2386375B00256437 /* ServicesImpl */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ServicesImpl;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

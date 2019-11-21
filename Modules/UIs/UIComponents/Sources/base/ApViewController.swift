@@ -56,6 +56,8 @@ open class ApViewController: UIViewController {
         }
 
         addViewForStylizing(stylizingNavBar)
+
+        styleDidChange(style)
     }
 
     open override func viewWillLayoutSubviews() {

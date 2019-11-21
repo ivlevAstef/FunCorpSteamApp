@@ -4,17 +4,21 @@
 import PackageDescription
 
 let package = Package(
-    name: "Models",
+    name: "ServicesImpl",
     platforms: [.iOS(.v10)],
     products: [
-        .library(name: "Models", targets: ["Models"]),
+        .library(name: "ServicesImpl", targets: ["ServicesImpl"]),
     ],
     dependencies: [
+        .package(path: "../../Domain/Services"),
         .package(path: "../../Core"),
+        .package(path: "../../Common"),
     ],
     targets: [
-        .target(name: "Models", dependencies: [
-            .product(name: "Core"),
+        .target(name: "ServicesImpl", dependencies: [
+            "Services",
+            "Core",
+            "Common"
         ], path: "./Sources"),
     ]
 )
