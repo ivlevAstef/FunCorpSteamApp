@@ -27,7 +27,6 @@ final class ProfileScreenPresenter
     private let view: ProfileScreenViewContract
     private let authService: SteamAuthService
     private let profileService: SteamProfileService
-    private var subscriber: SteamProfileServiceSubscriber?
 
     init(view: ProfileScreenViewContract,
          authService: SteamAuthService,
@@ -40,23 +39,18 @@ final class ProfileScreenPresenter
     func configure(steamId: SteamID) {
         var isLoading = true
         view.beginLoading("Подождите профиль подгружается")
-        subscriber = profileService.join(to: steamId, callback: { [weak self, weak view] result in
+        profileService.getNotifier(for: steamId).weakJoin(listener: { (self, result) in
             if isLoading {
-                view?.endLoading()
+                self.view.endLoading()
                 isLoading = false
             }
-            self?.processProfileResult(result)
-        })
+            self.processProfileResult(result)
+        }, owner: self)
 
-        subscribeOnView(for: steamId)
-    }
-
-    private func subscribeOnView(for steamId: SteamID) {
         view.needUpdateNotifier.join(listener: { [profileService] in
-            profileService.update(by: steamId)
+            profileService.refresh(for: steamId)
         })
     }
-
     private func processProfileResult(_ result: SteamProfileResult) {
         switch result {
         case .failure(.cancelled):

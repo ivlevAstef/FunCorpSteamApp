@@ -12,35 +12,78 @@ import Services
 
 final class SteamProfileServiceImpl: SteamProfileService
 {
-    private class ProfileNotifier: SteamProfileServiceSubscriber {
-        private let callback: (SteamProfileResult) -> Void
+    private class ProfileSubscribeInfo {
+        let notifier = Notifier<SteamProfileResult>()
         var profile: SteamProfile?
         var notifyAboutError: Bool = true
+        var isWorked: Bool = false
 
-        init(_ callback: @escaping (SteamProfileResult) -> Void) {
-            self.callback = callback
-        }
+        func notify(result: SteamProfileResult) {
+           log.assert(Thread.isMainThread, "Thread.isMainThread")
 
-        func notify(_ result: SteamProfileResult) {
-            /// ignore BD errors
-            if case .failure(.notFound) = result {
-                return
-            }
-            callback(result)
+           /// игнорируем ошибки что в БД нет данных - всеравно будет сетевой запрос
+           if case .failure(.notFound) = result {
+               return
+           }
+
+           var newProfile: SteamProfile?
+           if case let .success(profile) = result {
+               newProfile = profile
+           }
+
+           /// Если надо сообщить об ошибке, и это ошибка, то сообщаем
+           if notifyAboutError && nil == newProfile {
+               notifier.notify(result)
+           /// Если прошло состояние не равно новому, и новое при этом не ошибка, то сохраняем и оповещаем
+           } else if profile != newProfile && newProfile != nil {
+               profile = newProfile
+               notifier.notify(result)
+           }
+
+           notifyAboutError = false
         }
     }
 
     private let network: SteamProfileNetwork
     private let storage: SteamProfileStorage
 
-    private var subscribers: [SteamID: [Weak<ProfileNotifier>]] = [:]
+    private var subscribers: [SteamID: ProfileSubscribeInfo] = [:]
 
     init(network: SteamProfileNetwork, storage: SteamProfileStorage) {
         self.network = network
         self.storage = storage
     }
 
-    func fetch(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
+    func refresh(for steamId: SteamID) {
+        log.assert(Thread.isMainThread, "Thread.isMainThread")
+
+        guard let subscribeInfo = subscribers[steamId] else {
+            return
+        }
+
+        if subscribeInfo.isWorked {
+            return
+        }
+
+        subscribeInfo.isWorked = true
+        fetch(by: steamId) { [weak self] result in
+            subscribeInfo.notify(result: result)
+            self?.update(by: steamId) { result in
+                subscribeInfo.notify(result: result)
+                subscribeInfo.isWorked = false
+            }
+        }
+    }
+
+    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileResult> {
+        log.assert(Thread.isMainThread, "Thread.isMainThread")
+        let subscribeInfo = subscribers[steamId] ?? ProfileSubscribeInfo()
+        subscribers[steamId] = subscribeInfo
+
+        return subscribeInfo.notifier
+    }
+
+    private func fetch(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
         DispatchQueue.global(qos: .userInteractive).async { [weak storage] in
             guard let profile = storage?.fetch(by: steamId) else {
                 DispatchQueue.main.async {
@@ -54,60 +97,14 @@ final class SteamProfileServiceImpl: SteamProfileService
         }
     }
 
-    func update(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
+    private func update(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
         network.request(by: steamId, completion: { [weak storage] result in
             if case let .success(profile) = result {
                 storage?.put(profile)
             }
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async {
                 completion(result)
-                self?.notifySubscribers(for: steamId, result: result)
             }
         })
-    }
-
-
-    func join(to steamId: SteamID, callback: @escaping (SteamProfileResult) -> Void) -> SteamProfileServiceSubscriber {
-        log.assert(Thread.isMainThread, "Thread.isMainThread")
-        let profileNotifier = ProfileNotifier(callback)
-        subscribers[steamId, default: []].append(Weak(profileNotifier))
-
-        fetch(by: steamId) { [weak self] result in
-            self?.notifySubscribers(for: steamId, result: result)
-            self?.update(by: steamId)
-        }
-        
-        return profileNotifier
-    }
-
-    private func notifySubscribers(for steamId: SteamID, result: SteamProfileResult) {
-        log.assert(Thread.isMainThread, "Thread.isMainThread")
-        subscribers[steamId]?.removeAll(where: {
-            return $0.value == nil
-        })
-
-        var newProfile: SteamProfile?
-        if case let .success(profile) = result {
-            newProfile = profile
-        }
-
-        for notifier in subscribers[steamId] ?? [] {
-            guard let notifier = notifier.value else {
-                continue
-            }
-
-            defer { notifier.notifyAboutError = false }
-            /// Если надо сообщить об ошибке, и это ошибка, то сообщаем
-            if notifier.notifyAboutError && nil == newProfile {
-                notifier.notify(result)
-                continue
-            }
-
-            /// Если прошло состояние не равно новому, и новое при этом не ошибка, то сохраняем и оповещаем
-            if notifier.profile != newProfile && newProfile != nil {
-                notifier.profile = newProfile
-                notifier.notify(result)
-            }
-        }
     }
 }
