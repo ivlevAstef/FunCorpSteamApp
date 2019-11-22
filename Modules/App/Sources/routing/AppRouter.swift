@@ -27,45 +27,38 @@ final class AppRouter: IRouter
         self.subscribeOn(StartPoints.menu)
     }
 
-    @discardableResult
-    func configure(parameters: RoutingParamaters) -> IRouter {
-        let router = StartPoints.menu.makeRouter().configure(parameters: parameters)
+    func start(parameters: RoutingParamaters) {
+        let router = StartPoints.menu.makeRouter()
+        navController.push(router, animated: false)
 
         let startPointsCanOpened = parameters.isEmpty
             ? []
             : StartPoints.ui.values.filter { $0.isSupportOpen(with: parameters) }
 
-        log.debug("configure first screens, use parameters finished.")
-        log.trace("Params: \(parameters)")
-        log.trace("Opened Start Points: \(startPointsCanOpened)")
-
         if startPointsCanOpened.isEmpty {
-            navController.push(router, animated: false)
-        } else {
-            navController.pushButNotStart(router, animated: false)
+            router.start()
         }
 
         log.assert(startPointsCanOpened.count <= 1, "By parameters can open more start points - it's correct, or not?")
         for startPoint in startPointsCanOpened {
-            let router = startPoint.makeRouter().configure(parameters: parameters)
+            let router = startPoint.makeRouter()
             navController.push(router, animated: false)
+            router.start(parameters: parameters)
         }
-
-        return self
     }
 
     private func subscribeOn(_ startPoint: MenuStartPoint) {
         StartPoints.menu.newsGetter.take(use: {
-            return StartPoints.news.makeRouter().configure()
+            return StartPoints.news.makeRouter()
         })
         StartPoints.menu.myProfileGetter.take(use: {
-            return StartPoints.profile.makeRouter().configure()
+            return StartPoints.profile.makeRouter()
         })
 //        StartPoints.menu.friendsGetter.take(use: {
 //            return StartPoints.friends.makeRouter().configure()
 //        })
         StartPoints.menu.settingsGetter.take(use: {
-            return StartPoints.settings.makeRouter().configure()
+            return StartPoints.settings.makeRouter()
         })
     }
 }

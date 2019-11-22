@@ -12,6 +12,16 @@ import Services
 final class NetworkDependency: DIFramework
 {
     static func load(container: DIContainer) {
+        container.register(NetworkSession.init)
+            .lifetime(.perRun(.strong))
+
+        container.register(SteamAuthNetworkImpl.init)
+            .as(SteamAuthNetwork.self)
+            .lifetime(.prototype)
+
+        container.register(SteamProfileNetworkImpl.init)
+            .as(SteamProfileNetwork.self)
+            .lifetime(.prototype)
     }
 }
 

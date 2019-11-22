@@ -19,9 +19,7 @@ final class NewsRouter: IRouter
     /*dependency*/var ribbonScreenProvider = Provider<RibbonScreen>()
     
     var rootViewController: UIViewController {
-        let screen = ribbonScreenProvider.value
-        configure(screen)
-        return screen.view
+        return navController.uiController
     }
 
     private let navController: NavigationController
@@ -29,13 +27,11 @@ final class NewsRouter: IRouter
     init(navController: NavigationController) {
         self.navController = navController
     }
-    
-    func configure(parameters: RoutingParamaters) -> IRouter {
-        return self
-    }
 
-    func start() {
-
+    func start(parameters: RoutingParamaters) {
+        let screen = ribbonScreenProvider.value
+        configure(screen)
+        navController.setRoot(screen.view)
     }
 
     private func configure(_ screen: RibbonScreen) {

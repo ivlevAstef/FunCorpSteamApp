@@ -32,20 +32,14 @@ final class ProfileRouter: IRouter
         self.navController = navController
         self.authService = authService
     }
-    
-    func configure(parameters: RoutingParamaters) -> IRouter {
+
+    func start(parameters: RoutingParamaters) {
         let steamIdKey = ProfileStartPoint.RoutingOptions.steamId
         if let steamId = parameters.options[steamIdKey].flatMap({ SteamID($0) }) {
             showProfileScreen(steamId: steamId)
         } else {
             showRootScreen()
         }
-
-        return self
-    }
-
-    func start() {
-
     }
 
     private func showRootScreen() {

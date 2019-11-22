@@ -11,18 +11,19 @@ import Services
 import UIKit
 import WebKit
 
-
 final class SteamAuthServiceImpl: SteamAuthService
 {
     var isLogined: Bool { steamId != nil }
     var steamId: SteamID? {
-        return myProfileStorage.steamId
+        return authStorage.steamId
     }
 
-    private let myProfileStorage: SteamMyProfileDataStorage
+    private let authStorage: SteamAuthStorage
+    private let authNetwork: SteamAuthNetwork
 
-    init(myProfileStorage: SteamMyProfileDataStorage) {
-        self.myProfileStorage = myProfileStorage
+    init(authStorage: SteamAuthStorage, authNetwork: SteamAuthNetwork) {
+        self.authStorage = authStorage
+        self.authNetwork = authNetwork
     }
 
     func login(completion: @escaping (Result<SteamID, SteamLoginError>) -> Void) {
@@ -37,9 +38,9 @@ final class SteamAuthServiceImpl: SteamAuthService
             return
         }
 
-        let steamLoginVC = SteamLoginViewController(nibName: nil, bundle: nil)
-        steamLoginVC.successNotifier.join(listener: { [weak steamLoginVC, myProfileStorage] steamId in
-            myProfileStorage.steamId = steamId
+        let steamLoginVC = SteamLoginViewController(authNetwork: authNetwork)
+        steamLoginVC.successNotifier.join(listener: { [weak steamLoginVC, authStorage] steamId in
+            authStorage.steamId = steamId
             completion(.success(steamId))
             steamLoginVC?.dismiss(animated: true)
         })
@@ -87,7 +88,7 @@ final class SteamAuthServiceImpl: SteamAuthService
             return
         }
 
-        myProfileStorage.steamId = nil
+        authStorage.steamId = nil
         completion(.success(steamId))
     }
 }
@@ -103,6 +104,18 @@ private final class SteamLoginViewController: UIViewController, WKUIDelegate, WK
 
     private lazy var webView: WKWebView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
 
+    private let authNetwork: SteamAuthNetwork
+
+    // Просто лень, в идеале конечно наверх прокидывать события
+    init(authNetwork: SteamAuthNetwork) {
+        self.authNetwork = authNetwork
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func loadView() {
         webView.uiDelegate = self
         view = webView
@@ -113,8 +126,7 @@ private final class SteamLoginViewController: UIViewController, WKUIDelegate, WK
 
         webView.navigationDelegate = self
 
-        let url = steamopenIdUrl()
-        webView.load(URLRequest(url: url))
+        webView.load(URLRequest(url: authNetwork.loginUrl))
         webView.allowsBackForwardNavigationGestures = true
     }
 
@@ -132,71 +144,21 @@ private final class SteamLoginViewController: UIViewController, WKUIDelegate, WK
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
 
-        if let url = navigationAction.request.url, let components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
-            if components.host == Self.appRedirectName {
-                decisionHandler(.cancel)
+        if let url = navigationAction.request.url, authNetwork.isRedirect(url: url) {
+            decisionHandler(.cancel)
 
-                if let steamId = parseRedirectResult(components) {
-                    successNotifier.notify(steamId)
-                } else {
-                    // TODO: тут можно еще при желании распарсить причину отказа
-                    failureNotifier.notify(())
-                }
-                cleanNotifiers()
-
-                return
+            if let steamId = authNetwork.parseRedirect(url: url) {
+                successNotifier.notify(steamId)
+            } else {
+                // TODO: тут можно еще при желании распарсить причину отказа
+                failureNotifier.notify(())
             }
+            cleanNotifiers()
+
+            return
         }
 
         decisionHandler(.allow)
-    }
-
-    private func parseRedirectResult(_ components: URLComponents) -> SteamID? {
-        // also maybe need openid.sig=WDPVq743zqTGeLXqn/RZ/SYfyBM=
-        for queryItem in components.queryItems ?? [] {
-            guard let value = queryItem.value else {
-                continue
-            }
-            if queryItem.name != "openid.claimed_id" && queryItem.name != "openid.identity" {
-                continue
-            }
-            guard let paramComponents = URLComponents(string: value) else {
-                continue
-            }
-            if !paramComponents.path.hasPrefix("/openid/id/") {
-                continue
-            }
-
-            let lastComponent = (paramComponents.path as NSString).lastPathComponent
-            if let steamId = SteamID(lastComponent) {
-                return steamId
-            }
-        }
-
-        return nil
-    }
-
-    private func steamopenIdUrl() -> URL {
-        // TODO: hardcode - fix
-        var components = URLComponents(string: "https://steamcommunity.com/openid/login")!
-        let items = [
-            URLQueryItem(name: "openid.ns", value: "http://specs.openid.net/auth/2.0"),
-            URLQueryItem(name: "openid.claimed_id", value: "http://specs.openid.net/auth/2.0/identifier_select"),
-            URLQueryItem(name: "openid.identity", value: "http://specs.openid.net/auth/2.0/identifier_select"),
-            URLQueryItem(name: "openid.return_to", value: "https://\(Self.appRedirectName)"),
-            URLQueryItem(name: "openid.mode", value: "checkid_setup")
-        ]
-
-        let allowedChars = CharacterSet(charactersIn: ":/").inverted
-        components.percentEncodedQuery = items.map { item in
-            item.name + "=" + (item.value?.addingPercentEncoding(withAllowedCharacters: allowedChars) ?? "")
-        }.joined(separator: "&")
-
-        guard let url = components.url else {
-            log.fatal("Can't make steam open id url")
-        }
-
-        return url
     }
 
     private func cleanNotifiers() {

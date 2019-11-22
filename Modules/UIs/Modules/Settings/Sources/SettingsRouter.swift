@@ -20,9 +20,7 @@ final class SettingsRouter: IRouter
     /*dependency*/var settingsScreenProvider = Provider<SettingsScreen>()
 
     var rootViewController: UIViewController {
-        let screen = settingsScreenProvider.value
-        configure(screen)
-        return screen.view
+        navController.uiController
     }
 
     private let navController: NavigationController
@@ -31,11 +29,14 @@ final class SettingsRouter: IRouter
         self.navController = navController
     }
 
-    func configure(parameters: RoutingParamaters) -> IRouter {
+    func configure() -> IRouter {
         return self
     }
 
-    func start() {
+    func start(parameters: RoutingParamaters) {
+        let screen = settingsScreenProvider.value
+        configure(screen)
+        navController.setRoot(screen.view)
     }
 
     private func configure(_ screen: SettingsScreen) {

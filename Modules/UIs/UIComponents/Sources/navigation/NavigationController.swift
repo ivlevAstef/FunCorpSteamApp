@@ -35,14 +35,6 @@ public final class NavigationController
     }
 
     public func push(_ router: IRouter, animated: Bool = true) {
-        pushButNotStart(router, animated: animated)
-
-        router.start()
-
-        log.info("router: \(type(of: router)) started")
-    }
-
-    public func pushButNotStart(_ router: IRouter, animated: Bool = true) {
         let vc = router.rootViewController
         push(vc, animated: animated)
         vcRouterContainer.push(vc: vc, router: router)

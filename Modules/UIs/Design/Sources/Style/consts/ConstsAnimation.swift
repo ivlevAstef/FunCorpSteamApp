@@ -11,6 +11,7 @@ import UIKit
 public enum ConstsAnimation
 {
     public static let `default` = Style.Animation(
+        animationTime: 0.25,
         transitionTime: 0.5
     )
 }

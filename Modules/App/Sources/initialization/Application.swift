@@ -20,17 +20,17 @@ final class Application
         self.router = router
     }
 
-    func start(_ window: UIWindow) {
+    func configureWindow(_ window: UIWindow) {
         window.rootViewController = router.rootViewController
-        router.start()
     }
 
-    func configureAndInitialization(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    func start(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         // TODO: support parse launch options
-        router.configure(parameters: RoutingParamaters())
+        router.start(parameters: RoutingParamaters())
     }
 
     func openUrl(_ url: URL) -> Bool {
+        // TODO: support parse url
         return false
     }
 }

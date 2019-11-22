@@ -56,6 +56,7 @@ public struct Style
 
     // MARK: - Animation
     public struct Animation {
+        public let animationTime: TimeInterval
         public let transitionTime: TimeInterval
     }
 

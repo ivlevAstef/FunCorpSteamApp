@@ -15,6 +15,10 @@ final class ServicesImplDependency: DIFramework
         container.register(SteamAuthServiceImpl.init)
             .as(SteamAuthService.self)
             .lifetime(.perRun(.weak))
+
+        container.register(SteamProfileServiceImpl.init)
+        .as(SteamProfileService.self)
+        .lifetime(.perRun(.weak))
     }
 }
 

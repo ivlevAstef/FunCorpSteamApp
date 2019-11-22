@@ -22,12 +22,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         AppStartPoint.initialize()
         log.info("initialize modules finished")
 
-        AppStartPoint.app.configureAndInitialization(launchOptions: launchOptions)
-        log.info("configure and initializate application finished")
-        
         let window = UIWindow(frame: UIScreen.main.bounds)
         self.window = window
-        AppStartPoint.app.start(window)
+        AppStartPoint.app.configureWindow(window)
+        AppStartPoint.app.start(launchOptions: launchOptions)
         window.makeKeyAndVisible()
 
         log.info("setup windows and started application")

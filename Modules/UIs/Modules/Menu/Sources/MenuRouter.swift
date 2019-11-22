@@ -23,30 +23,18 @@ final class MenuRouter: IRouter
     let friendsGetter = Getter<Void, IRouter>()
     let settingsGetter = Getter<Void, IRouter>()
 
-    /*dependency*/var menuScreenProvider = Provider<MenuScreen>()
+    /*dependency*/var menuScreenProvider = Lazy<MenuScreen>()
     
     var rootViewController: UIViewController {
+        return menuScreenProvider.value.view
+    }
+
+    init() {
+    }
+
+    func start(parameters: RoutingParamaters) {
         let screen = menuScreenProvider.value
         configure(screen)
-        return screen.view
-    }
-
-    private let navController: NavigationController
-
-    init(navController: NavigationController) {
-        self.navController = navController
-    }
-
-    func configure(parameters: RoutingParamaters) -> IRouter {
-        return self
-    }
-
-    func start() {
-//        log.info("will show blog")
-//        if let blogRouter = blogGetter.get(()) {
-//            navController.push(blogRouter, animated: false)
-//            log.info("did show blog")
-//        }
     }
 
     private func configure(_ screen: MenuScreen) {

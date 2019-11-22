@@ -12,8 +12,12 @@ import Services
 final class StorageDependency: DIFramework
 {
     static func load(container: DIContainer) {
-        container.register(SteamMyProfileDataStorageImpl.init)
-            .as(SteamMyProfileDataStorage.self)
+        container.register(SteamAuthStorageImpl.init)
+            .as(SteamAuthStorage.self)
+            .lifetime(.perRun(.strong))
+
+        container.register(SteamProfileStorageImpl.init)
+            .as(SteamProfileStorage.self)
             .lifetime(.perRun(.strong))
     }
 }
