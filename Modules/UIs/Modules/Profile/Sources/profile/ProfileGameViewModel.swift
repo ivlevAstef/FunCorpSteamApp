@@ -14,5 +14,6 @@ struct ProfileGameViewModel
     let icon: ChangeableImage
     let name: String
 
+    let playtimePrefix: String
     let playtime: TimeInterval
 }

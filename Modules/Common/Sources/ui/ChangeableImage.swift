@@ -10,7 +10,7 @@ import UIKit
 
 public final class ChangeableImage
 {
-    public let changeImageNotifier = Notifier<UIImage?>()
+    private let changeImageNotifier = Notifier<UIImage?>()
 
     public var image: UIImage? {
         return self.currentImage ?? self.placeholder
@@ -30,21 +30,34 @@ public final class ChangeableImage
             changeImageNotifier.notify(image)
         }
     }
-}
 
-public extension ChangeableImage
-{
-    func join(imageView: UIImageView) {
-        imageView.image = image
-        changeImageNotifier.join(listener: { [weak imageView] image in
-            imageView?.image = image
-        })
+    public func join(
+        listener: @escaping (UIImage?) -> Void,
+        file: String = #file, line: UInt = #line) {
+        changeImageNotifier.join(listener: listener, file: file, line: line)
     }
 
-    func join(imageView: UIImageView, owner: AnyObject) {
+    public func weakJoin<Owner: AnyObject>(
+        listener: @escaping (Owner, UIImage?) -> Void,
+        owner: Owner,
+        file: String = #file, line: UInt = #line) {
+        changeImageNotifier.weakJoin(listener: listener, owner: owner, file: file, line: line)
+    }
+}
+
+// MARK: - UIImageView
+extension ChangeableImage {
+    public func join(imageView: UIImageView, file: String = #file, line: UInt = #line) {
         imageView.image = image
-        changeImageNotifier.weakJoin(listener: { [weak imageView] (_, image) in
+        join(listener: { [weak imageView] image in
             imageView?.image = image
-        }, owner: owner)
+        }, file: file, line: line)
+    }
+
+    public func join(imageView: UIImageView, owner: AnyObject, file: String = #file, line: UInt = #line) {
+        imageView.image = image
+        weakJoin(listener: { [weak imageView] (_, image) in
+            imageView?.image = image
+        }, owner: owner, file: file, line: line)
     }
 }

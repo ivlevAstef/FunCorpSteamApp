@@ -52,7 +52,6 @@ final class SteamProfileServiceImpl: SteamProfileService
                 storage?.put(profile: profile)
             }
 
-            sleep(5)
             completion(result)
         })
     }

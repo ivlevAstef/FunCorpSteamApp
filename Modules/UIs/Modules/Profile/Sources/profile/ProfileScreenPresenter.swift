@@ -119,6 +119,7 @@ final class ProfileScreenPresenter
             let viewModel = ProfileGameViewModel(
                 icon: ChangeableImage(placeholder: nil, image: nil),
                 name: game.name,
+                playtimePrefix: loc["SteamProfile.Game.PlayTimePrefix"],
                 playtime: game.playtimeForever
             )
 
@@ -127,6 +128,10 @@ final class ProfileScreenPresenter
             return viewModel
         }
 
-        view.showGames(viewModels)
+        let sortedViewModels = viewModels.sorted(by: { lhs, rhs in
+            lhs.playtime > rhs.playtime
+        })
+
+        view.showGames(sortedViewModels)
     }
 }

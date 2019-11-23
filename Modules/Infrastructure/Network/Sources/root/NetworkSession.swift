@@ -33,7 +33,7 @@ enum NetworkError: Error {
 
 enum Support {
     static func appImageUrl(appId: Int64, hash: String) -> URL? {
-        var urlString = Consts.apiBaseURL.absoluteString
+        var urlString = Consts.apiMediaURL.absoluteString
         urlString += "/steamcommunity/public/images/apps"
         urlString += "/\(appId)"
         urlString += "/\(hash)"

@@ -10,7 +10,7 @@ import Foundation
 import Common
 
 extension TimeInterval {
-    var adaptiveString: String {
+    public var adaptiveString: String {
         if self < 60 { // seconds
             let seconds = Int(self)
             return "\(seconds) \(loc["TimeInterval.short.seconds"])"
@@ -18,7 +18,7 @@ extension TimeInterval {
             let minutes = Int(self / 60)
             return "\(minutes) \(loc["TimeInterval.short.minutes"])"
         } else { // hours
-            let hours = Int(self / 60 * 60)
+            let hours = Int(self / (60 * 60))
             return "\(hours) \(loc["TimeInterval.short.hours"])"
         }
     }
