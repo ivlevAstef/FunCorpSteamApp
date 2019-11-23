@@ -47,3 +47,6 @@ Application for task from funcorp for show information from steam
 # Steam API
 
 # Планы
+
+### Время
+22-23 часа
