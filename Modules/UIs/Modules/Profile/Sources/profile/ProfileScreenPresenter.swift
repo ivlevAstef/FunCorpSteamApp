@@ -6,20 +6,23 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
+import Foundation
 import Common
 import Core
 import Services
+import UIComponents
 
 protocol ProfileScreenViewContract: class
 {
     var needUpdateNotifier: Notifier<Void> { get }
 
-    func beginLoading(_ text: String)
-    func endLoading()
+    func beginLoading()
+    func endLoading(_ success: Bool)
 
     func showError(_ text: String)
+    func showProfile(_ profile: ProfileViewModel)
 
-    func showProfile(_ profile: SteamProfile)
+    func showGames(_ games: [ProfileGameViewModel])
 }
 
 final class ProfileScreenPresenter
@@ -27,43 +30,103 @@ final class ProfileScreenPresenter
     private let view: ProfileScreenViewContract
     private let authService: SteamAuthService
     private let profileService: SteamProfileService
+    private let profileGamesService: SteamProfileGamesService
+    private let avatarService: AvatarService
 
     init(view: ProfileScreenViewContract,
          authService: SteamAuthService,
-         profileService: SteamProfileService) {
+         profileService: SteamProfileService,
+         profileGamesService: SteamProfileGamesService,
+         avatarService: AvatarService) {
         self.view = view
         self.authService = authService
         self.profileService = profileService
+        self.profileGamesService = profileGamesService
+        self.avatarService = avatarService
     }
 
     func configure(steamId: SteamID) {
-        var isLoading = true
-        view.beginLoading("Подождите профиль подгружается")
         profileService.getNotifier(for: steamId).weakJoin(listener: { (self, result) in
-            if isLoading {
-                self.view.endLoading()
-                isLoading = false
-            }
             self.processProfileResult(result)
         }, owner: self)
 
-        view.needUpdateNotifier.join(listener: { [profileService] in
+        profileGamesService.getNotifier(for: steamId).weakJoin(listener: { (self, result) in
+            self.processProfileGamesResult(result)
+        }, owner: self)
+
+
+        view.beginLoading()
+        profileService.refresh(for: steamId) { [weak view] success in
+            view?.endLoading(success)
+        }
+
+        view.needUpdateNotifier.join(listener: { [profileService, profileGamesService] in
             profileService.refresh(for: steamId)
+            profileGamesService.refresh(for: steamId)
         })
     }
+
+    // MARK: - profile
+
     private func processProfileResult(_ result: SteamProfileResult) {
         switch result {
         case .failure(.cancelled):
             break
 
         case .failure(.notConnection):
-            view.showError("Нет подключения к сети")
+            view.showError(loc["Errors.NotConnect"])
 
         case .failure(.notFound), .failure(.incorrectResponse):
-            view.showError("Что-то пошло не так, повторите операцию позже")
+            view.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let profile):
-            view.showProfile(profile)
+            processProfile(profile)
         }
+    }
+
+    private func processProfile(_ profile: SteamProfile) {
+        var viewModel = ProfileViewModel(
+            avatar: ChangeableImage(placeholder: nil, image: nil),
+            nick: profile.nickName
+        )
+
+        switch profile.visibilityState {
+        case .private:
+            break
+        case .open(let data):
+            viewModel.realName = data.realName
+        }
+
+        view.showProfile(viewModel)
+
+        avatarService.fetch(url: profile.avatarURL, to: viewModel.avatar)
+    }
+
+    // MARK: - games
+
+    private func processProfileGamesResult(_ result: SteamProfileGamesResult) {
+        switch result {
+        case .failure:
+            break
+
+        case .success(let games):
+            processGames(games)
+        }
+    }
+
+    private func processGames(_ games: [SteamProfileGame]) {
+        let viewModels: [ProfileGameViewModel] = games.map { game in
+            let viewModel = ProfileGameViewModel(
+                icon: ChangeableImage(placeholder: nil, image: nil),
+                name: game.name,
+                playtime: game.playtimeForever
+            )
+
+            avatarService.fetch(url: game.iconUrl, to: viewModel.icon)
+
+            return viewModel
+        }
+
+        view.showGames(viewModels)
     }
 }

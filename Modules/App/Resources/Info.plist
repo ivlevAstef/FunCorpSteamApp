@@ -24,12 +24,12 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>api.steampowered.com</key>
+			<key>steampowered.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 				<key>NSIncludesSubdomains</key>
-				<false/>
+				<true/>
 			</dict>
 		</dict>
 	</dict>

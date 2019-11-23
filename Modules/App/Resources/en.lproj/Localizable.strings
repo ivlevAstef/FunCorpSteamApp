@@ -8,6 +8,13 @@
 
 // Мне лень переводить
 
+"TimeInterval.short.seconds" = "сек.";
+"TimeInterval.short.minutes" = "мин.";
+"TimeInterval.short.hours" = "ч.";
+
+"Errors.NotConnect" = "Нет подключения к сети";
+"Errors.IncorrectResponse" = "Что-то пошло не так, повторите операцию позже";
+
 "Alert.Error" = "Ошибка";
 "Alert.Ok" = "Хорошо";
 

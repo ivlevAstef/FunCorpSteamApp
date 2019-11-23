@@ -10,7 +10,9 @@ import Foundation
 
 public protocol SteamProfileStorage: class
 {
-    func put(_ profile: SteamProfile)
+    func put(profile: SteamProfile)
+    func put(for steamId: SteamID, games: [SteamProfileGame])
 
-    func fetch(by steamId: SteamID) -> SteamProfile?
+    func fetchProfile(by steamId: SteamID) -> SteamProfile?
+    func fetchGames(by steamId: SteamID) -> [SteamProfileGame]?
 }

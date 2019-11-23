@@ -8,15 +8,7 @@
 
 import Foundation
 
-public typealias SteamProfileResult = Result<SteamProfile, SteamProfileError>
-
-public enum SteamProfileError: Error {
-    case notFound
-    case notConnection
-    case incorrectResponse
-    case cancelled
-}
-
+public typealias SteamProfileResult = Result<SteamProfile, ServiceError>
 
 public struct SteamProfile: Equatable
 {
@@ -50,6 +42,7 @@ public struct SteamProfile: Equatable
 
     public let nickName: String
     public let avatarURL: URL?
+    public let mediumAvatarURL: URL?
     /// Когда пользователь был последний раз онлайн
     public let lastlogoff: Date
 
@@ -64,6 +57,7 @@ extension SteamProfile {
         profileURL: URL?,
         nickName: String,
         avatarURL: URL?,
+        mediumAvatarURL: URL?,
         lastlogoff: Date,
         visibilityState: VisibilityState
     ) {
@@ -71,6 +65,7 @@ extension SteamProfile {
         self.profileURL = profileURL
         self.nickName = nickName
         self.avatarURL = avatarURL
+        self.mediumAvatarURL = mediumAvatarURL
         self.lastlogoff = lastlogoff
         self.visibilityState = visibilityState
     }

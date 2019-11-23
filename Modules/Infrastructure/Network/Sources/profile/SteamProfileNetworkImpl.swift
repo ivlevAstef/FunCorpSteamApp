@@ -18,27 +18,43 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
         self.session = session
     }
 
-    func request(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
-        session.requestOnUser(
+    func requestUser(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
+        session.request(
+            interface: "ISteamUser",
             method: "GetPlayerSummaries",
             version: "0002",
             fields: ["steamids": "\(steamId)"],
             completion: { (result: Result<Response<Players>, NetworkError>) in
-                completion(Self.map(result))
+                completion(Self.map(result, with: steamId))
         })
     }
 
-    private static func map(_ result: Result<Response<Players>, NetworkError>) -> SteamProfileResult {
+    func requestGames(by steamId: SteamID, completion: @escaping (SteamProfileGamesResult) -> Void) {
+        session.request(
+            interface: "IPlayerService",
+            method: "GetOwnedGames",
+            version: "0001",
+            fields: ["steamid": "\(steamId)", "include_appinfo": "true"],
+            completion: { (result: Result<Response<Games>, NetworkError>) in
+                completion(Self.map(result, with: steamId))
+        })
+    }
+
+    // MARK: - profile mapper
+
+    private static func map(_ result: Result<Response<Players>, NetworkError>,
+                            with steamId: SteamID) -> SteamProfileResult {
         switch result {
         case .success(let response):
             guard let player = response.response.players.first else {
                 return .failure(.incorrectResponse)
             }
-            guard let steamId = SteamID(player.steamid) else {
+            guard let responseSteamId = SteamID(player.steamid) else {
                 return .failure(.incorrectResponse)
             }
+            log.assert(responseSteamId == steamId, "request steam id not equal response")
 
-            return .success(map(player, steamId: steamId))
+            return .success(map(player, steamId: responseSteamId))
         case .failure(.cancelled):
             return .failure(.cancelled)
         case .failure(.notConnection), .failure(.timeout):
@@ -78,13 +94,43 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
             profileURL: URL(string: result.profileurl),
             nickName: result.personaname,
             avatarURL: URL(string: result.avatarfull),
+            mediumAvatarURL: URL(string: result.avatarmedium),
             lastlogoff: result.lastlogoff.unixTimeToDate,
             visibilityState: visibilityState
         )
     }
+
+    // MARK: - profile games mapper
+
+    private static func map(_ result: Result<Response<Games>, NetworkError>,
+                            with steamId: SteamID) -> SteamProfileGamesResult {
+        switch result {
+        case .success(let response):
+            let games = response.response.games.map { map($0, steamId: steamId) }
+            return .success(games)
+        case .failure(.cancelled):
+            return .failure(.cancelled)
+        case .failure(.notConnection), .failure(.timeout):
+            return .failure(.notConnection)
+        case .failure:
+            return .failure(.incorrectResponse)
+        }
+    }
+
+    private static func map(_ result: Game, steamId: SteamID) -> SteamProfileGame {
+        return SteamProfileGame(
+            steamId: steamId,
+            appId: result.appid,
+            name: result.name,
+            iconUrl: result.img_icon_url.flatMap { Support.appImageUrl(appId: result.appid, hash: $0) },
+            logoUrl: result.img_logo_url.flatMap { Support.appImageUrl(appId: result.appid, hash: $0) },
+            playtimeForever: result.playtime_forever.flatMap { TimeInterval($0 * 60) } ?? 0,
+            playtime2weeks: result.playtime_2weeks.flatMap { TimeInterval($0 * 60) } ?? 0
+        )
+    }
 }
 
-// MARK: - data
+// MARK: - profile data
 
 private struct Players: Decodable {
     let players: [Player]
@@ -135,3 +181,24 @@ private struct Player: Decodable {
 //            "loccountrycode":"RU",
 //            "locstatecode":"53",
 //            "loccityid":41723
+
+// MARK: - profile games data
+
+private struct Games: Decodable {
+    let game_count: Int
+    let games: [Game]
+}
+
+private struct Game: Decodable {
+    let appid: Int64
+    let name: String
+    /// it's image hash
+    let img_icon_url: String?
+    /// it's image hash
+    let img_logo_url: String?
+
+    /// summary in game time
+    let playtime_forever: Int64?
+    /// summary in game time
+    let playtime_2weeks: Int64?
+}

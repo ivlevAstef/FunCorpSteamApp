@@ -11,7 +11,8 @@ import Common
 
 private enum Consts
 {
-    static let apibaseURL = URL(string: "http://api.steampowered.com")!
+    static let apiBaseURL = URL(string: "http://api.steampowered.com")!
+    static let apiMediaURL = URL(string: "http://media.steampowered.com")!
     static let key = "4A90F8A38B026CAF2588190E5DBBCF04"
     static let format = "json"
 }
@@ -28,6 +29,17 @@ enum NetworkError: Error {
     case custom(Error)
 
     case failureParse
+}
+
+enum Support {
+    static func appImageUrl(appId: Int64, hash: String) -> URL? {
+        var urlString = Consts.apiBaseURL.absoluteString
+        urlString += "/steamcommunity/public/images/apps"
+        urlString += "/\(appId)"
+        urlString += "/\(hash)"
+        urlString += ".jpg"
+        return URL(string: urlString)
+    }
 }
 
 final class NetworkSession {
@@ -57,7 +69,7 @@ final class NetworkSession {
                          method: String,
                          version: String,
                          fields: [String: String] = [:]) -> URL? {
-        var urlString = Consts.apibaseURL.absoluteString
+        var urlString = Consts.apiBaseURL.absoluteString
         urlString += "/" + interface
         urlString += "/" + method
         urlString += "/v" + version

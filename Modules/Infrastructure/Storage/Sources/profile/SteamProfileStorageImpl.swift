@@ -9,13 +9,23 @@
 import Services
 
 
-class SteamProfileStorageImpl: SteamProfileStorage {
+class SteamProfileStorageImpl: SteamProfileStorage
+{
     // TODO: make real storage
-    func put(_ profile: SteamProfile) {
+    func put(profile: SteamProfile) {
 
     }
 
-    func fetch(by steamId: SteamID) -> SteamProfile? {
+    func put(for steamId: SteamID, games: [SteamProfileGame]) {
+    }
+
+
+
+    func fetchProfile(by steamId: SteamID) -> SteamProfile? {
+        return nil
+    }
+
+    func fetchGames(by steamId: SteamID) -> [SteamProfileGame]? {
         return nil
     }
 }

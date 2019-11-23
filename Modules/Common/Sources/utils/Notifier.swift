@@ -1,6 +1,6 @@
 //
 //  Notifier.swift
-//  Core
+//  Common
 //
 //  Created by Alexander Ivlev on 25/09/2019.
 //  Copyright © 2019 ApostleLife. All rights reserved.

@@ -8,5 +8,7 @@
 
 public protocol SteamProfileNetwork: class
 {
-    func request(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void)
+    func requestUser(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void)
+
+    func requestGames(by steamId: SteamID, completion: @escaping (SteamProfileGamesResult) -> Void)
 }

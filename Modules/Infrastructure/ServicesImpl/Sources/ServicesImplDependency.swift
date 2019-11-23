@@ -12,13 +12,21 @@ import Services
 final class ServicesImplDependency: DIFramework
 {
     static func load(container: DIContainer) {
+        container.register(AvatarServiceImpl.init)
+            .as(AvatarService.self)
+            .lifetime(.perRun(.weak))
+
         container.register(SteamAuthServiceImpl.init)
             .as(SteamAuthService.self)
             .lifetime(.perRun(.weak))
 
         container.register(SteamProfileServiceImpl.init)
-        .as(SteamProfileService.self)
-        .lifetime(.perRun(.weak))
+            .as(SteamProfileService.self)
+            .lifetime(.perRun(.weak))
+
+        container.register(SteamProfileGamesServiceImpl.init)
+            .as(SteamProfileGamesService.self)
+            .lifetime(.perRun(.weak))
     }
 }
 

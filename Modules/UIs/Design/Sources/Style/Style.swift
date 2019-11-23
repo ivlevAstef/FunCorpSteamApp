@@ -21,6 +21,10 @@ public struct Style
         public let separator: UIColor
         /// used for navigation bar buttons, or other small elements. for example icons
         public let tint: UIColor
+        /// use for show skeleton loading
+        public let skeleton: Gradient
+        /// use for show skeleton failed loading
+        public let skeletonFailed: UIColor
 
         // MARK: - text
         /// main text

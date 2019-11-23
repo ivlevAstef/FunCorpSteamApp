@@ -1,5 +1,5 @@
 //
-//  SteamProfileServiceImpl.swift
+//  SteamProfileGamesServiceImpl.swift
 //  ServicesImpl
 //
 //  Created by Alexander Ivlev on 23/11/2019.
@@ -10,7 +10,7 @@ import Foundation
 import Common
 import Services
 
-final class SteamProfileServiceImpl: SteamProfileService
+final class SteamProfileGamesServiceImpl: SteamProfileGamesService
 {
     private lazy var universalService = {
         UniversalServiceImpl(
@@ -35,24 +35,22 @@ final class SteamProfileServiceImpl: SteamProfileService
         universalService.refresh(for: steamId, completion: completion)
     }
 
-    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileResult> {
+    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileGamesResult> {
         universalService.getNotifier(for: steamId)
     }
 
-    private func fetch(by steamId: SteamID) -> SteamProfileResult {
-        guard let profile = storage.fetchProfile(by: steamId) else {
+    private func fetch(by steamId: SteamID) -> SteamProfileGamesResult {
+        guard let games = storage.fetchGames(by: steamId) else {
             return .failure(.notFound)
         }
-        return .success(profile)
+        return .success(games)
     }
 
-    private func update(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
-        network.requestUser(by: steamId, completion: { [weak storage] result in
-            if case let .success(profile) = result {
-                storage?.put(profile: profile)
+    private func update(by steamId: SteamID, completion: @escaping (SteamProfileGamesResult) -> Void) {
+        network.requestGames(by: steamId, completion: { [weak storage] result in
+            if case let .success(games) = result {
+                storage?.put(for: steamId, games: games)
             }
-
-            sleep(5)
             completion(result)
         })
     }

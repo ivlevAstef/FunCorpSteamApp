@@ -1,5 +1,5 @@
 //
-//  SteamProfileService.swift
+//  SteamProfileGamesService.swift
 //  Services
 //
 //  Created by Alexander Ivlev on 23/11/2019.
@@ -8,14 +8,14 @@
 
 import Common
 
-public protocol SteamProfileService: class
+public protocol SteamProfileGamesService: class
 {
-    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileResult>
+    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileGamesResult>
 
     func refresh(for steamId: SteamID, completion: ((Bool) -> Void)?)
 }
 
-extension SteamProfileService
+extension SteamProfileGamesService
 {
     public func refresh(for steamId: SteamID) {
         refresh(for: steamId, completion: nil)

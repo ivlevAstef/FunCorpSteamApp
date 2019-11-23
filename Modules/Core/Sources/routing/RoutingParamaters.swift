@@ -24,3 +24,10 @@ public struct RoutingParamaters
         self.options = options
     }
 }
+
+extension RoutingParamaters: Equatable
+{
+    public static func ==(lhs: RoutingParamaters, rhs: RoutingParamaters) -> Bool {
+        return lhs.moduleName == rhs.moduleName && lhs.options == rhs.options
+    }
+}
