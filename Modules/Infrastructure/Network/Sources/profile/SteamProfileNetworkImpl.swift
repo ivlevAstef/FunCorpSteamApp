@@ -22,19 +22,24 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
         session.request(
             interface: "ISteamUser",
             method: "GetPlayerSummaries",
-            version: "0002",
+            version: 2,
             fields: ["steamids": "\(steamId)"],
             completion: { (result: Result<Response<Players>, NetworkError>) in
                 completion(Self.map(result, with: steamId))
         })
     }
 
-    func requestGames(by steamId: SteamID, completion: @escaping (SteamProfileGamesResult) -> Void) {
+    func requestGames(by steamId: SteamID, completion: @escaping (SteamProfileGamesInfoResult) -> Void) {
+        // Вот такая несостыковочка - где-то это игры, а где-то приложения. Решил использовать App
         session.request(
             interface: "IPlayerService",
             method: "GetOwnedGames",
-            version: "0001",
-            fields: ["steamid": "\(steamId)", "include_appinfo": "true"],
+            version: 1,
+            fields: [
+                "steamid": "\(steamId)",
+                "include_appinfo": "true",
+                "include_played_free_games": "true"
+            ],
             completion: { (result: Result<Response<Games>, NetworkError>) in
                 completion(Self.map(result, with: steamId))
         })
@@ -103,11 +108,11 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
     // MARK: - profile games mapper
 
     private static func map(_ result: Result<Response<Games>, NetworkError>,
-                            with steamId: SteamID) -> SteamProfileGamesResult {
+                            with steamId: SteamID) -> SteamProfileGamesInfoResult {
         switch result {
         case .success(let response):
-            let games = response.response.games.map { map($0, steamId: steamId) }
-            return .success(games)
+            let apps = response.response.games.map { map($0, steamId: steamId) }
+            return .success(apps)
         case .failure(.cancelled):
             return .failure(.cancelled)
         case .failure(.notConnection), .failure(.timeout):
@@ -117,15 +122,18 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
         }
     }
 
-    private static func map(_ result: Game, steamId: SteamID) -> SteamProfileGame {
-        return SteamProfileGame(
+    private static func map(_ result: Game, steamId: SteamID) -> SteamProfileGameInfo {
+        let gameId = SteamGameID(result.appid)
+        return SteamProfileGameInfo(
             steamId: steamId,
-            appId: result.appid,
-            name: result.name,
-            iconUrl: result.img_icon_url.flatMap { Support.appImageUrl(appId: result.appid, hash: $0) },
-            logoUrl: result.img_logo_url.flatMap { Support.appImageUrl(appId: result.appid, hash: $0) },
             playtimeForever: result.playtime_forever.flatMap { TimeInterval($0 * 60) } ?? 0,
-            playtime2weeks: result.playtime_2weeks.flatMap { TimeInterval($0 * 60) } ?? 0
+            playtime2weeks: result.playtime_2weeks.flatMap { TimeInterval($0 * 60) } ?? 0,
+            gameInfo: SteamGameInfo(
+                gameId: gameId,
+                name: result.name,
+                iconUrl: result.img_icon_url.flatMap { Support.gameImageUrl(gameId: gameId, hash: $0) },
+                logoUrl: result.img_logo_url.flatMap { Support.gameImageUrl(gameId: gameId, hash: $0) }
+            )
         )
     }
 }
@@ -190,7 +198,7 @@ private struct Games: Decodable {
 }
 
 private struct Game: Decodable {
-    let appid: Int64
+    let appid: SteamGameID
     let name: String
     /// it's image hash
     let img_icon_url: String?

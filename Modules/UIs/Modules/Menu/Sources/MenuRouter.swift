@@ -20,8 +20,7 @@ final class MenuRouter: IRouter
 {
     let newsGetter = Getter<Void, IRouter>()
     let myProfileGetter = Getter<Void, IRouter>()
-    let friendsGetter = Getter<Void, IRouter>()
-    let settingsGetter = Getter<Void, IRouter>()
+    let sessionsGetter = Getter<Void, IRouter>()
 
     /*dependency*/var menuScreenProvider = Lazy<MenuScreen>()
     
@@ -42,8 +41,7 @@ final class MenuRouter: IRouter
         
         screen.presenter.newsGetter.take(from: self.newsGetter)
         screen.presenter.myProfileGetter.take(from: self.myProfileGetter)
-        screen.presenter.friendsGetter.take(from: self.friendsGetter)
-        screen.presenter.settingsGetter.take(from: self.settingsGetter)
+        screen.presenter.sessionsGetter.take(from: self.sessionsGetter)
 
         screen.presenter.start()
     }

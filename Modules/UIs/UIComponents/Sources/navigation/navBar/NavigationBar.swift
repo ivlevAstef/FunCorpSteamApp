@@ -126,7 +126,7 @@ public class NavigationBar: UIView, INavigationBar
         setNeedsLayout()
     }
 
-    public func bind(to scrollView: UIScrollView) {
+    public func bind(to scrollView: ScrollableView & UIScrollView) {
         scrollController = ScrollNavigationBarController(scrollView: scrollView, navBar: self)
     }
 
@@ -227,17 +227,26 @@ public class NavigationBar: UIView, INavigationBar
         let sortedAccessoryViews = canNotHiddenAccessoryItems + canHiddenAccessoryItems
         for accessoryView in sortedAccessoryViews {
             let height = accessoryView.fullyHeight
-            let normalHeight = max(0.0, min(frame.height - originX, height))
-            let t = accessoryView.canHidden ? (normalHeight / height) : 1.0
+            if height.isEqual(to: 0.0) {
+                accessoryView.isHidden = true
+                accessoryView.frame = CGRect(x: leftInset,
+                                             y: originX,
+                                             width: frame.width - leftInset - rightInset,
+                                             height: 0.0)
+                accessoryView.recalculateViews(for: 0.0)
+            } else {
+                let normalHeight = max(0.0, min(frame.height - originX, height))
+                let t = accessoryView.canHidden ? (normalHeight / height) : 1.0
 
-            accessoryView.isHidden = (t == 0.0)
-            accessoryView.frame = CGRect(x: leftInset,
-                                         y: originX,
-                                         width: frame.width - leftInset - rightInset,
-                                         height: t * height)
-            accessoryView.recalculateViews(for: t)
+                accessoryView.isHidden = (t == 0.0)
+                accessoryView.frame = CGRect(x: leftInset,
+                                             y: originX,
+                                             width: frame.width - leftInset - rightInset,
+                                             height: t * height)
+                accessoryView.recalculateViews(for: t)
 
-            originX += height
+                originX += height
+            }
         }
 
         // move accessories to bottom
@@ -268,7 +277,7 @@ public class NavigationBar: UIView, INavigationBar
         let y: CGFloat
         let height: CGFloat
         if rightItemsGlueBottom {
-            y = max(0.0, min((t - 1.0) * defaultHeight, defaultHeight))
+            y = (min(t, 1.0) - 1.0) * defaultHeight
             let accessoryHeight = calculateCurrentAccessoriesHeight()
             height = frame.height - accessoryHeight - y - bottomInset
         } else {

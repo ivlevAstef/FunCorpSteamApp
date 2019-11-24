@@ -35,18 +35,18 @@ final class SteamProfileGamesServiceImpl: SteamProfileGamesService
         universalService.refresh(for: steamId, completion: completion)
     }
 
-    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileGamesResult> {
+    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileGamesInfoResult> {
         universalService.getNotifier(for: steamId)
     }
 
-    private func fetch(by steamId: SteamID) -> SteamProfileGamesResult {
+    private func fetch(by steamId: SteamID) -> SteamProfileGamesInfoResult {
         guard let games = storage.fetchGames(by: steamId) else {
             return .failure(.notFound)
         }
         return .success(games)
     }
 
-    private func update(by steamId: SteamID, completion: @escaping (SteamProfileGamesResult) -> Void) {
+    private func update(by steamId: SteamID, completion: @escaping (SteamProfileGamesInfoResult) -> Void) {
         network.requestGames(by: steamId, completion: { [weak storage] result in
             if case let .success(games) = result {
                 storage?.put(for: steamId, games: games)

@@ -18,8 +18,7 @@ final class MenuScreenPresenter
 {
     let newsGetter = Getter<Void, IRouter>()
     let myProfileGetter = Getter<Void, IRouter>()
-    let friendsGetter = Getter<Void, IRouter>()
-    let settingsGetter = Getter<Void, IRouter>()
+    let sessionsGetter = Getter<Void, IRouter>()
 
     private let view: MenuScreenViewContract
 
@@ -34,24 +33,19 @@ final class MenuScreenPresenter
     private func configure() {
         view.viewModels = [
             MenuViewModel(
-                icon: ConstImage(image: nil),
-                title: "News",
+                icon: ConstImage(named: "tabbarNews"),
+                title: loc["SteamMenu.News"],
                 viewGetter: newsGetter
             ),
             MenuViewModel(
-                icon: ConstImage(image: nil),
-                title: "MyProfile",
+                icon: ConstImage(named: "tabbarProfile"),
+                title: loc["SteamMenu.Profile"],
                 viewGetter: myProfileGetter
             ),
             MenuViewModel(
-                icon: ConstImage(image: nil),
-                title: "Friends",
-                viewGetter: friendsGetter
-            ),
-            MenuViewModel(
-                icon: ConstImage(image: nil),
-                title: "Settings",
-                viewGetter: settingsGetter
+                icon: ConstImage(named: "tabbarSessions"),
+                title: loc["SteamMenu.Sessions"],
+                viewGetter: sessionsGetter
             ),
         ]
     }

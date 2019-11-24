@@ -8,6 +8,7 @@
 
 import Foundation
 import Common
+import Services
 
 private enum Consts
 {
@@ -32,10 +33,10 @@ enum NetworkError: Error {
 }
 
 enum Support {
-    static func appImageUrl(appId: Int64, hash: String) -> URL? {
+    static func gameImageUrl(gameId: SteamGameID, hash: String) -> URL? {
         var urlString = Consts.apiMediaURL.absoluteString
         urlString += "/steamcommunity/public/images/apps"
-        urlString += "/\(appId)"
+        urlString += "/\(gameId)"
         urlString += "/\(hash)"
         urlString += ".jpg"
         return URL(string: urlString)
@@ -48,7 +49,7 @@ final class NetworkSession {
     func request<Success: Decodable>(
         interface: String,
         method: String,
-        version: String,
+        version: Int,
         fields: [String: String] = [:],
         completion: @escaping (Result<Success, NetworkError>) -> Void) {
         guard let url = makeURL(interface: interface, method: method, version: version, fields: fields) else {
@@ -67,12 +68,12 @@ final class NetworkSession {
 
     private func makeURL(interface: String,
                          method: String,
-                         version: String,
+                         version: Int,
                          fields: [String: String] = [:]) -> URL? {
         var urlString = Consts.apiBaseURL.absoluteString
         urlString += "/" + interface
         urlString += "/" + method
-        urlString += "/v" + version
+        urlString += "/v\(version)"
         urlString += "/?key=" + Consts.key
         urlString += "&format=" + Consts.format
         for field in fields {

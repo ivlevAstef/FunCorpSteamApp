@@ -13,13 +13,17 @@ import Design
 private class AvatarUnique {}
 
 public class AvatarView: UIView {
-    internal var size: CGFloat {
+    public var size: CGFloat {
         didSet { setNeedsLayout() }
     }
+
+    public var cornerRadius: CGFloat = 0.0
+
     private var image: UIImage?
     private var unique: AvatarUnique?
 
     private var letter: String?
+    private var style: Style?
 
     public init(size: CGFloat) {
         self.size = size
@@ -37,7 +41,7 @@ public class AvatarView: UIView {
 
         let rect = CGRect(x: 0, y: 0, width: size, height: size)
 
-        UIBezierPath(roundedRect: rect, cornerRadius: size * 0.5).addClip()
+        UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius).addClip()
         image?.draw(in: rect)
     }
 
@@ -45,6 +49,7 @@ public class AvatarView: UIView {
     public func setup(letter: String) {
         unique = nil
         self.letter = letter
+        updateAvatarByLetterIfNeeded()
     }
 
     public func setup(_ newImage: UIImage?) {
@@ -53,23 +58,32 @@ public class AvatarView: UIView {
         image = newImage
     }
 
-    public func setup(_ newImage: ChangeableImage) {
+    public func setup(_ newImage: ChangeableImage, letter: String? = nil) {
         let owner = AvatarUnique()
         unique = owner
-        letter = nil
+        self.letter = letter
         newImage.weakJoin(listener: { [weak self] (_, newImage) in
+            if nil != newImage {
+                self?.letter = nil
+            }
             self?.image = newImage
         }, owner: owner)
+        updateAvatarByLetterIfNeeded()
+    }
+
+    private func updateAvatarByLetterIfNeeded() {
+        if let letter = self.letter, !letter.isEmpty, let style = self.style {
+            let newImage = Self.generateAvatar(letter: letter, size: size, style: style)
+            image = newImage
+        }
     }
 }
 
 extension AvatarView: StylizingView
 {
     public func apply(use style: Style) {
-        if let letter = self.letter {
-            let newImage = Self.generateAvatar(letter: letter, size: size, style: style)
-            image = newImage
-        }
+        self.style = style
+        updateAvatarByLetterIfNeeded()
     }
 }
 

@@ -11,5 +11,6 @@ import Services
 
 class SteamAuthStorageImpl: SteamAuthStorage {
     // TODO: make real storage
-    var steamId: SteamID? = 76561198073561699
+    //var steamId: SteamID? = 76561198073561699 // my steam id
+    var steamId: SteamID? = 76561198047329396 // core2duo steam id
 }

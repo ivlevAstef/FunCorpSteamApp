@@ -27,24 +27,30 @@
          location = "group:Modules/UIs/Modules"
          name = "Modules">
          <FileRef
-            location = "group:GameInformation">
-         </FileRef>
-         <FileRef
             location = "group:Menu">
          </FileRef>
          <FileRef
-            location = "group:News">
+            location = "group:Auth">
          </FileRef>
          <FileRef
             location = "group:Profile">
          </FileRef>
          <FileRef
-            location = "group:Settings">
+            location = "group:Sessions">
+         </FileRef>
+         <FileRef
+            location = "group:GameInformation">
+         </FileRef>
+         <FileRef
+            location = "group:News">
          </FileRef>
          <FileRef
             location = "group:Friends">
          </FileRef>
       </Group>
+      <FileRef
+         location = "group:Modules/UIs/AppUIComponents">
+      </FileRef>
       <FileRef
          location = "group:Modules/UIs/UIComponents">
       </FileRef>

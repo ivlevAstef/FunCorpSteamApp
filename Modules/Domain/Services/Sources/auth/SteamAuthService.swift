@@ -6,21 +6,6 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
-public typealias SteamID = Int64
-
-public enum SteamLoginError: Error
-{
-    case yourLoggedIn
-    case userCancel
-    case applicationIncorrectConfigured
-    case incorrectResponse
-}
-
-public enum SteamLogoutError: Error
-{
-    case yourLoggedOut
-}
-
 /// Протокол содержащий бизнес логику авторизации через стим.
 public protocol SteamAuthService: class
 {
@@ -28,6 +13,8 @@ public protocol SteamAuthService: class
     var isLogined: Bool { get }
     /// Уникальный id пользователя. Пустое только если пользователь не залогинен
     var steamId: SteamID? { get }
+    /// Уникальный id пользователя - используется в играх. Пустое только если пользователь не залогинен
+    var accountId: AccountID? { get }
 
     /// Позволяет начать процесс авторизации в стим.
     /// - Parameter completion: Результат авторизации. В случае успеха вернется SteamID

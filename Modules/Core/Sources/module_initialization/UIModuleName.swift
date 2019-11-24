@@ -7,22 +7,24 @@
 //
 
 public enum UIModuleName {
+    case auth
     case menu
 
     case news
     case profile
     case friends
     case gameInfo
-    case settings
+    case sessions
 
     public var deeplinkName: DeepLink.Name {
         switch self {
+        case .auth: return "auth"
         case .menu: return "menu"
         case .news: return "news"
         case .profile: return "profile"
         case .friends: return "friends"
         case .gameInfo: return "gameInfo"
-        case .settings: return "settings"
+        case .sessions: return "sessions"
         }
     }
 }

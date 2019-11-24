@@ -20,7 +20,10 @@ public enum ConstColors
         mainText: color(hex24: 0xFFFFFF),
         notAccentText: color(hex24: 0xc3c3c3),
         contentText: color(hex24: 0xc3c3c3),
-        blurStyle: .dark
+        blurStyle: .dark,
+
+        shadowColor: color(hex24: 0x000000),
+        shadowOpacity: 1.0
     )
 
     public static let lightColors = Style.Colors(
@@ -33,6 +36,9 @@ public enum ConstColors
         mainText: color(hex24: 0x000000),
         notAccentText: color(hex24: 0x3c3c3c),
         contentText: color(hex24: 0x3c3c3c),
-        blurStyle: .light
+        blurStyle: .light,
+
+        shadowColor: color(hex24: 0x000000),
+        shadowOpacity: 1.0
     )
 }

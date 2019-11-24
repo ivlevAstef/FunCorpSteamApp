@@ -52,6 +52,12 @@ public final class NavigationController
         log.info("push view controller: \(type(of: vc))")
     }
 
+    public func setRoot(_ router: IRouter) {
+        let vc = router.rootViewController
+        setRoot(vc)
+        vcRouterContainer.set(vc: vc, router: router)
+    }
+
     public func setRoot(_ rootViewController: UIViewController) {
         if uiController.viewControllers.isEmpty {
             uiController.setViewControllers([rootViewController], animated: false)
@@ -135,6 +141,12 @@ private class VCRouterContainer {
         return nil
     }
 
+    func set(vc: UIViewController, router: IRouter) {
+        removeAllRouters()
+
+        vcWithRouterList.append((WeakRef(vc), Weak(router)))
+    }
+
     func push(vc: UIViewController, router: IRouter) {
         removeOldRouters()
 
@@ -169,6 +181,13 @@ private class VCRouterContainer {
         }
 
         return foundRouters
+    }
+
+    private func removeAllRouters() {
+        for (_, routerRef) in vcWithRouterList {
+            routerRef.value?.stop()
+        }
+        vcWithRouterList.removeAll()
     }
 
     private func removeOldRouters() {

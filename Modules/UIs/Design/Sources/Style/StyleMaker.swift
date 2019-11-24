@@ -64,7 +64,7 @@ public class StyleMaker
             safeAreaInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
         }
 
-        let canUseLarge = UIApplication.shared.statusBarOrientation.isLandscape
+        let canUseLarge = !UIApplication.shared.statusBarOrientation.isLandscape
 
         var statusBarHeight = UIApplication.shared.statusBarFrame.height
         if #available(iOS 13.0, *) {

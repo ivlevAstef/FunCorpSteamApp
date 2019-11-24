@@ -10,7 +10,7 @@ import Common
 
 public protocol SteamProfileGamesService: class
 {
-    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileGamesResult>
+    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileGamesInfoResult>
 
     func refresh(for steamId: SteamID, completion: ((Bool) -> Void)?)
 }

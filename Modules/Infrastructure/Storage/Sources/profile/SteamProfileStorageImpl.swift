@@ -16,7 +16,7 @@ class SteamProfileStorageImpl: SteamProfileStorage
 
     }
 
-    func put(for steamId: SteamID, games: [SteamProfileGame]) {
+    func put(for steamId: SteamID, games: [SteamProfileGameInfo]) {
     }
 
 
@@ -25,7 +25,7 @@ class SteamProfileStorageImpl: SteamProfileStorage
         return nil
     }
 
-    func fetchGames(by steamId: SteamID) -> [SteamProfileGame]? {
+    func fetchGames(by steamId: SteamID) -> [SteamProfileGameInfo]? {
         return nil
     }
 }

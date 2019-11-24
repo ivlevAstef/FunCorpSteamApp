@@ -108,7 +108,7 @@ public protocol INavigationBar: class {
     func update(force: Bool)
     func update(layout: NavigationBarLayout)
 
-    func bind(to scrollView: UIScrollView)
+    func bind(to scrollView: ScrollableView & UIScrollView)
 }
 
 extension INavigationBar {

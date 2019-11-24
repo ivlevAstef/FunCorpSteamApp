@@ -12,9 +12,10 @@ import SnapKit
 import Design
 import UIComponents
 
-final class ProfileGamesTableView: UITableView
+final class ProfileGamesTableView: ApTableView
 {
-    private var viewModels: [ProfileGameViewModel] = []
+    private var sectionTitle: String?
+    private var viewModels: [ProfileGameInfoViewModel] = []
     private var designStyle: Design.Style?
 
     init() {
@@ -26,7 +27,11 @@ final class ProfileGamesTableView: UITableView
         fatalError("init(coder:) has not been implemented")
     }
 
-    func update(_ viewModels: [ProfileGameViewModel]) {
+    func setSectionTitle(_ text: String) {
+        sectionTitle = text
+    }
+
+    func update(_ viewModels: [ProfileGameInfoViewModel]) {
         log.assert(Thread.isMainThread, "Thread.isMainThread")
 
         self.viewModels = viewModels
@@ -42,12 +47,14 @@ final class ProfileGamesTableView: UITableView
 
         estimatedRowHeight = 60.0
         rowHeight = 60.0
+        sectionHeaderHeight = 30.0
     }
 }
 
 extension ProfileGamesTableView: StylizingView {
     func apply(use style: Design.Style) {
         self.designStyle = style
+        self.backgroundColor = style.colors.background
         self.separatorColor = style.colors.separator
         reloadData()
     }
@@ -56,6 +63,31 @@ extension ProfileGamesTableView: StylizingView {
 extension ProfileGamesTableView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModels.count
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let style = designStyle, let text = sectionTitle else {
+            return nil
+        }
+
+        let view = UIView()
+        let titleLabel = UILabel(frame: .zero)
+        view.addSubview(titleLabel)
+
+        view.backgroundColor = style.colors.background
+
+        titleLabel.font = style.fonts.title
+        titleLabel.textColor = style.colors.mainText
+        titleLabel.text = text
+
+        titleLabel.snp.makeConstraints { maker in
+            maker.top.equalToSuperview().offset(4.0)
+            maker.left.equalToSuperview().offset(style.layout.cellInnerInsets.left)
+            maker.right.equalToSuperview().offset(-style.layout.cellInnerInsets.right)
+            maker.bottom.equalToSuperview().offset(-4.0)
+        }
+
+        return view
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -92,7 +124,7 @@ private final class ProfileGameCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(_ viewModel: ProfileGameViewModel, style: Design.Style) {
+    func configure(_ viewModel: ProfileGameInfoViewModel, style: Design.Style) {
         // TODO: в идеале можно убедиться что style не менялся...
         relayout(use: style.layout)
         setStyle(style: style)

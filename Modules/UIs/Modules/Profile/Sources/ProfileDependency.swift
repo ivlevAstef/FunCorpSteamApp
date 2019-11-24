@@ -12,21 +12,12 @@ final class ProfileDependency: DIFramework
 {
     static func load(container: DIContainer) {
         container.register(ProfileRouter.init)
-            .injection(\.authScreenProvider)
             .injection(\.profileScreenProvider)
-            .lifetime(.objectGraph)
-
-        container.register(AuthScreen.init)
-            .lifetime(.prototype)
-        container.register { AuthScreenView() }
-            .as(AuthScreenViewContract.self)
-            .lifetime(.objectGraph)
-        container.register(AuthScreenPresenter.init)
             .lifetime(.objectGraph)
 
         container.register(ProfileScreen.init)
             .lifetime(.prototype)
-        container.register { ProfileScreenView() }
+        container.register(ProfileScreenView.init(steamNavBar:))
             .as(ProfileScreenViewContract.self)
             .lifetime(.objectGraph)
         container.register(ProfileScreenPresenter.init)

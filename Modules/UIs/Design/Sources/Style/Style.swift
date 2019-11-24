@@ -35,6 +35,9 @@ public struct Style
         public let contentText: UIColor
         /// for blured views
         public let blurStyle: UIBlurEffect.Style
+
+        public let shadowColor: UIColor
+        public let shadowOpacity: Float
     }
 
     // MARK: - Fonts

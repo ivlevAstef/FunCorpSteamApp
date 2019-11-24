@@ -17,8 +17,7 @@ public final class MenuStartPoint: UIStartPoint
 
     public let newsGetter = Getter<Void, IRouter>()
     public let myProfileGetter = Getter<Void, IRouter>()
-    public let friendsGetter = Getter<Void, IRouter>()
-    public let settingsGetter = Getter<Void, IRouter>()
+    public let sessionsGetter = Getter<Void, IRouter>()
 
     private var routerProvider = Provider<MenuRouter>()
 
@@ -47,8 +46,7 @@ public final class MenuStartPoint: UIStartPoint
         let router = routerProvider.value
         router.newsGetter.take(from: newsGetter)
         router.myProfileGetter.take(from: myProfileGetter)
-        router.friendsGetter.take(from: friendsGetter)
-        router.settingsGetter.take(from: settingsGetter)
+        router.sessionsGetter.take(from: sessionsGetter)
 
         return router
     }

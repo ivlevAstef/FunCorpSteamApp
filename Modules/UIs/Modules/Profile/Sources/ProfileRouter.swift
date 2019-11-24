@@ -10,27 +10,26 @@ import UIKit
 import Core
 import Common
 import SwiftLazy
+import AppUIComponents
 import UIComponents
 import Services
 
-typealias AuthScreen = Screen<AuthScreenView, AuthScreenPresenter>
 typealias ProfileScreen = Screen<ProfileScreenView, ProfileScreenPresenter>
 
 final class ProfileRouter: IRouter
 {
-    /*dependency*/var authScreenProvider = Provider<AuthScreen>()
     /*dependency*/var profileScreenProvider = Provider<ProfileScreen>()
     
     var rootViewController: UIViewController {
         return navController.uiController
     }
 
-    private let navController: NavigationController
+    private let navController: NavigationController & SteamNavigationController
     private let authService: SteamAuthService
 
     private var currentRoutingParamaters: RoutingParamaters?
     
-    init(navController: NavigationController, authService: SteamAuthService) {
+    init(navController: NavigationController & SteamNavigationController, authService: SteamAuthService) {
         self.navController = navController
         self.authService = authService
     }
@@ -43,37 +42,20 @@ final class ProfileRouter: IRouter
 
         let steamIdKey = ProfileStartPoint.RoutingOptions.steamId
         if let steamId = parameters.options[steamIdKey].flatMap({ SteamID($0) }) {
+            navController.setSteamId(steamId)
+            showProfileScreen(steamId: steamId)
+        } else if let steamId = authService.steamId {
+            navController.setSteamId(steamId)
             showProfileScreen(steamId: steamId)
         } else {
-            showRootScreen()
+            log.fatal("Unsupport show profile without steamId for options or auth")
         }
-    }
-
-    private func showRootScreen() {
-        let showView: UIViewController
-        if authService.isLogined, let steamId = authService.steamId {
-            showView = makeProfileScreen(steamId: steamId).view
-        } else {
-            showView = makeAuthScreen().view
-        }
-
-        navController.setRoot(showView)
     }
 
     private func showProfileScreen(steamId: SteamID) {
         let screen = makeProfileScreen(steamId: steamId)
 
         navController.setRoot(screen.view)
-    }
-
-    private func makeAuthScreen() -> AuthScreen {
-        let screen = authScreenProvider.value
-        screen.setRouter(self)
-
-        screen.presenter.authSuccessNotifier.join(listener: { [weak self] in
-            self?.showRootScreen()
-        })
-        return screen
     }
 
     private func makeProfileScreen(steamId: SteamID) -> ProfileScreen {

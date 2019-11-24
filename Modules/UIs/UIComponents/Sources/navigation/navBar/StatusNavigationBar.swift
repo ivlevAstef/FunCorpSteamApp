@@ -111,7 +111,7 @@ public class StatusNavigationBar: UIView, INavigationBar
         setNeedsLayout()
     }
 
-    public func bind(to scrollView: UIScrollView) {
+    public func bind(to scrollView: ScrollableView & UIScrollView) {
         scrollController = ScrollNavigationBarController(scrollView: scrollView, navBar: self)
     }
 

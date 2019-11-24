@@ -8,18 +8,20 @@
 
 import UIKit
 
+import Common
+
 final class ScrollNavigationBarController: NSObject, UIScrollViewDelegate {
 
-    private let scrollView: UIScrollView
+    private let scrollView: ScrollableView & UIScrollView
     private weak var navBar: INavigationBar?
 
-    init(scrollView: UIScrollView, navBar: INavigationBar) {
+    init(scrollView: ScrollableView & UIScrollView, navBar: INavigationBar) {
         self.scrollView = scrollView
         self.navBar = navBar
 
         super.init()
 
-        scrollView.delegate = self
+        scrollView.scrollDelegate = self
     }
 
     func update() {

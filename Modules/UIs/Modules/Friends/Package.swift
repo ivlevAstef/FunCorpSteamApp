@@ -10,6 +10,7 @@ let package = Package(
         .library(name: "Friends", targets: ["Friends"]),
     ],
     dependencies: [
+        .package(path: "../../AppUIComponents"),
         .package(path: "../../UIComponents"),
         .package(path: "../../Design"),
         .package(path: "../../../Core"),
@@ -17,6 +18,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "Friends", dependencies: [
+            .product(name: "AppUIComponents"),
             .product(name: "UIComponents"),
             .product(name: "Design"),
             .product(name: "Core"),

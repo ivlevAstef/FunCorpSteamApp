@@ -16,114 +16,66 @@ protocol ProfileScreenViewContract: class
 {
     var needUpdateNotifier: Notifier<Void> { get }
 
-    func beginLoading()
-    func endLoading(_ success: Bool)
-
     func showError(_ text: String)
-    func showProfile(_ profile: ProfileViewModel)
 
-    func showGames(_ games: [ProfileGameViewModel])
+    func setGamesSectionText(_ text: String)
+    func beginLoadingGames()
+    func endLoadingGames(_ success: Bool)
+
+    func showGamesInfo(_ games: [ProfileGameInfoViewModel])
 }
 
 final class ProfileScreenPresenter
 {
     private let view: ProfileScreenViewContract
     private let authService: SteamAuthService
-    private let profileService: SteamProfileService
     private let profileGamesService: SteamProfileGamesService
     private let avatarService: AvatarService
 
     init(view: ProfileScreenViewContract,
          authService: SteamAuthService,
-         profileService: SteamProfileService,
          profileGamesService: SteamProfileGamesService,
          avatarService: AvatarService) {
         self.view = view
         self.authService = authService
-        self.profileService = profileService
         self.profileGamesService = profileGamesService
         self.avatarService = avatarService
     }
 
     func configure(steamId: SteamID) {
-        profileService.getNotifier(for: steamId).weakJoin(listener: { (self, result) in
-            self.processProfileResult(result)
-        }, owner: self)
+        view.setGamesSectionText("Ваши игры")
 
         profileGamesService.getNotifier(for: steamId).weakJoin(listener: { (self, result) in
-            self.processProfileGamesResult(result)
+            self.processProfileGamesInfoResult(result)
         }, owner: self)
 
-
-        view.beginLoading()
-        profileService.refresh(for: steamId) { [weak view] success in
-            view?.endLoading(success)
-        }
-
-        view.needUpdateNotifier.join(listener: { [profileService, profileGamesService] in
-            profileService.refresh(for: steamId)
+        view.needUpdateNotifier.join(listener: { [profileGamesService] in
             profileGamesService.refresh(for: steamId)
         })
     }
 
-    // MARK: - profile
-
-    private func processProfileResult(_ result: SteamProfileResult) {
-        switch result {
-        case .failure(.cancelled):
-            break
-
-        case .failure(.notConnection):
-            view.showError(loc["Errors.NotConnect"])
-
-        case .failure(.notFound), .failure(.incorrectResponse):
-            view.showError(loc["Errors.IncorrectResponse"])
-
-        case .success(let profile):
-            processProfile(profile)
-        }
-    }
-
-    private func processProfile(_ profile: SteamProfile) {
-        var viewModel = ProfileViewModel(
-            avatar: ChangeableImage(placeholder: nil, image: nil),
-            nick: profile.nickName
-        )
-
-        switch profile.visibilityState {
-        case .private:
-            break
-        case .open(let data):
-            viewModel.realName = data.realName
-        }
-
-        view.showProfile(viewModel)
-
-        avatarService.fetch(url: profile.avatarURL, to: viewModel.avatar)
-    }
-
     // MARK: - games
 
-    private func processProfileGamesResult(_ result: SteamProfileGamesResult) {
+    private func processProfileGamesInfoResult(_ result: SteamProfileGamesInfoResult) {
         switch result {
         case .failure:
             break
 
         case .success(let games):
-            processGames(games)
+            processGamesInfo(games)
         }
     }
 
-    private func processGames(_ games: [SteamProfileGame]) {
-        let viewModels: [ProfileGameViewModel] = games.map { game in
-            let viewModel = ProfileGameViewModel(
+    private func processGamesInfo(_ profileGamesInfo: [SteamProfileGameInfo]) {
+        let viewModels: [ProfileGameInfoViewModel] = profileGamesInfo.map { profileGame in
+            let viewModel = ProfileGameInfoViewModel(
                 icon: ChangeableImage(placeholder: nil, image: nil),
-                name: game.name,
+                name: profileGame.gameInfo.name,
                 playtimePrefix: loc["SteamProfile.Game.PlayTimePrefix"],
-                playtime: game.playtimeForever
+                playtime: profileGame.playtimeForever
             )
 
-            avatarService.fetch(url: game.iconUrl, to: viewModel.icon)
+            avatarService.fetch(url: profileGame.gameInfo.iconUrl, to: viewModel.icon)
 
             return viewModel
         }
@@ -132,6 +84,6 @@ final class ProfileScreenPresenter
             lhs.playtime > rhs.playtime
         })
 
-        view.showGames(sortedViewModels)
+        view.showGamesInfo(sortedViewModels)
     }
 }
