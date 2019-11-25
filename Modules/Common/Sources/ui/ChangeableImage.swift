@@ -16,7 +16,7 @@ public final class ChangeableImage
         return self.currentImage ?? self.placeholder
     }
 
-    private let placeholder: UIImage?
+    private var placeholder: UIImage?
     private var currentImage: UIImage?
 
     public init(placeholder: UIImage? = nil, image: UIImage? = nil) {
@@ -24,7 +24,14 @@ public final class ChangeableImage
         self.currentImage = image
     }
 
-    public func updateImage(image newImage: UIImage?) {
+    public func updatePlaceholder(_ newPlaceholder: UIImage?) {
+        DispatchQueue.mainSync {
+            placeholder = newPlaceholder
+            changeImageNotifier.notify(image)
+        }
+    }
+
+    public func updateImage(_ newImage: UIImage?) {
         DispatchQueue.mainSync {
             currentImage = newImage
             changeImageNotifier.notify(image)

@@ -16,38 +16,45 @@ protocol ProfileScreenViewContract: class
 {
     var needUpdateNotifier: Notifier<Void> { get }
 
-    func beginLoadingProfile()
-    func endLoadingProfile(_ success: Bool)
-
-    func showProfile(_ profile: ProfileViewModel)
-
-    func showError(_ text: String)
-
     func setGamesSectionText(_ text: String)
-    func beginLoadingGames()
+
+    func beginLoading()
+
+    func endLoadingProfile(_ success: Bool)
     func endLoadingGames(_ success: Bool)
 
+    func showProfile(_ profile: ProfileViewModel)
     func showGamesInfo(_ games: [ProfileGameInfoViewModel])
+
+    func showError(_ text: String)
 }
 
 final class ProfileScreenPresenter
 {
+    let tapOnProfileNotifier = Notifier<SteamID>()
+    let tapOnGameNotifier = Notifier<(SteamID, SteamGameID)>()
+
     private let view: ProfileScreenViewContract
     private let authService: SteamAuthService
     private let profileService: SteamProfileService
     private let profileGamesService: SteamProfileGamesService
-    private let avatarService: AvatarService
+    private let imageService: ImageService
+
+    // При первом обновлении показываем индикацию, при всех последующих в фоне
+    private var isFirstRefresh: Bool = true
+    private var cachedProfileViewModel: ProfileViewModel?
+    private var cachedGameInfoViewModels: [SteamGameID: ProfileGameInfoViewModel] = [:]
 
     init(view: ProfileScreenViewContract,
          authService: SteamAuthService,
          profileService: SteamProfileService,
          profileGamesService: SteamProfileGamesService,
-         avatarService: AvatarService) {
+         imageService: ImageService) {
         self.view = view
         self.authService = authService
         self.profileService = profileService
         self.profileGamesService = profileGamesService
-        self.avatarService = avatarService
+        self.imageService = imageService
     }
 
     func configure(steamId: SteamID) {
@@ -60,20 +67,26 @@ final class ProfileScreenPresenter
             self.processProfileGamesInfoResult(result)
         }, owner: self)
 
+        view.needUpdateNotifier.join(listener: { [weak self] in
+            self?.refresh(for: steamId)
+        })
+    }
 
-        view.beginLoadingProfile()
-        profileService.refresh(for: steamId) { [weak view] success in
-            view?.endLoadingProfile(success)
-        }
-        view.beginLoadingGames()
-        profileGamesService.refresh(for: steamId) { [weak view] success in
-            view?.endLoadingGames(success)
-        }
+    private func refresh(for steamId: SteamID) {
+        if isFirstRefresh {
+            view.beginLoading()
 
-        view.needUpdateNotifier.join(listener: { [profileService, profileGamesService] in
+            profileService.refresh(for: steamId) { [weak view] success in
+                view?.endLoadingProfile(success)
+            }
+            profileGamesService.refresh(for: steamId) { [weak view] success in
+                view?.endLoadingGames(success)
+            }
+        } else {
             profileService.refresh(for: steamId)
             profileGamesService.refresh(for: steamId)
-        })
+        }
+        isFirstRefresh = false
     }
 
     // MARK: - profile
@@ -82,10 +95,8 @@ final class ProfileScreenPresenter
         switch result {
         case .failure(.cancelled):
             break
-
         case .failure(.notConnection):
             view.showError(loc["Errors.NotConnect"])
-
         case .failure(.notFound), .failure(.incorrectResponse):
             view.showError(loc["Errors.IncorrectResponse"])
 
@@ -96,10 +107,16 @@ final class ProfileScreenPresenter
 
     private func processProfile(_ profile: SteamProfile) {
         var viewModel = ProfileViewModel(
-            avatar: ChangeableImage(placeholder: nil, image: nil),
+            avatar: cachedProfileViewModel?.avatar ?? ChangeableImage(placeholder: nil, image: nil),
             avatarLetter: String(profile.nickName.prefix(2)),
-            nick: profile.nickName
+            nick: profile.nickName,
+            tapNotifier: Notifier<Void>()
         )
+        cachedProfileViewModel = viewModel
+
+        viewModel.tapNotifier.weakJoin(tapOnProfileNotifier, owner: self) { (self, _) -> SteamID in
+            return profile.steamId
+        }
 
         switch profile.visibilityState {
         case .private:
@@ -110,7 +127,7 @@ final class ProfileScreenPresenter
 
         view.showProfile(viewModel)
 
-        avatarService.fetch(url: profile.avatarURL, to: viewModel.avatar)
+        imageService.fetch(url: profile.avatarURL, to: viewModel.avatar)
     }
 
 
@@ -118,8 +135,12 @@ final class ProfileScreenPresenter
 
     private func processProfileGamesInfoResult(_ result: SteamProfileGamesInfoResult) {
         switch result {
-        case .failure:
+        case .failure(.cancelled):
             break
+        case .failure(.notConnection):
+            view.showError(loc["Errors.NotConnect"])
+        case .failure(.notFound), .failure(.incorrectResponse):
+            view.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let games):
             processGamesInfo(games)
@@ -128,14 +149,21 @@ final class ProfileScreenPresenter
 
     private func processGamesInfo(_ profileGamesInfo: [SteamProfileGameInfo]) {
         let viewModels: [ProfileGameInfoViewModel] = profileGamesInfo.map { profileGame in
+            let cachedViewModel = cachedGameInfoViewModels[profileGame.gameInfo.gameId]
             let viewModel = ProfileGameInfoViewModel(
-                icon: ChangeableImage(placeholder: nil, image: nil),
+                icon: cachedViewModel?.icon ?? ChangeableImage(placeholder: nil, image: nil),
                 name: profileGame.gameInfo.name,
                 playtimePrefix: loc["SteamProfile.Game.PlayTimePrefix"],
-                playtime: profileGame.playtimeForever
+                playtime: profileGame.playtimeForever,
+                tapNotifier: Notifier<Void>()
             )
+            cachedGameInfoViewModels[profileGame.gameInfo.gameId] = viewModel
 
-            avatarService.fetch(url: profileGame.gameInfo.iconUrl, to: viewModel.icon)
+            viewModel.tapNotifier.weakJoin(tapOnGameNotifier, owner: self) { (self, _) -> (SteamID, SteamGameID) in
+                return (profileGame.steamId, profileGame.gameInfo.gameId)
+            }
+
+            imageService.fetch(url: profileGame.gameInfo.iconUrl, to: viewModel.icon)
 
             return viewModel
         }

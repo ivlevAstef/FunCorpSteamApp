@@ -15,4 +15,6 @@ struct ProfileViewModel
 
     let nick: String
     var realName: String?
+
+    let tapNotifier: Notifier<Void>
 }

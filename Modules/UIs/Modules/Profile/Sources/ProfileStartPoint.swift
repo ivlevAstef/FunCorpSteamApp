@@ -6,9 +6,11 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
+import Common
 import Core
 import DITranquillity
 import SwiftLazy
+import Services
 
 public final class ProfileStartPoint: UIStartPoint
 {
@@ -16,12 +18,21 @@ public final class ProfileStartPoint: UIStartPoint
         public static let steamId = "ProfileSteamId"
     }
 
+    public let tapOnProfileNotifier = Notifier<SteamID>()
+    public let tapOnGameNotifier = Notifier<(SteamID, SteamGameID)>()
+
     public static let name: UIModuleName = .profile
 
     private var routerProvider = Provider1<ProfileRouter, Navigator>()
 
     public init() {
 
+    }
+
+    public func makeParams(steamId: SteamID) -> RoutingParamaters {
+        return RoutingParamaters(moduleName: Self.name, options: [
+            RoutingOptions.steamId: "\(steamId)"
+        ])
     }
     
     public func configure() {
@@ -42,7 +53,11 @@ public final class ProfileStartPoint: UIStartPoint
     }
 
     public func makeRouter(use navigator: Navigator) -> IRouter {
-        return routerProvider.value(navigator)
+        let router = routerProvider.value(navigator)
+        router.tapOnProfileNotifier.join(tapOnProfileNotifier)
+        router.tapOnGameNotifier.join(tapOnGameNotifier)
+
+        return router
     }
 
 }

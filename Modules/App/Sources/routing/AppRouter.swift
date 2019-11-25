@@ -15,6 +15,10 @@ import Services
 import Auth
 import Menu
 
+import Profile
+import Friends
+import GameInformation
+
 final class AppRouter: IRouter
 {
     var rootViewController: UIViewController {
@@ -31,6 +35,7 @@ final class AppRouter: IRouter
         navigator.showNavigationBar = false
 
         self.subscribeOn(StartPoints.auth)
+        self.subscribeOn(StartPoints.profile)
         self.subscribeOn(StartPoints.menu)
     }
 
@@ -74,6 +79,17 @@ final class AppRouter: IRouter
     private func subscribeOn(_ startPoint: AuthStartPoint) {
         startPoint.authSuccessNotifier.join(listener: { [weak self] parameters in
             self?.showRoot(parameters: parameters)
+        })
+    }
+
+    private func subscribeOn(_ startPoint: ProfileStartPoint) {
+        startPoint.tapOnProfileNotifier.join(listener: { [navigator] steamId in
+            let router = StartPoints.friends.makeRouter(use: navigator)
+            router.start(parameters: StartPoints.friends.makeParams(steamId: steamId))
+        })
+        startPoint.tapOnGameNotifier.join(listener: { [navigator] (steamId, gameId) in
+            let router = StartPoints.gameInfo.makeRouter(use: navigator)
+            router.start(parameters: StartPoints.gameInfo.makeParams(steamId: steamId, gameId: gameId))
         })
     }
 

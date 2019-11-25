@@ -12,7 +12,7 @@ import UIComponents
 import SnapKit
 
 private enum Consts {
-    static let avatarSize: CGSize = CGSize(width: 76, height: 76)
+    static let avatarSize: CGFloat = 76.0
 }
 
 final class ProfileCell: UITableViewCell
@@ -20,7 +20,7 @@ final class ProfileCell: UITableViewCell
     static let preferredHeight: CGFloat = 96.0
     static let identifier = "\(ProfileCell.self)"
 
-    private let avatarView = AvatarView(size: Consts.avatarSize.width)
+    private let avatarView = AvatarView(size: Consts.avatarSize)
     private let nickNameLabel = UILabel(frame: .zero)
     private let realNameLabel = UILabel(frame: .zero)
 
@@ -47,7 +47,11 @@ final class ProfileCell: UITableViewCell
         case .done(let viewModel):
             nickNameLabel.endSkeleton()
             realNameLabel.endSkeleton()
-            avatarView.setup(viewModel.avatar, letter: viewModel.avatarLetter, completion: { [weak avatarView] in
+
+            let avatarPlaceholder = AvatarView.generateAvatar(letter: viewModel.avatarLetter, size: Consts.avatarSize, style: style)
+            viewModel.avatar.updatePlaceholder(avatarPlaceholder)
+
+            avatarView.setup(viewModel.avatar, completion: { [weak avatarView] in
                 avatarView?.endSkeleton()
             })
 
@@ -89,7 +93,7 @@ final class ProfileCell: UITableViewCell
         avatarView.snp.remakeConstraints { maker in
             maker.top.equalToSuperview().offset(12.0)
             maker.left.equalToSuperview().offset(layout.cellInnerInsets.left)
-            maker.size.equalTo(Consts.avatarSize)
+            maker.size.equalTo(CGSize(width: Consts.avatarSize, height: Consts.avatarSize))
         }
 
         nickNameLabel.snp.remakeConstraints { maker in

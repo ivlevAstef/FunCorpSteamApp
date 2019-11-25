@@ -11,7 +11,15 @@ import Common
 
 public final class ErrorAlert
 {
+    private static var isShown: Bool = false
+
     public static func show(_ text: String, on viewController: UIViewController) {
+        log.assert(Thread.isMainThread, "Thread.isMainThread")
+
+        if isShown {
+            return
+        }
+
         // Да не модно и не молодежно, но зато писать или подключать ничего не надо
         let alertController = UIAlertController(title: loc["Alert.Error"],
                                                 message: text,
@@ -19,8 +27,11 @@ public final class ErrorAlert
         alertController.addAction(UIAlertAction(
             title: loc["Alert.Ok"],
             style: .default,
-            handler: nil
+            handler: { _ in
+                isShown = false
+            }
         ))
         viewController.present(alertController, animated: true, completion: nil)
+        isShown = true
     }
 }

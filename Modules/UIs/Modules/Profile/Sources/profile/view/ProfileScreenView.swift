@@ -41,12 +41,12 @@ final class ProfileScreenView: ApViewController, ProfileScreenViewContract
         needUpdateNotifier.notify(())
     }
 
-    // MARK: - profile
-
-    func beginLoadingProfile() {
+    func beginLoading() {
         tableView.updateProfile(.loading)
+        tableView.updateGames(Array(repeating: .loading, count: 6))
     }
 
+    // MARK: - profile
     func endLoadingProfile(_ success: Bool) {
         if !success {
             tableView.updateProfile(.failed)
@@ -57,15 +57,7 @@ final class ProfileScreenView: ApViewController, ProfileScreenViewContract
         tableView.updateProfile(.done(profile))
     }
 
-    func showError(_ text: String) {
-        ErrorAlert.show(text, on: self)
-    }
-
     // MARK: - games
-
-    func beginLoadingGames() {
-        tableView.updateGames(Array(repeating: .loading, count: 6))
-    }
 
     func endLoadingGames(_ success: Bool) {
         if !success {
@@ -79,6 +71,12 @@ final class ProfileScreenView: ApViewController, ProfileScreenViewContract
 
     func setGamesSectionText(_ text: String) {
         tableView.setGamesSectionTitle(text)
+    }
+
+    // MARK: - other
+
+    func showError(_ text: String) {
+        ErrorAlert.show(text, on: self)
     }
 
     private func configureViews() {

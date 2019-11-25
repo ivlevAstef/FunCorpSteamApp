@@ -18,6 +18,9 @@ typealias ProfileScreen = Screen<ProfileScreenView, ProfileScreenPresenter>
 
 final class ProfileRouter: IRouter
 {
+    let tapOnProfileNotifier = Notifier<SteamID>()
+    let tapOnGameNotifier = Notifier<(SteamID, SteamGameID)>()
+
     /*dependency*/var profileScreenProvider = Provider<ProfileScreen>()
 
     private let navigator: Navigator
@@ -55,6 +58,9 @@ final class ProfileRouter: IRouter
     private func makeProfileScreen(steamId: SteamID) -> ProfileScreen {
         let screen = profileScreenProvider.value
         screen.setRouter(self)
+
+        screen.presenter.tapOnProfileNotifier.join(tapOnProfileNotifier)
+        screen.presenter.tapOnGameNotifier.join(tapOnGameNotifier)
 
         screen.presenter.configure(steamId: steamId)
         return screen

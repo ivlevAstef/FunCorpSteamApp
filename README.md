@@ -49,4 +49,4 @@ Application for task from funcorp for show information from steam
 # Планы
 
 ### Время
-35 часа
+36 часа

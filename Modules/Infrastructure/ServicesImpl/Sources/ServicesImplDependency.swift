@@ -12,8 +12,8 @@ import Services
 final class ServicesImplDependency: DIFramework
 {
     static func load(container: DIContainer) {
-        container.register(AvatarServiceImpl.init)
-            .as(AvatarService.self)
+        container.register(ImageServiceImpl.init)
+            .as(ImageService.self)
             .lifetime(.perRun(.weak))
 
         container.register(SteamAuthServiceImpl.init)

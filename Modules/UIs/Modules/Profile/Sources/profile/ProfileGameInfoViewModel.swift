@@ -16,4 +16,6 @@ struct ProfileGameInfoViewModel
 
     let playtimePrefix: String
     let playtime: TimeInterval
+
+    let tapNotifier: Notifier<Void>
 }

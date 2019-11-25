@@ -1,5 +1,5 @@
 //
-//  AvatarService.swift
+//  ImageService.swift
 //  Services
 //
 //  Created by Alexander Ivlev on 23/11/2019.
@@ -9,12 +9,12 @@
 import Foundation
 import Common
 
-public protocol AvatarService: class
+public protocol ImageService: class
 {
     func fetch(url: URL, to changeableImage: ChangeableImage)
 }
 
-extension AvatarService
+extension ImageService
 {
     public func fetch(url: URL?, to changeableImage: ChangeableImage) {
         if let url = url {

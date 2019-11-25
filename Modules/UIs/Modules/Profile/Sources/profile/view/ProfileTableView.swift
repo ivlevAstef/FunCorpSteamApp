@@ -148,4 +148,32 @@ extension ProfileTableView: UITableViewDelegate, UITableViewDataSource {
             gameCell.configure(viewModel, style: style)
         }
     }
+
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if indexPath.section == 0 {
+            if case .done = profileViewModel {
+                return indexPath
+            }
+            return nil
+        }
+
+        if case .done = gamesViewModels[indexPath.row] {
+            return indexPath
+        }
+        return nil
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            if case let .done(viewModel) = profileViewModel {
+                viewModel.tapNotifier.notify(())
+            }
+        } else {
+            if case let .done(viewModel) = gamesViewModels[indexPath.row] {
+                viewModel.tapNotifier.notify(())
+            }
+        }
+
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 }

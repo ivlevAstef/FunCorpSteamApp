@@ -1,5 +1,5 @@
 //
-//  AvatarServiceImpl.swift
+//  ImageServiceImpl.swift
 //  ServicesImpl
 //
 //  Created by Alexander Ivlev on 23/11/2019.
@@ -11,7 +11,7 @@ import UIKit
 import Common
 import Services
 
-final class AvatarServiceImpl: AvatarService
+final class ImageServiceImpl: ImageService
 {
     func fetch(url: URL, completion: @escaping (UIImage?) -> Void) {
         DispatchQueue.global(qos: .default).async {
@@ -28,7 +28,7 @@ final class AvatarServiceImpl: AvatarService
 
     func fetch(url: URL, to changeableImage: ChangeableImage) {
         fetch(url: url, completion: { image in
-            changeableImage.updateImage(image: image)
+            changeableImage.updateImage(image)
         })
     }
 }

@@ -9,15 +9,28 @@
 import Core
 import DITranquillity
 import SwiftLazy
+import Services
 
 public final class GameInfoStartPoint: UIStartPoint
 {
+    public enum RoutingOptions {
+        public static let steamId = "ProfileSteamId"
+        public static let gameId = "GameId"
+    }
+
     public static let name: UIModuleName = .gameInfo
 
-//    private var routerProvider = Provider1<GameInfoRouter, Navigator>()
+    private var routerProvider = Provider1<GameInfoRouter, Navigator>()
 
     public init() {
 
+    }
+
+    public func makeParams(steamId: SteamID, gameId: SteamGameID) -> RoutingParamaters {
+        return RoutingParamaters(moduleName: Self.name, options: [
+            RoutingOptions.steamId: "\(steamId)",
+            RoutingOptions.gameId: "\(gameId)"
+        ])
     }
     
     public func configure() {
@@ -25,8 +38,8 @@ public final class GameInfoStartPoint: UIStartPoint
     }
 
     public func reg(container: DIContainer) {
-//        container.append(framework: NewsDependency.self)
-//        routerProvider = container.resolve()
+        container.append(framework: GameInfoDependency.self)
+        routerProvider = container.resolve()
     }
 
     public func initialize() {
@@ -38,8 +51,7 @@ public final class GameInfoStartPoint: UIStartPoint
     }
 
     public func makeRouter(use navigator: Navigator) -> IRouter {
-        //return routerProvider.value(navigator)
-        fatalError("")
+        return routerProvider.value(navigator)
     }
 
 }
