@@ -21,15 +21,11 @@ final class AuthRouter: IRouter
 
     /*dependency*/var authScreenProvider = Provider<AuthScreen>()
     
-    var rootViewController: UIViewController {
-        return navController.uiController
-    }
-
-    private let navController: NavigationController
+    private let navigator: Navigator
     private let authService: SteamAuthService
     
-    init(navController: NavigationController, authService: SteamAuthService) {
-        self.navController = navController
+    init(navigator: Navigator, authService: SteamAuthService) {
+        self.navigator = navigator
         self.authService = authService
     }
 
@@ -46,6 +42,6 @@ final class AuthRouter: IRouter
             return parameters
         })
 
-        navController.setRoot(screen.view)
+        navigator.push(screen.view)
     }
 }

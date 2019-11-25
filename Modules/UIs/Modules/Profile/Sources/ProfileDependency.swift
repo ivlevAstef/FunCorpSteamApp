@@ -11,13 +11,13 @@ import DITranquillity
 final class ProfileDependency: DIFramework
 {
     static func load(container: DIContainer) {
-        container.register(ProfileRouter.init)
+        container.register { ProfileRouter(navigator: arg($0), authService: $1) }
             .injection(\.profileScreenProvider)
             .lifetime(.objectGraph)
 
         container.register(ProfileScreen.init)
             .lifetime(.prototype)
-        container.register(ProfileScreenView.init(steamNavBar:))
+        container.register { ProfileScreenView() }
             .as(ProfileScreenViewContract.self)
             .lifetime(.objectGraph)
         container.register(ProfileScreenPresenter.init)

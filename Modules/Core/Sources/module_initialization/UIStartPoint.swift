@@ -15,5 +15,5 @@ public protocol UIStartPoint: CommonStartPoint
     func isSupportOpen(with parameters: RoutingParamaters) -> Bool
 
     /// make router for startup project
-    func makeRouter() -> IRouter
+    func makeRouter(use navigator: Navigator) -> IRouter
 }

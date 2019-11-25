@@ -18,15 +18,17 @@ import Menu
 final class AppRouter: IRouter
 {
     var rootViewController: UIViewController {
-        return navController.uiController
+        return navigator.controller
     }
 
-    private let navController: NavigationController
+    private let navigator: Navigator
     private let authService: SteamAuthService
 
-    init(navController: NavigationController, authService: SteamAuthService) {
-        self.navController = navController
+    init(navigator: Navigator, authService: SteamAuthService) {
+        self.navigator = navigator
         self.authService = authService
+
+        navigator.showNavigationBar = false
 
         self.subscribeOn(StartPoints.auth)
         self.subscribeOn(StartPoints.menu)
@@ -37,6 +39,7 @@ final class AppRouter: IRouter
     }
 
     private func showRoot(parameters: RoutingParamaters) {
+        navigator.reset()
         if !authService.isLogined {
             showAuth(parameters: parameters)
         } else {
@@ -45,15 +48,13 @@ final class AppRouter: IRouter
     }
 
     private func showAuth(parameters: RoutingParamaters) {
-        let router = StartPoints.auth.makeRouter()
-        navController.setRoot(router)
+        let router = StartPoints.auth.makeRouter(use: navigator)
 
         router.start(parameters: parameters)
     }
 
     private func showMenu(parameters: RoutingParamaters) {
-        let router = StartPoints.menu.makeRouter()
-        navController.setRoot(router)
+        let router = StartPoints.menu.makeRouter(use: navigator)
 
         let startPointsCanOpened = parameters.isEmpty
             ? []
@@ -65,8 +66,7 @@ final class AppRouter: IRouter
 
         log.assert(startPointsCanOpened.count <= 1, "By parameters can open more start points - it's correct, or not?")
         for startPoint in startPointsCanOpened {
-            let router = startPoint.makeRouter()
-            navController.push(router, animated: false)
+            let router = startPoint.makeRouter(use: navigator)
             router.start(parameters: parameters)
         }
     }
@@ -78,14 +78,14 @@ final class AppRouter: IRouter
     }
 
     private func subscribeOn(_ startPoint: MenuStartPoint) {
-        startPoint.newsGetter.take(use: {
-            return StartPoints.news.makeRouter()
+        startPoint.newsGetter.take(use: { navigator in
+            return StartPoints.news.makeRouter(use: navigator)
         })
-        startPoint.myProfileGetter.take(use: {
-            return StartPoints.profile.makeRouter()
+        startPoint.myProfileGetter.take(use: { navigator in
+            return StartPoints.profile.makeRouter(use: navigator)
         })
-        startPoint.sessionsGetter.take(use: {
-            return StartPoints.sessions.makeRouter()
+        startPoint.sessionsGetter.take(use: { navigator in
+            return StartPoints.sessions.makeRouter(use: navigator)
         })
     }
 }

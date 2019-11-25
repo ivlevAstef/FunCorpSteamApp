@@ -17,13 +17,10 @@ final class ProfileScreenView: ApViewController, ProfileScreenViewContract
 {
     let needUpdateNotifier = Notifier<Void>()
 
-    private let steamNavBar: SteamNavBar
+    private let tableView = ProfileTableView()
 
-    private let gamesView = ProfileGamesTableView()
-
-    init(steamNavBar: SteamNavBar) {
-        self.steamNavBar = steamNavBar
-        super.init(navStatusBar: steamNavBar.view)
+    override init() {
+        super.init()
     }
 
     required init?(coder: NSCoder) {
@@ -33,16 +30,31 @@ final class ProfileScreenView: ApViewController, ProfileScreenViewContract
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        configureViews()
+        title = loc["SteamProfile.Title"]
 
-        self.steamNavBar.parentVC = self
-        self.steamNavBar.view.bind(to: gamesView)
+        configureViews()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         needUpdateNotifier.notify(())
+    }
+
+    // MARK: - profile
+
+    func beginLoadingProfile() {
+        tableView.updateProfile(.loading)
+    }
+
+    func endLoadingProfile(_ success: Bool) {
+        if !success {
+            tableView.updateProfile(.failed)
+        }
+    }
+
+    func showProfile(_ profile: ProfileViewModel) {
+        tableView.updateProfile(.done(profile))
     }
 
     func showError(_ text: String) {
@@ -52,28 +64,32 @@ final class ProfileScreenView: ApViewController, ProfileScreenViewContract
     // MARK: - games
 
     func beginLoadingGames() {
+        tableView.updateGames(Array(repeating: .loading, count: 6))
     }
 
     func endLoadingGames(_ success: Bool) {
-    }
-
-    func setGamesSectionText(_ text: String) {
-        gamesView.setSectionTitle(text)
+        if !success {
+            tableView.updateGames(Array(repeating: .failed, count: 6))
+        }
     }
 
     func showGamesInfo(_ games: [ProfileGameInfoViewModel]) {
-        gamesView.update(games)
+        tableView.updateGames(games.map { .done($0) })
+    }
+
+    func setGamesSectionText(_ text: String) {
+        tableView.setGamesSectionTitle(text)
     }
 
     private func configureViews() {
-        view.addSubview(gamesView)
+        view.addSubview(tableView)
 
-        gamesView.clipsToBounds = true
-        gamesView.backgroundColor = .clear
+        tableView.clipsToBounds = true
+        tableView.backgroundColor = .clear
 
-        addViewForStylizing(gamesView)
+        addViewForStylizing(tableView)
 
-        gamesView.snp.makeConstraints { maker in
+        tableView.snp.makeConstraints { maker in
             maker.top.equalToSuperview()
             maker.left.equalToSuperview()
             maker.right.equalToSuperview()

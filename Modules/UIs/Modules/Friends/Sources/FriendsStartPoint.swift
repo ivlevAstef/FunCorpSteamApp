@@ -14,7 +14,7 @@ public final class FriendsStartPoint: UIStartPoint
 {
     public static let name: UIModuleName = .friends
 
-    //private var routerProvider = Provider<NewsRouter>()
+    //private var routerProvider = Provider<FriendsRouter, Navigator>()
 
     public init() {
 
@@ -37,9 +37,9 @@ public final class FriendsStartPoint: UIStartPoint
         return parameters.moduleName == Self.name
     }
 
-    public func makeRouter() -> IRouter {
-        fatalError("")
-//        return routerProvider.value
+    public func makeRouter(use navigator: Navigator) -> IRouter {
+        fatalError()
+        //return routerProvider.value(navigator)
     }
 
 }

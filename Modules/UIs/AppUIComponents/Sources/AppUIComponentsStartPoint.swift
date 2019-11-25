@@ -22,13 +22,6 @@ public final class AppUIComponentsStartPoint: CommonStartPoint
     }
 
     public func reg(container: DIContainer) {
-        container.register(SteamNavBar.init)
-            .lifetime(.prototype)
-
-        container.register {
-            NavigationController(controller: SteamNavigationViewController(nibName: nil, bundle: nil))
-            as (NavigationController & SteamNavigationController)
-        }.lifetime(.prototype)
     }
 
     public func initialize() {

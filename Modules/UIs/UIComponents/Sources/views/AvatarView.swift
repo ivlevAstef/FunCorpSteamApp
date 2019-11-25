@@ -12,7 +12,7 @@ import Design
 
 private class AvatarUnique {}
 
-public class AvatarView: UIView {
+open class AvatarView: UIView {
     public var size: CGFloat {
         didSet { setNeedsLayout() }
     }
@@ -32,7 +32,7 @@ public class AvatarView: UIView {
         backgroundColor = .clear
     }
 
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -58,7 +58,7 @@ public class AvatarView: UIView {
         image = newImage
     }
 
-    public func setup(_ newImage: ChangeableImage, letter: String? = nil) {
+    public func setup(_ newImage: ChangeableImage, letter: String? = nil, completion: (() -> Void)?) {
         let owner = AvatarUnique()
         unique = owner
         self.letter = letter
@@ -67,6 +67,8 @@ public class AvatarView: UIView {
                 self?.letter = nil
             }
             self?.image = newImage
+            self?.setNeedsDisplay()
+            completion?()
         }, owner: owner)
         updateAvatarByLetterIfNeeded()
     }
@@ -83,6 +85,13 @@ extension AvatarView: StylizingView
 {
     public func apply(use style: Style) {
         self.style = style
+
+        layer.shadowColor = style.colors.shadowColor.cgColor
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 4.0
+        layer.shadowOpacity = style.colors.shadowOpacity
+        cornerRadius = 4.0
+
         updateAvatarByLetterIfNeeded()
     }
 }

@@ -1,3 +1,3 @@
-# Profile
+# Friends
 
 A description of this package.

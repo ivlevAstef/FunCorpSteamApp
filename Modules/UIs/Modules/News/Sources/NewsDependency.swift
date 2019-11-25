@@ -11,7 +11,7 @@ import DITranquillity
 final class NewsDependency: DIFramework
 {
     static func load(container: DIContainer) {
-        container.register(NewsRouter.init)
+        container.register { NewsRouter(navigator: arg($0)) }
             .injection(\.ribbonScreenProvider)
             .lifetime(.objectGraph)
 

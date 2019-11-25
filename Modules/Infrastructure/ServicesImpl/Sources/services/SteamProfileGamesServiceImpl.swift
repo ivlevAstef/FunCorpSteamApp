@@ -51,6 +51,7 @@ final class SteamProfileGamesServiceImpl: SteamProfileGamesService
             if case let .success(games) = result {
                 storage?.put(for: steamId, games: games)
             }
+
             completion(result)
         })
     }

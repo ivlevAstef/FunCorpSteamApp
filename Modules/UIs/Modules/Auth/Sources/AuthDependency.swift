@@ -11,7 +11,7 @@ import DITranquillity
 final class AuthDependency: DIFramework
 {
     static func load(container: DIContainer) {
-        container.register(AuthRouter.init)
+        container.register { AuthRouter(navigator: arg($0), authService: $1) }
             .injection(\.authScreenProvider)
             .lifetime(.objectGraph)
 

@@ -18,7 +18,7 @@ public final class ProfileStartPoint: UIStartPoint
 
     public static let name: UIModuleName = .profile
 
-    private var routerProvider = Provider<ProfileRouter>()
+    private var routerProvider = Provider1<ProfileRouter, Navigator>()
 
     public init() {
 
@@ -41,8 +41,8 @@ public final class ProfileStartPoint: UIStartPoint
         return parameters.moduleName == Self.name
     }
 
-    public func makeRouter() -> IRouter {
-        return routerProvider.value
+    public func makeRouter(use navigator: Navigator) -> IRouter {
+        return routerProvider.value(navigator)
     }
 
 }

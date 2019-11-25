@@ -14,7 +14,7 @@ public final class NewsStartPoint: UIStartPoint
 {
     public static let name: UIModuleName = .news
 
-    private var routerProvider = Provider<NewsRouter>()
+    private var routerProvider = Provider1<NewsRouter, Navigator>()
 
     public init() {
 
@@ -37,8 +37,8 @@ public final class NewsStartPoint: UIStartPoint
         return parameters.moduleName == Self.name
     }
 
-    public func makeRouter() -> IRouter {
-        return routerProvider.value
+    public func makeRouter(use navigator: Navigator) -> IRouter {
+        return routerProvider.value(navigator)
     }
 
 }

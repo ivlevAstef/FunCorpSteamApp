@@ -18,22 +18,23 @@ typealias MenuScreen = Screen<MenuScreenView, MenuScreenPresenter>
 
 final class MenuRouter: IRouter
 {
-    let newsGetter = Getter<Void, IRouter>()
-    let myProfileGetter = Getter<Void, IRouter>()
-    let sessionsGetter = Getter<Void, IRouter>()
+    let newsGetter = Getter<Navigator, IRouter>()
+    let myProfileGetter = Getter<Navigator, IRouter>()
+    let sessionsGetter = Getter<Navigator, IRouter>()
 
     /*dependency*/var menuScreenProvider = Lazy<MenuScreen>()
-    
-    var rootViewController: UIViewController {
-        return menuScreenProvider.value.view
-    }
 
-    init() {
+    private let navigator: Navigator
+
+    init(navigator: Navigator) {
+        self.navigator = navigator
     }
 
     func start(parameters: RoutingParamaters) {
         let screen = menuScreenProvider.value
         configure(screen)
+
+        navigator.push(screen.view)
     }
 
     private func configure(_ screen: MenuScreen) {

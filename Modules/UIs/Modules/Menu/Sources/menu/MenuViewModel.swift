@@ -13,5 +13,5 @@ struct MenuViewModel {
     let icon: ConstImage
     let title: String
 
-    let viewGetter: Getter<Void, IRouter>
+    let viewGetter: Getter<Navigator, IRouter>
 }

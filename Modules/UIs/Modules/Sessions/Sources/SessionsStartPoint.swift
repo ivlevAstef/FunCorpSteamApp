@@ -15,7 +15,7 @@ public final class SessionsStartPoint: UIStartPoint
 {
     public static let name: UIModuleName = .sessions
 
-    private var routerProvider = Provider<SessionsRouter>()
+    private var routerProvider = Provider1<SessionsRouter, Navigator>()
 
     public init() {
 
@@ -35,10 +35,10 @@ public final class SessionsStartPoint: UIStartPoint
 
     public func isSupportOpen(with parameters: RoutingParamaters) -> Bool {
        return parameters.moduleName == Self.name
-   }
+    }
 
-   public func makeRouter() -> IRouter {
-       return routerProvider.value
-   }
+    public func makeRouter(use navigator: Navigator) -> IRouter {
+        return routerProvider.value(navigator)
+    }
 
 }

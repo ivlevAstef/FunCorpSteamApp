@@ -11,6 +11,7 @@ import Core
 import Common
 import UIComponents
 import Design
+import SwiftLazy
 
 final class MenuScreenView: ApTabBarController, UITabBarControllerDelegate, MenuScreenViewContract
 {
@@ -19,9 +20,17 @@ final class MenuScreenView: ApTabBarController, UITabBarControllerDelegate, Menu
             configureViewControllers()
         }
     }
-    // TODO: в идеале конечно надо было поделить функционал, так чтобы экран незнал о роутере. Но это много доп. кода
-    private var screensInfo: [(rootVC: UIViewController, router: IRouter)] = []
-    private var selectedRouter: IRouter?
+
+    private let navigatorProvider: Provider<Navigator>
+
+    init(navigatorProvider: Provider<Navigator>) {
+        self.navigatorProvider = navigatorProvider
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func styleDidChange(_ style: Style) {
         super.styleDidChange(style)
@@ -39,52 +48,24 @@ final class MenuScreenView: ApTabBarController, UITabBarControllerDelegate, Menu
     }
 
     private func configureViewControllers() {
-        screensInfo.removeAll()
-
+        var newViewControllers: [UIViewController] = []
         for viewModel in viewModels {
             if !viewModel.viewGetter.hasCallback() {
                 continue
             }
-            guard let router = viewModel.viewGetter.get(()) else {
+
+            let navigator = navigatorProvider.value
+            guard let router = viewModel.viewGetter.get(navigator) else {
                 continue
             }
+            router.start()
 
-            let rootVC = router.rootViewController
-            
-            let tag = screensInfo.count
-            rootVC.tabBarItem = UITabBarItem(title: viewModel.title, image: viewModel.icon.image, tag: tag)
+            let vc = navigator.controller
+            vc.tabBarItem = UITabBarItem(title: viewModel.title, image: viewModel.icon.image, tag: 0)
 
-            screensInfo.append((rootVC: rootVC, router: router))
+            newViewControllers.append(vc)
         }
 
-        viewControllers = screensInfo.map { $0.rootVC }
-
-        if let selectedVC = selectedViewController {
-            select(selectedVC)
-        }
-    }
-
-    private func select(_ viewController: UIViewController) {
-        guard let tag = viewController.tabBarItem?.tag else {
-            log.assert("Menu TabBar not contains tab bar item")
-            return
-        }
-
-        select(tag)
-    }
-
-    private func select(_ index: Int) {
-        if index < 0 || screensInfo.count <= index {
-            log.assert("Incorrect select index - maybe need check tags")
-            return
-        }
-
-        selectedRouter?.stop()
-        screensInfo[index].router.start()
-        selectedRouter = screensInfo[index].router
-    }
-
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        select(viewController)
+        viewControllers = newViewControllers
     }
 }

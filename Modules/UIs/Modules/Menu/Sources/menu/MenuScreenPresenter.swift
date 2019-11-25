@@ -16,9 +16,9 @@ protocol MenuScreenViewContract: class
 
 final class MenuScreenPresenter
 {
-    let newsGetter = Getter<Void, IRouter>()
-    let myProfileGetter = Getter<Void, IRouter>()
-    let sessionsGetter = Getter<Void, IRouter>()
+    let newsGetter = Getter<Navigator, IRouter>()
+    let myProfileGetter = Getter<Navigator, IRouter>()
+    let sessionsGetter = Getter<Navigator, IRouter>()
 
     private let view: MenuScreenViewContract
 

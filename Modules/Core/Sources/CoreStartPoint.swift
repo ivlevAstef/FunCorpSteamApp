@@ -21,6 +21,8 @@ public final class CoreStartPoint: CommonStartPoint
     }
 
     public func reg(container: DIContainer) {
+        container.register(Navigator.init)
+            .lifetime(.prototype)
     }
 
     public func initialize() {

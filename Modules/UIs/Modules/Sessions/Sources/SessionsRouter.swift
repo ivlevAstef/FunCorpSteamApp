@@ -18,14 +18,10 @@ final class SessionsRouter: IRouter
 {
     /*dependency*/var sessionsScreenProvider = Provider<SessionsScreen>()
 
-    var rootViewController: UIViewController {
-        navController.uiController
-    }
+    private let navigator: Navigator
 
-    private let navController: NavigationController
-
-    init(navController: NavigationController) {
-        self.navController = navController
+    init(navigator: Navigator) {
+        self.navigator = navigator
     }
 
     func configure() -> IRouter {
@@ -35,7 +31,7 @@ final class SessionsRouter: IRouter
     func start(parameters: RoutingParamaters) {
         let screen = sessionsScreenProvider.value
         configure(screen)
-        navController.setRoot(screen.view)
+        navigator.push(screen.view)
     }
 
     private func configure(_ screen: SessionsScreen) {

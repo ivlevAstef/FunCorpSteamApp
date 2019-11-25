@@ -25,8 +25,8 @@ final class AuthScreenView: ApViewController, AuthScreenViewContract
     private let informationText: UILabel = UILabel(frame: .zero)
     private let steamAuthButton: UIButton = UIButton(frame: .zero)
 
-    init() {
-        super.init(navStatusBar: nil)
+    override init() {
+        super.init()
     }
 
     required init?(coder: NSCoder) {

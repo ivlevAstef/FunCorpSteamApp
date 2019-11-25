@@ -15,11 +15,11 @@ public final class MenuStartPoint: UIStartPoint
 {
     public static let name: UIModuleName = .menu
 
-    public let newsGetter = Getter<Void, IRouter>()
-    public let myProfileGetter = Getter<Void, IRouter>()
-    public let sessionsGetter = Getter<Void, IRouter>()
+    public let newsGetter = Getter<Navigator, IRouter>()
+    public let myProfileGetter = Getter<Navigator, IRouter>()
+    public let sessionsGetter = Getter<Navigator, IRouter>()
 
-    private var routerProvider = Provider<MenuRouter>()
+    private var routerProvider = Provider1<MenuRouter, Navigator>()
 
     public init() {
 
@@ -42,8 +42,8 @@ public final class MenuStartPoint: UIStartPoint
         return parameters.moduleName == Self.name
     }
 
-    public func makeRouter() -> IRouter {
-        let router = routerProvider.value
+    public func makeRouter(use navigator: Navigator) -> IRouter {
+        let router = routerProvider.value(navigator)
         router.newsGetter.take(from: newsGetter)
         router.myProfileGetter.take(from: myProfileGetter)
         router.sessionsGetter.take(from: sessionsGetter)

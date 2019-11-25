@@ -17,21 +17,17 @@ typealias RibbonScreen = Screen<RibbonScreenView, RibbonScreenPresenter>
 final class NewsRouter: IRouter
 {
     /*dependency*/var ribbonScreenProvider = Provider<RibbonScreen>()
-    
-    var rootViewController: UIViewController {
-        return navController.uiController
-    }
 
-    private let navController: NavigationController
+    private let navigator: Navigator
     
-    init(navController: NavigationController) {
-        self.navController = navController
+    init(navigator: Navigator) {
+        self.navigator = navigator
     }
 
     func start(parameters: RoutingParamaters) {
         let screen = ribbonScreenProvider.value
         configure(screen)
-        navController.setRoot(screen.view)
+        navigator.push(screen.view)
     }
 
     private func configure(_ screen: RibbonScreen) {

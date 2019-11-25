@@ -19,18 +19,14 @@ typealias ProfileScreen = Screen<ProfileScreenView, ProfileScreenPresenter>
 final class ProfileRouter: IRouter
 {
     /*dependency*/var profileScreenProvider = Provider<ProfileScreen>()
-    
-    var rootViewController: UIViewController {
-        return navController.uiController
-    }
 
-    private let navController: NavigationController & SteamNavigationController
+    private let navigator: Navigator
     private let authService: SteamAuthService
 
     private var currentRoutingParamaters: RoutingParamaters?
     
-    init(navController: NavigationController & SteamNavigationController, authService: SteamAuthService) {
-        self.navController = navController
+    init(navigator: Navigator, authService: SteamAuthService) {
+        self.navigator = navigator
         self.authService = authService
     }
 
@@ -38,14 +34,12 @@ final class ProfileRouter: IRouter
         if currentRoutingParamaters == parameters {
             return
         }
-        // TODO: currentRoutingParamaters = parameters
+        currentRoutingParamaters = parameters
 
         let steamIdKey = ProfileStartPoint.RoutingOptions.steamId
         if let steamId = parameters.options[steamIdKey].flatMap({ SteamID($0) }) {
-            navController.setSteamId(steamId)
             showProfileScreen(steamId: steamId)
         } else if let steamId = authService.steamId {
-            navController.setSteamId(steamId)
             showProfileScreen(steamId: steamId)
         } else {
             log.fatal("Unsupport show profile without steamId for options or auth")
@@ -55,7 +49,7 @@ final class ProfileRouter: IRouter
     private func showProfileScreen(steamId: SteamID) {
         let screen = makeProfileScreen(steamId: steamId)
 
-        navController.setRoot(screen.view)
+        navigator.push(screen.view)
     }
 
     private func makeProfileScreen(steamId: SteamID) -> ProfileScreen {

@@ -27,4 +27,6 @@
 "SteamMenu.Profile" = "Профиль";
 "SteamMenu.Sessions" = "Сессии";
 
+"SteamProfile.Title" = "Профиль";
+"SteamProfile.Games" = "Игры";
 "SteamProfile.Game.PlayTimePrefix" = "Время в игре: ";

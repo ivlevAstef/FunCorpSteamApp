@@ -14,7 +14,7 @@ public final class GameInfoStartPoint: UIStartPoint
 {
     public static let name: UIModuleName = .gameInfo
 
-//    private var routerProvider = Provider<NewsRouter>()
+//    private var routerProvider = Provider1<GameInfoRouter, Navigator>()
 
     public init() {
 
@@ -37,9 +37,9 @@ public final class GameInfoStartPoint: UIStartPoint
         return parameters.moduleName == Self.name
     }
 
-    public func makeRouter() -> IRouter {
+    public func makeRouter(use navigator: Navigator) -> IRouter {
+        //return routerProvider.value(navigator)
         fatalError("")
-//        return routerProvider.value
     }
 
 }

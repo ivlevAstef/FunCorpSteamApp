@@ -11,13 +11,13 @@ import DITranquillity
 final class MenuDependency: DIFramework
 {
     static func load(container: DIContainer) {
-        container.register(MenuRouter.init)
+        container.register { MenuRouter(navigator: arg($0)) }
             .injection(\.menuScreenProvider)
             .lifetime(.objectGraph)
 
         container.register(MenuScreen.init)
             .lifetime(.prototype)
-        container.register { MenuScreenView() }
+        container.register{ MenuScreenView(navigatorProvider: $0) }
             .as(MenuScreenViewContract.self)
             .lifetime(.objectGraph)
         container.register(MenuScreenPresenter.init)

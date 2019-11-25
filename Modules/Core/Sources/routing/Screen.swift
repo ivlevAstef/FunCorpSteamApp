@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Core
 
 private /*static*/var associatedForRetainKey: UInt8 = 0
 private /*static*/var associatedForRouterRetainKey: UInt8 = 0
