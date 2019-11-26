@@ -21,4 +21,14 @@ extension ImageService
             fetch(url: url, to: changeableImage)
         }
     }
+
+    public func deferredFetch(url: URL?, to changeableImage: ChangeableImage) {
+        if let url = url {
+            changeableImage.fetcher = { [weak self, weak changeableImage] in
+                if let changeableImage = changeableImage {
+                    self?.fetch(url: url, to: changeableImage)
+                }
+            }
+        }
+    }
 }

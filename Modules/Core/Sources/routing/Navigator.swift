@@ -29,24 +29,6 @@ public final class Navigator
         self.controllerProvider = controllerProvider
     }
 
-    // MARK: - StartPoints
-
-//    public func push(_ startPoint: UIStartPoint) -> IRouter {
-//        let router = startPoint.makeRouter(use: self)
-//        log.info("push startPoint: \(type(of: startPoint))")
-//
-//        return router
-//    }
-//
-//    public func present(_ startPoint: UIStartPoint, animated: Bool = true) -> IRouter {
-//        let navigator = Navigator(controllerProvider: controllerProvider)
-//        let router = startPoint.makeRouter(use: navigator)
-//
-//        controller.present(navigator.controller, animated: animated)
-//
-//        log.info("present startPoint: \(type(of: startPoint))")
-//    }
-
     // MARK: - View Controllers
 
     public func push(_ vc: UIViewController, animated: Bool = true) {

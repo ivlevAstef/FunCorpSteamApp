@@ -15,7 +15,10 @@ public final class AuthStartPoint: UIStartPoint
 {
     public static let name: UIModuleName = .auth
 
-    public let authSuccessNotifier = Notifier<RoutingParamaters>()
+    public struct Subscribers {
+        public let authSuccessNotifier: Notifier<RoutingParamaters>
+    }
+    public var subscribersFiller: (_ navigator: Navigator, _ subscribers: Subscribers) -> Void = { _, _ in }
 
     private var routerProvider = Provider1<AuthRouter, Navigator>()
 
@@ -42,7 +45,9 @@ public final class AuthStartPoint: UIStartPoint
 
     public func makeRouter(use navigator: Navigator) -> IRouter {
         let router = routerProvider.value(navigator)
-        router.authSuccessNotifier.join(authSuccessNotifier)
+        subscribersFiller(navigator, Subscribers(
+            authSuccessNotifier: router.authSuccessNotifier
+        ))
 
         return router
     }

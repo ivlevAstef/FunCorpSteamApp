@@ -50,9 +50,10 @@ final class NetworkSession {
         interface: String,
         method: String,
         version: Int,
-        fields: [String: String] = [:],
+        useJson: Bool = false,
+        fields: [String: Any] = [:],
         completion: @escaping (Result<Success, NetworkError>) -> Void) {
-        guard let url = makeURL(interface: interface, method: method, version: version, fields: fields) else {
+        guard let url = makeURL(interface: interface, method: method, version: version, useJson: useJson, fields: fields) else {
             log.error("can't start request by method: \(method) on interface: \(interface)")
             completion(.failure(.incorrectURL))
             return
@@ -69,15 +70,31 @@ final class NetworkSession {
     private func makeURL(interface: String,
                          method: String,
                          version: Int,
-                         fields: [String: String] = [:]) -> URL? {
+                         useJson: Bool,
+                         fields: [String: Any] = [:]) -> URL? {
         var urlString = Consts.apiBaseURL.absoluteString
         urlString += "/" + interface
         urlString += "/" + method
         urlString += "/v\(version)"
         urlString += "/?key=" + Consts.key
         urlString += "&format=" + Consts.format
-        for field in fields {
-            urlString += "&\(field.key)=\(field.value)"
+        if useJson {
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: fields, options: []) else {
+                log.assert("can't generate json data for fields")
+                return nil
+            }
+            guard let json = String(data: jsonData, encoding: .utf8) else {
+                log.assert("can't generate json data for fields")
+                return nil
+            }
+
+            let encodingJson = json.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? json
+
+            urlString += "&input_json=" + encodingJson
+        } else {
+            for field in fields {
+                urlString += "&\(field.key)=\(field.value)"
+            }
         }
 
         guard let url = URL(string: urlString) else {

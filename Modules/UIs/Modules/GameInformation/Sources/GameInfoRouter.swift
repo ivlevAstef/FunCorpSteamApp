@@ -11,6 +11,7 @@ import Core
 import Common
 import SwiftLazy
 import UIComponents
+import Services
 
 typealias GameInfoScreen = Screen<GameInfoScreenView, GameInfoScreenPresenter>
 
@@ -25,12 +26,28 @@ final class GameInfoRouter: IRouter
     }
 
     func start(parameters: RoutingParamaters) {
-        let screen = gameInfoScreenProvider.value
-        configure(screen)
+        let steamIdKey = GameInfoStartPoint.RoutingOptions.steamId
+        let gameIdKey = GameInfoStartPoint.RoutingOptions.gameId
+
+        if let steamId = parameters.options[steamIdKey].flatMap({ SteamID($0) }),
+           let gameId = parameters.options[gameIdKey].flatMap({ SteamGameID($0) }) {
+            showGameInfoScreen(steamId: steamId, gameId: gameId)
+        } else {
+            log.fatal("Unsupport show game info without steamId and game in options")
+        }
+    }
+
+    private func showGameInfoScreen(steamId: SteamID, gameId: SteamGameID) {
+        let screen = makeGameInfoScreen(steamId: steamId, gameId: gameId)
+
         navigator.push(screen.view)
     }
 
-    private func configure(_ screen: GameInfoScreen) {
+    private func makeGameInfoScreen(steamId: SteamID, gameId: SteamGameID) -> GameInfoScreen {
+        let screen = gameInfoScreenProvider.value
         screen.setRouter(self)
+
+        screen.presenter.configure(steamId: steamId, gameId: gameId)
+        return screen
     }
 }

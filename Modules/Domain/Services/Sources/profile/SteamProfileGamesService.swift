@@ -10,14 +10,20 @@ import Common
 
 public protocol SteamProfileGamesService: class
 {
-    func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileGamesInfoResult>
+    func getGameNotifier(for steamId: SteamID, gameId: SteamGameID) -> Notifier<SteamProfileGameInfoResult>
+    func refreshGame(for steamId: SteamID, gameId: SteamGameID, completion: ((Bool) -> Void)?)
 
-    func refresh(for steamId: SteamID, completion: ((Bool) -> Void)?)
+    func getGamesNotifier(for steamId: SteamID) -> Notifier<SteamProfileGamesInfoResult>
+    func refreshGames(for steamId: SteamID, completion: ((Bool) -> Void)?)
 }
 
 extension SteamProfileGamesService
 {
-    public func refresh(for steamId: SteamID) {
-        refresh(for: steamId, completion: nil)
+    public func refreshGame(for steamId: SteamID, gameId: SteamGameID) {
+        refreshGame(for: steamId, gameId: gameId, completion: nil)
+    }
+
+    public func refreshGames(for steamId: SteamID) {
+        refreshGames(for: steamId, completion: nil)
     }
 }

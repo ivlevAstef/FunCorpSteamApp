@@ -34,9 +34,10 @@ final class AppRouter: IRouter
 
         navigator.showNavigationBar = false
 
-        self.subscribeOn(StartPoints.auth)
-        self.subscribeOn(StartPoints.profile)
-        self.subscribeOn(StartPoints.menu)
+        StartPoints.auth.subscribersFiller = subscriberFiller
+        StartPoints.menu.subscribersFiller = subscriberFiller
+
+        StartPoints.profile.subscribersFiller = subscriberFiller
     }
 
     func start(parameters: RoutingParamaters) {
@@ -76,32 +77,32 @@ final class AppRouter: IRouter
         }
     }
 
-    private func subscribeOn(_ startPoint: AuthStartPoint) {
-        startPoint.authSuccessNotifier.join(listener: { [weak self] parameters in
+    private func subscriberFiller(_ navigator: Navigator, subscribers: AuthStartPoint.Subscribers) {
+        subscribers.authSuccessNotifier.join(listener: { [weak self] parameters in
             self?.showRoot(parameters: parameters)
         })
     }
 
-    private func subscribeOn(_ startPoint: ProfileStartPoint) {
-        startPoint.tapOnProfileNotifier.join(listener: { [navigator] steamId in
-            let router = StartPoints.friends.makeRouter(use: navigator)
-            router.start(parameters: StartPoints.friends.makeParams(steamId: steamId))
+    private func subscriberFiller(_ navigator: Navigator, subscribers: MenuStartPoint.Subscribers) {
+        subscribers.newsGetter.take(use: { navigator in
+            return StartPoints.news.makeRouter(use: navigator)
         })
-        startPoint.tapOnGameNotifier.join(listener: { [navigator] (steamId, gameId) in
-            let router = StartPoints.gameInfo.makeRouter(use: navigator)
-            router.start(parameters: StartPoints.gameInfo.makeParams(steamId: steamId, gameId: gameId))
+        subscribers.myProfileGetter.take(use: { navigator in
+            return StartPoints.profile.makeRouter(use: navigator)
+        })
+        subscribers.sessionsGetter.take(use: { navigator in
+            return StartPoints.sessions.makeRouter(use: navigator)
         })
     }
 
-    private func subscribeOn(_ startPoint: MenuStartPoint) {
-        startPoint.newsGetter.take(use: { navigator in
-            return StartPoints.news.makeRouter(use: navigator)
+    private func subscriberFiller(_ navigator: Navigator, subscribers: ProfileStartPoint.Subscribers) {
+        subscribers.tapOnProfileNotifier.join(listener: { steamId in
+            let router = StartPoints.friends.makeRouter(use: navigator)
+            router.start(parameters: StartPoints.friends.makeParams(steamId: steamId))
         })
-        startPoint.myProfileGetter.take(use: { navigator in
-            return StartPoints.profile.makeRouter(use: navigator)
-        })
-        startPoint.sessionsGetter.take(use: { navigator in
-            return StartPoints.sessions.makeRouter(use: navigator)
+        subscribers.tapOnGameNotifier.join(listener: { (steamId, gameId) in
+            let router = StartPoints.gameInfo.makeRouter(use: navigator)
+            router.start(parameters: StartPoints.gameInfo.makeParams(steamId: steamId, gameId: gameId))
         })
     }
 }

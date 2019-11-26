@@ -23,7 +23,7 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
             interface: "ISteamUser",
             method: "GetPlayerSummaries",
             version: 2,
-            fields: ["steamids": "\(steamId)"],
+            fields: ["steamids": steamId],
             completion: { (result: Result<Response<Players>, NetworkError>) in
                 completion(Self.map(result, with: steamId))
         })
@@ -36,12 +36,30 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
             method: "GetOwnedGames",
             version: 1,
             fields: [
-                "steamid": "\(steamId)",
+                "steamid": steamId,
                 "include_appinfo": "true",
                 "include_played_free_games": "true"
             ],
             completion: { (result: Result<Response<Games>, NetworkError>) in
                 completion(Self.map(result, with: steamId))
+        })
+    }
+
+    func requestGame(by steamId: SteamID, gameId: SteamGameID, completion: @escaping (SteamProfileGameInfoResult) -> Void) {
+        // Вот такая несостыковочка - где-то это игры, а где-то приложения. Решил использовать App
+        session.request(
+            interface: "IPlayerService",
+            method: "GetOwnedGames",
+            version: 1,
+            useJson: true,
+            fields: [
+                "steamid": steamId,
+                "include_appinfo": "true",
+                "include_played_free_games": "true",
+                "appids_filter": [gameId]
+            ],
+            completion: { (result: Result<Response<Games>, NetworkError>) in
+                completion(Self.map(result, with: steamId, gameId: gameId))
         })
     }
 
@@ -111,8 +129,27 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
                             with steamId: SteamID) -> SteamProfileGamesInfoResult {
         switch result {
         case .success(let response):
-            let apps = response.response.games.map { map($0, steamId: steamId) }
-            return .success(apps)
+            let games = response.response.games.map { map($0, steamId: steamId) }
+            return .success(games)
+        case .failure(.cancelled):
+            return .failure(.cancelled)
+        case .failure(.notConnection), .failure(.timeout):
+            return .failure(.notConnection)
+        case .failure:
+            return .failure(.incorrectResponse)
+        }
+    }
+
+    private static func map(_ result: Result<Response<Games>, NetworkError>,
+                            with steamId: SteamID, gameId: SteamGameID) -> SteamProfileGameInfoResult {
+        switch result {
+        case .success(let response):
+            log.assert(response.response.games.count == 1, "received more game, but requested one")
+            let foundGames = response.response.games.first(where:{ $0.appid == gameId })
+            guard let game = foundGames.flatMap({ map($0, steamId: steamId) }) else {
+                return .failure(.incorrectResponse)
+            }
+            return .success(game)
         case .failure(.cancelled):
             return .failure(.cancelled)
         case .failure(.notConnection), .failure(.timeout):

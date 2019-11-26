@@ -17,8 +17,10 @@ public struct Style
         public let background: UIColor
         /// used for cell background or accent views on background
         public let accent: UIColor
-        /// used for separate cell or other views
+        /// used for separate cell or other views. Also used for select cell
         public let separator: UIColor
+        /// used for navigation bar
+        public let barStyle: UIBarStyle
         /// used for navigation bar buttons, or other small elements. for example icons
         public let tint: UIColor
         /// use for show skeleton loading

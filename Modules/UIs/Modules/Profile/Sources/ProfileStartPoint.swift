@@ -18,8 +18,11 @@ public final class ProfileStartPoint: UIStartPoint
         public static let steamId = "ProfileSteamId"
     }
 
-    public let tapOnProfileNotifier = Notifier<SteamID>()
-    public let tapOnGameNotifier = Notifier<(SteamID, SteamGameID)>()
+    public struct Subscribers {
+        public let tapOnProfileNotifier: Notifier<SteamID>
+        public let tapOnGameNotifier: Notifier<(SteamID, SteamGameID)>
+    }
+    public var subscribersFiller: (_ navigator: Navigator, _ subscribers: Subscribers) -> Void = { _, _ in }
 
     public static let name: UIModuleName = .profile
 
@@ -54,8 +57,10 @@ public final class ProfileStartPoint: UIStartPoint
 
     public func makeRouter(use navigator: Navigator) -> IRouter {
         let router = routerProvider.value(navigator)
-        router.tapOnProfileNotifier.join(tapOnProfileNotifier)
-        router.tapOnGameNotifier.join(tapOnGameNotifier)
+        subscribersFiller(navigator, Subscribers(
+            tapOnProfileNotifier: router.tapOnProfileNotifier,
+            tapOnGameNotifier: router.tapOnGameNotifier
+        ))
 
         return router
     }

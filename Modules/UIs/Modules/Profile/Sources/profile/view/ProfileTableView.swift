@@ -12,16 +12,15 @@ import SnapKit
 import Design
 import UIComponents
 
-final class ProfileTableView: UITableView
+final class ProfileTableView: ApTableView
 {
-    private var profileViewModel: CellViewModel<ProfileViewModel> = .loading
+    private var profileViewModel: SkeletonViewModel<ProfileViewModel> = .loading
 
     private var sectionTitles: [String?] = [nil, nil]
-    private var gamesViewModels: [CellViewModel<ProfileGameInfoViewModel>] = []
-    private var designStyle: Design.Style?
+    private var gamesViewModels: [SkeletonViewModel<ProfileGameInfoViewModel>] = []
 
     init() {
-        super.init(frame: .zero, style: .plain)
+        super.init(frame: .zero, style: .grouped)
         commonInit()
     }
 
@@ -33,14 +32,14 @@ final class ProfileTableView: UITableView
         sectionTitles[1] = text
     }
 
-    func updateProfile(_ viewModel: CellViewModel<ProfileViewModel>) {
+    func updateProfile(_ viewModel: SkeletonViewModel<ProfileViewModel>) {
         log.assert(Thread.isMainThread, "Thread.isMainThread")
 
         profileViewModel = viewModel
         reloadData()
     }
 
-    func updateGames(_ viewModels: [CellViewModel<ProfileGameInfoViewModel>]) {
+    func updateGames(_ viewModels: [SkeletonViewModel<ProfileGameInfoViewModel>]) {
         log.assert(Thread.isMainThread, "Thread.isMainThread")
 
         gamesViewModels = viewModels
@@ -54,15 +53,6 @@ final class ProfileTableView: UITableView
         self.delegate = self
 
         self.tableFooterView = UIView(frame: .zero)
-    }
-}
-
-extension ProfileTableView: StylizingView {
-    func apply(use style: Design.Style) {
-        self.designStyle = style
-        self.backgroundColor = style.colors.background
-        self.separatorColor = style.colors.separator
-        reloadData()
     }
 }
 
@@ -98,29 +88,12 @@ extension ProfileTableView: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let style = designStyle else {
-            return nil
-        }
         guard let text = sectionTitles[section] else {
             return nil
         }
 
-        let view = UIView()
-        let titleLabel = UILabel(frame: .zero)
-        view.addSubview(titleLabel)
-
-        view.backgroundColor = style.colors.background
-
-        titleLabel.font = style.fonts.title
-        titleLabel.textColor = style.colors.mainText
-        titleLabel.text = text
-
-        titleLabel.snp.makeConstraints { maker in
-            maker.top.equalToSuperview().offset(4.0)
-            maker.left.equalToSuperview().offset(style.layout.cellInnerInsets.left)
-            maker.right.equalToSuperview().offset(-style.layout.cellInnerInsets.right)
-            maker.bottom.equalToSuperview().offset(-4.0)
-        }
+        let view = ApSectionTitleView(text: text)
+        addViewForStylizing(view)
 
         return view
     }
@@ -133,19 +106,17 @@ extension ProfileTableView: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let style = self.designStyle else {
-            log.assert("use table without setup style - please setup style")
-            return
-        }
-
         if let profileCell = cell as? ProfileCell {
-            profileCell.configure(profileViewModel, style: style)
+            profileCell.configure(profileViewModel)
+            addViewForStylizing(profileCell)
         }
 
         if let gameCell = cell as? ProfileGameCell {
             let viewModel = gamesViewModels[indexPath.row]
 
-            gameCell.configure(viewModel, style: style)
+            gameCell.configure(viewModel)
+
+            addViewForStylizing(gameCell)
         }
     }
 

@@ -17,7 +17,7 @@ final class GameInfoDependency: DIFramework
 
         container.register(GameInfoScreen.init)
             .lifetime(.prototype)
-        container.register { GameInfoScreenView(nibName: nil, bundle: nil) }
+        container.register { GameInfoScreenView() }
             .as(GameInfoScreenViewContract.self)
             .lifetime(.objectGraph)
         container.register(GameInfoScreenPresenter.init)

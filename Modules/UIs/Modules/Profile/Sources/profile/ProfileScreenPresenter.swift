@@ -63,7 +63,7 @@ final class ProfileScreenPresenter
         profileService.getNotifier(for: steamId).weakJoin(listener: { (self, result) in
             self.processProfileResult(result)
         }, owner: self)
-        profileGamesService.getNotifier(for: steamId).weakJoin(listener: { (self, result) in
+        profileGamesService.getGamesNotifier(for: steamId).weakJoin(listener: { (self, result) in
             self.processProfileGamesInfoResult(result)
         }, owner: self)
 
@@ -79,12 +79,12 @@ final class ProfileScreenPresenter
             profileService.refresh(for: steamId) { [weak view] success in
                 view?.endLoadingProfile(success)
             }
-            profileGamesService.refresh(for: steamId) { [weak view] success in
+            profileGamesService.refreshGames(for: steamId) { [weak view] success in
                 view?.endLoadingGames(success)
             }
         } else {
             profileService.refresh(for: steamId)
-            profileGamesService.refresh(for: steamId)
+            profileGamesService.refreshGames(for: steamId)
         }
         isFirstRefresh = false
     }
@@ -163,7 +163,7 @@ final class ProfileScreenPresenter
                 return (profileGame.steamId, profileGame.gameInfo.gameId)
             }
 
-            imageService.fetch(url: profileGame.gameInfo.iconUrl, to: viewModel.icon)
+            imageService.deferredFetch(url: profileGame.gameInfo.iconUrl, to: viewModel.icon)
 
             return viewModel
         }

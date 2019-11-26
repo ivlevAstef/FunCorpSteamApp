@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Common
 import Design
 import UIComponents
 import SnapKit
@@ -15,11 +16,12 @@ private enum Consts {
     static let avatarSize: CGFloat = 76.0
 }
 
-final class ProfileCell: UITableViewCell
+final class ProfileCell: ApTableViewCell
 {
     static let preferredHeight: CGFloat = 96.0
     static let identifier = "\(ProfileCell.self)"
 
+    private var placeholderUpdater: ((Style) -> Void)?
     private let avatarView = AvatarView(size: Consts.avatarSize)
     private let nickNameLabel = UILabel(frame: .zero)
     private let realNameLabel = UILabel(frame: .zero)
@@ -33,23 +35,20 @@ final class ProfileCell: UITableViewCell
         fatalError("init(coder:) has not been implemented")
     }
 
-
-    func configure(_ viewModel: CellViewModel<ProfileViewModel>, style: Design.Style) {
-        // TODO: в идеале можно убедиться что style не менялся...
-        relayout(use: style.layout)
-        setStyle(style: style)
-
+    func configure(_ viewModel: SkeletonViewModel<ProfileViewModel>) {
         switch viewModel {
         case .loading:
-            contentView.subviews.forEach { $0.startSkeleton().apply(use: style) }
+            contentView.subviews.forEach { stylizingSubviews.append($0.startSkeleton()) }
         case .failed:
             contentView.subviews.forEach { $0.failedSkeleton() }
         case .done(let viewModel):
             nickNameLabel.endSkeleton()
             realNameLabel.endSkeleton()
 
-            let avatarPlaceholder = AvatarView.generateAvatar(letter: viewModel.avatarLetter, size: Consts.avatarSize, style: style)
-            viewModel.avatar.updatePlaceholder(avatarPlaceholder)
+            placeholderUpdater = { style in
+                let avatarPlaceholder = AvatarView.generateAvatar(letter: viewModel.avatarLetter, size: Consts.avatarSize, style: style)
+                viewModel.avatar.updatePlaceholder(avatarPlaceholder)
+            }
 
             avatarView.setup(viewModel.avatar, completion: { [weak avatarView] in
                 avatarView?.endSkeleton()
@@ -58,22 +57,6 @@ final class ProfileCell: UITableViewCell
             nickNameLabel.text = viewModel.nick
             realNameLabel.text = viewModel.realName
         }
-    }
-
-    private func setStyle(style: Style) {
-        avatarView.apply(use: style)
-
-        nickNameLabel.font = style.fonts.large
-        nickNameLabel.textColor = style.colors.mainText
-        nickNameLabel.minimumScaleFactor = 0.5
-        nickNameLabel.numberOfLines = 1
-        nickNameLabel.lineBreakMode = .byTruncatingTail
-
-        realNameLabel.font = style.fonts.large
-        realNameLabel.textColor = style.colors.mainText
-        realNameLabel.minimumScaleFactor = 0.5
-        realNameLabel.numberOfLines = 1
-        realNameLabel.lineBreakMode = .byTruncatingTail
     }
 
     private func commonInit() {
@@ -87,6 +70,27 @@ final class ProfileCell: UITableViewCell
 
         nickNameLabel.text = " "
         realNameLabel.text = " "
+    }
+
+    override func apply(use style: Style) {
+        super.apply(use: style)
+
+        placeholderUpdater?(style)
+        avatarView.apply(use: style)
+
+        nickNameLabel.font = style.fonts.large
+        nickNameLabel.textColor = style.colors.mainText
+        nickNameLabel.minimumScaleFactor = 0.5
+        nickNameLabel.numberOfLines = 1
+        nickNameLabel.lineBreakMode = .byTruncatingTail
+
+        realNameLabel.font = style.fonts.large
+        realNameLabel.textColor = style.colors.mainText
+        realNameLabel.minimumScaleFactor = 0.5
+        realNameLabel.numberOfLines = 1
+        realNameLabel.lineBreakMode = .byTruncatingTail
+
+        relayout(use: style.layout)
     }
 
     private func relayout(use layout: Style.Layout) {

@@ -9,7 +9,7 @@
 import UIKit
 import Common
 
-public final class IdImageView: UIImageView
+open class IdImageView: UIImageView
 {
     fileprivate var owner: ChangeableImage?
 }

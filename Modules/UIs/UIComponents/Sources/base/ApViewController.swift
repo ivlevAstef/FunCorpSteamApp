@@ -8,14 +8,13 @@
 
 import UIKit
 import Design
-import Common
 
 open class ApViewController: UIViewController {
     public private(set) lazy var style: Style = styleMaker.makeStyle(for: self)
 
     private let styleMaker: StyleMaker = StyleMaker()
 
-    private var viewsForStylizing: [Weak<StylizingView>] = []
+    private let stylizingViewsContainer = StylizingViewsContainer()
 
     public init() {
         super.init(nibName: nil, bundle: nil)
@@ -26,23 +25,22 @@ open class ApViewController: UIViewController {
     }
 
     public func addViewForStylizing(_ view: StylizingView, immediately: Bool = true) {
-        viewsForStylizing.append(Weak(view))
-        if immediately {
-            view.apply(use: style)
-        }
+        stylizingViewsContainer.addView(view, immediately: immediately)
     }
 
     open func styleDidChange(_ style: Style) {
         view.backgroundColor = style.colors.background
 
-        viewsForStylizing.removeAll { $0.value == nil }
-        for refStylizingView in viewsForStylizing.reversed() {
-            refStylizingView.value?.apply(use: style)
-        }
+        navigationController?.navigationBar.barStyle = style.colors.barStyle
+        navigationController?.navigationBar.tintColor = style.colors.tint
+
+        stylizingViewsContainer.styleDidChange(style)
     }
 
     open override func viewDidLoad() {
         super.viewDidLoad()
+
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
 
         styleDidChange(style)
     }

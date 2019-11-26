@@ -9,6 +9,7 @@
 import Foundation
 
 public typealias SteamProfileGamesInfoResult = Result<[SteamProfileGameInfo], ServiceError>
+public typealias SteamProfileGameInfoResult = Result<SteamProfileGameInfo, ServiceError>
 
 public struct SteamProfileGameInfo
 {

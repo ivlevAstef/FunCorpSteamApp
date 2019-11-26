@@ -12,14 +12,13 @@ import Design
 
 private class AvatarUnique {}
 
-open class AvatarView: UIView {
+public final class AvatarView: IdImageView {
     public var size: CGFloat {
         didSet { setNeedsLayout() }
     }
 
     public var cornerRadius: CGFloat = 0.0
 
-    private var image: UIImage?
     private var unique: AvatarUnique?
 
     public init(size: CGFloat) {
@@ -31,15 +30,6 @@ open class AvatarView: UIView {
 
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    public override func draw(_ rect: CGRect) {
-        super.draw(rect)
-
-        let rect = CGRect(x: 0, y: 0, width: size, height: size)
-
-        UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius).addClip()
-        image?.draw(in: rect)
     }
 
     /// after call need call apply style
@@ -57,7 +47,6 @@ open class AvatarView: UIView {
         unique = owner
         newImage.weakJoin(listener: { [weak self] (_, newImage) in
             self?.image = newImage
-            self?.setNeedsDisplay()
             completion?()
         }, owner: owner)
     }
@@ -70,7 +59,6 @@ extension AvatarView: StylizingView
         layer.shadowOffset = .zero
         layer.shadowRadius = 4.0
         layer.shadowOpacity = style.colors.shadowOpacity
-        cornerRadius = 4.0
     }
 }
 

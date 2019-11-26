@@ -81,7 +81,7 @@ public final class SkeletonView: UIView {
         }
 
         gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
-        gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.2 * bounds.height / bounds.width)
+        gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.05 * bounds.height / bounds.width)
 
         gradientLayer.frame = CGRect(origin: .zero, size: bounds.size)
 

@@ -28,7 +28,7 @@ public class StyleMaker
     }
 
     private func makeColors(traitCollection: UITraitCollection) -> Style.Colors {
-        if #available(iOS 12.0, *) {
+        if #available(iOS 13.0, *) {
             switch traitCollection.userInterfaceStyle {
             case .dark:
                 return ConstColors.darkColors
