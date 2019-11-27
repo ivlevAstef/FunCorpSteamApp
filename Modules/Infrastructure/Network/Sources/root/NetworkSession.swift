@@ -46,40 +46,30 @@ enum Support {
 final class NetworkSession {
     private let session: URLSession = URLSession.shared
 
-    func request<Success: Decodable>(
-        interface: String,
-        method: String,
-        version: Int,
-        useJson: Bool = false,
-        fields: [String: Any] = [:],
-        completion: @escaping (Result<Success, NetworkError>) -> Void) {
-        guard let url = makeURL(interface: interface, method: method, version: version, useJson: useJson, fields: fields) else {
-            log.error("can't start request by method: \(method) on interface: \(interface)")
-            completion(.failure(.incorrectURL))
+    func request<Success: Decodable>(_ request: Request<Success>, useJson: Bool = false) {
+        guard let url = makeURL(request: request, useJson: useJson) else {
+            log.error("can't start request by method: \(request.method) on interface: \(request.interface)")
+            request.completion(.failure(.incorrectURL))
             return
         }
 
         log.debug("start request on url: \(url.absoluteString)")
         let task = session.dataTask(with: url) { (data, response, error) in
             log.debug("receive response on url: \(url.absoluteString)")
-            completion(Self.parseResult(data: data, response: response, error: error))
+            request.completion(Self.parseResult(data: data, response: response, error: error))
         }
         task.resume()
     }
 
-    private func makeURL(interface: String,
-                         method: String,
-                         version: Int,
-                         useJson: Bool,
-                         fields: [String: Any] = [:]) -> URL? {
+    private func makeURL(request: RequestInfo, useJson: Bool = false) -> URL? {
         var urlString = Consts.apiBaseURL.absoluteString
-        urlString += "/" + interface
-        urlString += "/" + method
-        urlString += "/v\(version)"
+        urlString += "/" + request.interface
+        urlString += "/" + request.method
+        urlString += "/v\(request.version)"
         urlString += "/?key=" + Consts.key
         urlString += "&format=" + Consts.format
         if useJson {
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: fields, options: []) else {
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: request.fields, options: []) else {
                 log.assert("can't generate json data for fields")
                 return nil
             }
@@ -92,7 +82,7 @@ final class NetworkSession {
 
             urlString += "&input_json=" + encodingJson
         } else {
-            for field in fields {
+            for field in request.fields {
                 urlString += "&\(field.key)=\(field.value)"
             }
         }

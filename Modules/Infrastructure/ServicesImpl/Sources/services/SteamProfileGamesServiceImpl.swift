@@ -43,7 +43,7 @@ final class SteamProfileGamesServiceImpl: SteamProfileGamesService
         self.storage = storage
     }
 
-    // MAKR: - game
+    // MARK: - game
 
     func getGameNotifier(for steamId: SteamID, gameId: SteamGameID) -> Notifier<SteamProfileGameInfoResult> {
         universalGameService.getNotifier(for: SteamIdGameIdPair(steamId: steamId, gameId: gameId))

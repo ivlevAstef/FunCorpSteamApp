@@ -90,7 +90,7 @@ final class UniversalServiceImpl<ResultType, Params: Hashable>
     }
 
     private func fetch(by params: Params, completion: @escaping (UniversalResult) -> Void) {
-        DispatchQueue.global(qos: .userInteractive).async { [fetcher] in
+        DispatchQueue.global(qos: .userInitiated).async { [fetcher] in
             let result = fetcher(params)
             DispatchQueue.main.async {
                 completion(result)

@@ -10,6 +10,7 @@ import UIKit
 import Common
 import Design
 import UIComponents
+import AppUIComponents
 import SnapKit
 
 private enum Consts {
@@ -22,7 +23,7 @@ final class ProfileCell: ApTableViewCell
     static let identifier = "\(ProfileCell.self)"
 
     private var placeholderUpdater: ((Style) -> Void)?
-    private let avatarView = AvatarView(size: Consts.avatarSize)
+    private let avatarView = SteamAvatarView()
     private let nickNameLabel = UILabel(frame: .zero)
     private let realNameLabel = UILabel(frame: .zero)
 
@@ -50,7 +51,7 @@ final class ProfileCell: ApTableViewCell
                 viewModel.avatar.updatePlaceholder(avatarPlaceholder)
             }
 
-            avatarView.setup(viewModel.avatar, completion: { [weak avatarView] in
+            viewModel.avatar.weakJoin(imageView: avatarView, owner: self, completion: { [weak avatarView] in
                 avatarView?.endSkeleton()
             })
 

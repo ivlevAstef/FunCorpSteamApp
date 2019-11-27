@@ -19,19 +19,19 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
     }
 
     func requestUser(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
-        session.request(
+        session.request(SteamRequest(
             interface: "ISteamUser",
             method: "GetPlayerSummaries",
             version: 2,
             fields: ["steamids": steamId],
-            completion: { (result: Result<Response<Players>, NetworkError>) in
-                completion(Self.map(result, with: steamId))
-        })
+            parse: { Self.mapPlayer($0, with: steamId) },
+            completion: completion
+        ))
     }
 
     func requestGames(by steamId: SteamID, completion: @escaping (SteamProfileGamesInfoResult) -> Void) {
         // Вот такая несостыковочка - где-то это игры, а где-то приложения. Решил использовать App
-        session.request(
+        session.request(SteamRequest(
             interface: "IPlayerService",
             method: "GetOwnedGames",
             version: 1,
@@ -40,51 +40,40 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
                 "include_appinfo": "true",
                 "include_played_free_games": "true"
             ],
-            completion: { (result: Result<Response<Games>, NetworkError>) in
-                completion(Self.map(result, with: steamId))
-        })
+            parse: { Self.mapGames($0, with: steamId) },
+            completion: completion
+        ))
     }
 
     func requestGame(by steamId: SteamID, gameId: SteamGameID, completion: @escaping (SteamProfileGameInfoResult) -> Void) {
         // Вот такая несостыковочка - где-то это игры, а где-то приложения. Решил использовать App
-        session.request(
+        session.request(SteamRequest(
             interface: "IPlayerService",
             method: "GetOwnedGames",
             version: 1,
-            useJson: true,
             fields: [
                 "steamid": steamId,
                 "include_appinfo": "true",
                 "include_played_free_games": "true",
                 "appids_filter": [gameId]
             ],
-            completion: { (result: Result<Response<Games>, NetworkError>) in
-                completion(Self.map(result, with: steamId, gameId: gameId))
-        })
+            parse: { Self.mapGame($0, with: steamId, gameId: gameId) },
+            completion: completion
+        ), useJson: true)
     }
 
     // MARK: - profile mapper
 
-    private static func map(_ result: Result<Response<Players>, NetworkError>,
-                            with steamId: SteamID) -> SteamProfileResult {
-        switch result {
-        case .success(let response):
-            guard let player = response.response.players.first else {
-                return .failure(.incorrectResponse)
-            }
-            guard let responseSteamId = SteamID(player.steamid) else {
-                return .failure(.incorrectResponse)
-            }
-            log.assert(responseSteamId == steamId, "request steam id not equal response")
-
-            return .success(map(player, steamId: responseSteamId))
-        case .failure(.cancelled):
-            return .failure(.cancelled)
-        case .failure(.notConnection), .failure(.timeout):
-            return .failure(.notConnection)
-        case .failure:
+    private static func mapPlayer(_ response: Response<Players>, with steamId: SteamID) -> SteamProfileResult {
+        guard let player = response.response.players.first else {
             return .failure(.incorrectResponse)
         }
+        guard let responseSteamId = SteamID(player.steamid) else {
+            return .failure(.incorrectResponse)
+        }
+        log.assert(responseSteamId == steamId, "request steam id not equal response")
+
+        return .success(map(player, steamId: responseSteamId))
     }
 
     private static func map(_ result: Player, steamId: SteamID) -> SteamProfile {
@@ -125,38 +114,18 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
 
     // MARK: - profile games mapper
 
-    private static func map(_ result: Result<Response<Games>, NetworkError>,
-                            with steamId: SteamID) -> SteamProfileGamesInfoResult {
-        switch result {
-        case .success(let response):
-            let games = response.response.games.map { map($0, steamId: steamId) }
-            return .success(games)
-        case .failure(.cancelled):
-            return .failure(.cancelled)
-        case .failure(.notConnection), .failure(.timeout):
-            return .failure(.notConnection)
-        case .failure:
-            return .failure(.incorrectResponse)
-        }
+    private static func mapGames(_ response: Response<Games>, with steamId: SteamID) -> SteamProfileGamesInfoResult {
+        let games = response.response.games.map { map($0, steamId: steamId) }
+        return .success(games)
     }
 
-    private static func map(_ result: Result<Response<Games>, NetworkError>,
-                            with steamId: SteamID, gameId: SteamGameID) -> SteamProfileGameInfoResult {
-        switch result {
-        case .success(let response):
-            log.assert(response.response.games.count == 1, "received more game, but requested one")
-            let foundGames = response.response.games.first(where:{ $0.appid == gameId })
-            guard let game = foundGames.flatMap({ map($0, steamId: steamId) }) else {
-                return .failure(.incorrectResponse)
-            }
-            return .success(game)
-        case .failure(.cancelled):
-            return .failure(.cancelled)
-        case .failure(.notConnection), .failure(.timeout):
-            return .failure(.notConnection)
-        case .failure:
+    private static func mapGame(_ response: Response<Games>, with steamId: SteamID, gameId: SteamGameID) -> SteamProfileGameInfoResult {
+        log.assert(response.response.games.count == 1, "received more game, but requested one")
+        let foundGames = response.response.games.first(where:{ $0.appid == gameId })
+        guard let game = foundGames.flatMap({ map($0, steamId: steamId) }) else {
             return .failure(.incorrectResponse)
         }
+        return .success(game)
     }
 
     private static func map(_ result: Game, steamId: SteamID) -> SteamProfileGameInfo {
@@ -180,7 +149,6 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
 private struct Players: Decodable {
     let players: [Player]
 }
-
 private struct Player: Decodable {
     let steamid: String
 
@@ -233,7 +201,6 @@ private struct Games: Decodable {
     let game_count: Int
     let games: [Game]
 }
-
 private struct Game: Decodable {
     let appid: SteamGameID
     let name: String

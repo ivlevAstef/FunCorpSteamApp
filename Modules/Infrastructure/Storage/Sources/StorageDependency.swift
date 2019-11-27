@@ -14,11 +14,15 @@ final class StorageDependency: DIFramework
     static func load(container: DIContainer) {
         container.register(SteamAuthStorageImpl.init)
             .as(SteamAuthStorage.self)
-            .lifetime(.perRun(.strong))
+            .lifetime(.prototype)
 
         container.register(SteamProfileStorageImpl.init)
             .as(SteamProfileStorage.self)
-            .lifetime(.perRun(.strong))
+            .lifetime(.prototype)
+
+        container.register(SteamGameStorageImpl.init)
+            .as(SteamGameStorage.self)
+            .lifetime(.prototype)
     }
 }
 

@@ -12,53 +12,14 @@ import Design
 
 private class AvatarUnique {}
 
-public final class AvatarView: IdImageView {
-    public var size: CGFloat {
-        didSet { setNeedsLayout() }
-    }
+open class AvatarView: IdImageView {
 
-    public var cornerRadius: CGFloat = 0.0
-
-    private var unique: AvatarUnique?
-
-    public init(size: CGFloat) {
-        self.size = size
-        super.init(frame: CGRect(origin: .zero, size: CGSize(width: size, height: size)))
-
-        backgroundColor = .clear
+    public init() {
+        super.init(frame: .zero)
     }
 
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    /// after call need call apply style
-    public func setup(letter: String) {
-        unique = nil
-    }
-
-    public func setup(_ newImage: UIImage?) {
-        unique = nil
-        image = newImage
-    }
-
-    public func setup(_ newImage: ChangeableImage, completion: (() -> Void)? = nil) {
-        let owner = AvatarUnique()
-        unique = owner
-        newImage.weakJoin(listener: { [weak self] (_, newImage) in
-            self?.image = newImage
-            completion?()
-        }, owner: owner)
-    }
-}
-
-extension AvatarView: StylizingView
-{
-    public func apply(use style: Style) {
-        layer.shadowColor = style.colors.shadowColor.cgColor
-        layer.shadowOffset = .zero
-        layer.shadowRadius = 4.0
-        layer.shadowOpacity = style.colors.shadowOpacity
     }
 }
 

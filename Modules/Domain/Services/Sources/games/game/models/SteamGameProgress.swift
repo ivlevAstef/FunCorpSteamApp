@@ -18,7 +18,6 @@ public struct SteamGameProgress
 {
     public struct Achievement {
         public let achieved: Bool
-        public let unlocktime: Date?
 
         private init() { fatalError("Not support empty initialization") }
     }
@@ -55,9 +54,8 @@ extension SteamGameProgress
 
 extension SteamGameProgress.Achievement
 {
-    public init(achieved: Bool, unlocktime: Date?) {
+    public init(achieved: Bool) {
         self.achieved = achieved
-        self.unlocktime = unlocktime
     }
 }
 

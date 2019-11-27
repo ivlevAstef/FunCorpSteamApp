@@ -17,11 +17,18 @@ public protocol SteamGameService: class
     func getScheme(for gameId: SteamGameID, loc: SteamLocalization, completion: @escaping (SteamGameSchemeResult) -> Void)
 
     /// Позволяет получить универсальный прогресс по игре - ачивки, и некоторую универсальную статистиску
-    func getGameProgressNotifier(for gameId: SteamID, steamId: SteamID) -> Notifier<SteamGameProgressResult>
+    func getGameProgressNotifier(for gameId: SteamGameID, steamId: SteamID) -> Notifier<SteamGameProgressResult>
     /// Обновляет универсальный прогресс по игре - ачивки, и некоторую универсальную статистиску
-    func refreshGameProgress(for gameId: SteamID, steamId: SteamID, completion: ((Bool) -> Void)?)
+    func refreshGameProgress(for gameId: SteamGameID, steamId: SteamID, completion: ((Bool) -> Void)?)
 
     /// Выдает универсальную историю прогресса - то есть как менялось состояние ачивок, и универсальной статистики
-    func getGameProgressHistory(for gameId: SteamID, steamId: SteamID,
+    func getGameProgressHistory(for gameId: SteamGameID, steamId: SteamID,
                                 completion: @escaping (SteamGameProgressHistoryResult) -> Void)
+}
+
+extension SteamGameService
+{
+    public func refreshGameProgress(for gameId: SteamGameID, steamId: SteamID) {
+        refreshGameProgress(for: gameId, steamId: steamId, completion: nil)
+    }
 }

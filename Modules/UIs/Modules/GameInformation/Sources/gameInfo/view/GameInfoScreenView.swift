@@ -41,6 +41,7 @@ final class GameInfoScreenView: ApViewController, GameInfoScreenViewContract
 
     func beginLoading() {
         tableView.updateGameInfo(.loading)
+        tableView.updateAchiementSummary(.loading)
     }
 
     // MARK: - GameInfo
@@ -52,6 +53,17 @@ final class GameInfoScreenView: ApViewController, GameInfoScreenViewContract
 
     func showGameInfo(_ gameInfo: GameInfoViewModel) {
         tableView.updateGameInfo(.done(gameInfo))
+    }
+
+    // MARK: - Achievements
+    func endLoadingAchievementsSummary(_ success: Bool) {
+        if !success {
+            tableView.updateAchiementSummary(.failed)
+        }
+    }
+
+    func showAchievementsSummary(_ achievementsSummary: AchievementsSummaryViewModel?) {
+        tableView.updateAchiementSummary(.done(achievementsSummary))
     }
 
     func showError(_ text: String) {

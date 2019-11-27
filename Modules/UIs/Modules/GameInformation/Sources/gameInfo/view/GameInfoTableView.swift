@@ -13,6 +13,7 @@ import Design
 class GameInfoTableView: ApTableView
 {
     private var gameInfoViewModel: SkeletonViewModel<GameInfoViewModel> = .loading
+    private var achievementsSummaryViewModel: SkeletonViewModel<AchievementsSummaryViewModel?> = .loading
 
     init() {
         super.init(frame: .zero, style: .plain)
@@ -25,6 +26,11 @@ class GameInfoTableView: ApTableView
 
     func updateGameInfo(_ gameInfo: SkeletonViewModel<GameInfoViewModel>) {
         gameInfoViewModel = gameInfo
+        reloadData()
+    }
+
+    func updateAchiementSummary(_ achievementsSummary: SkeletonViewModel<AchievementsSummaryViewModel?>) {
+        achievementsSummaryViewModel = achievementsSummary
         reloadData()
     }
 

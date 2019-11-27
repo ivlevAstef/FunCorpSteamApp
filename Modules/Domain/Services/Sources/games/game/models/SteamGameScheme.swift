@@ -16,8 +16,8 @@ public struct SteamGameScheme
         public let id: SteamAchievementID
         public let hidden: Bool
 
-        public let localizedName: String
-        public let localizedDescription: String
+        public let localizedName: String?
+        public let localizedDescription: String?
 
         public let iconUrl: URL?
         public let iconGrayUrl: URL?
@@ -32,7 +32,7 @@ public struct SteamGameScheme
         private init() { fatalError("Not support empty initialization") }
     }
 
-    public let gameInfo: SteamGameInfo
+    public let gameId: SteamGameID
 
     public let achivements: [Achivement]
     public let stats: [Stat]
@@ -43,11 +43,11 @@ public struct SteamGameScheme
 extension SteamGameScheme
 {
     public init(
-        gameInfo: SteamGameInfo,
+        gameId: SteamGameID,
         achivements: [Achivement],
         stats: [Stat]
     ) {
-        self.gameInfo = gameInfo
+        self.gameId = gameId
         self.achivements = achivements
         self.stats = stats
     }

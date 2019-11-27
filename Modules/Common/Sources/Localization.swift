@@ -24,4 +24,8 @@ public final class Localization
 
         return result
     }
+
+    public var languageCode: String {
+        return Locale.current.languageCode ?? "en"
+    }
 }
