@@ -31,7 +31,7 @@ public final class ErrorAlert
                 isShown = false
             }
         ))
-        viewController.present(alertController, animated: true, completion: nil)
         isShown = true
+        viewController.present(alertController, animated: true, completion: nil)
     }
 }

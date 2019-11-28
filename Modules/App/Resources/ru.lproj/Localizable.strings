@@ -34,3 +34,5 @@
 "SteamGame.Title" = "Информация по игре";
 "SteamGame.PlayTimeForeverPrefix" = "Время в игре: ";
 "SteamGame.PlayTime2weeksPrefix" = "За последние 2 недели: ";
+"SteamGame.AchievementsSummaryTitle" = "Достижения";
+"SteamGame.AchievementsSummaryPrefix" = "Прогресс: ";

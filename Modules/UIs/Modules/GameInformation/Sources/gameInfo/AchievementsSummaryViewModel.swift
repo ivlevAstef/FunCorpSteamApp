@@ -11,5 +11,7 @@ import Common
 
 struct AchievementsSummaryViewModel
 {
-
+    let prefix: String
+    let current: Int
+    let any:  Int
 }

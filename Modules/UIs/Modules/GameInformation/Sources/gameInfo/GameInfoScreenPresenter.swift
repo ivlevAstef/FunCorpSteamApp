@@ -13,6 +13,8 @@ protocol GameInfoScreenViewContract: class
 {
     var needUpdateNotifier: Notifier<Void> { get }
 
+    func setTitles(gameInfo: String, achievementsSummary: String)
+
     func beginLoading()
 
     func endLoadingGameInfo(_ success: Bool)
@@ -49,6 +51,8 @@ final class GameInfoScreenPresenter
     }
 
     func configure(steamId: SteamID, gameId: SteamGameID) {
+        view.setTitles(gameInfo: "", achievementsSummary: loc["SteamGame.AchievementsSummaryTitle"])
+
         profileGamesService.getGameNotifier(for: steamId, gameId: gameId).weakJoin(listener: { (self, result) in
             self.processProfileGameInfoResult(result)
         }, owner: self)
@@ -134,7 +138,11 @@ final class GameInfoScreenPresenter
             return
         }
 
-        let viewModel = AchievementsSummaryViewModel()
+        let viewModel = AchievementsSummaryViewModel(
+            prefix: loc["SteamGame.AchievementsSummaryPrefix"],
+            current: achievementsSummary.current.count,
+            any: achievementsSummary.any.count
+        )
 
         view.showAchievementsSummary(viewModel)
     }

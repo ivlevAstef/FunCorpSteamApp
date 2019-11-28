@@ -12,6 +12,8 @@ import Common
 
 public class ApSectionTitleView: UIView
 {
+    public static let preferredHeight: CGFloat = 30.0
+    
     private let titleLabel: UILabel = UILabel(frame: .zero)
 
     public init(text: String) {

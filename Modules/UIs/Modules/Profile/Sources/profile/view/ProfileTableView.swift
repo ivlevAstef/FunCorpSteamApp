@@ -16,6 +16,7 @@ final class ProfileTableView: ApTableView
 {
     private var profileViewModel: SkeletonViewModel<ProfileViewModel> = .loading
 
+    // TODO: вообще есть более красивое уже решение, но переписывать некогда
     private var sectionTitles: [String?] = [nil, nil]
     private var gamesViewModels: [SkeletonViewModel<ProfileGameInfoViewModel>] = []
 
@@ -84,7 +85,7 @@ extension ProfileTableView: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return nil != sectionTitles[section] ? 30.0 : 0.0
+        return nil != sectionTitles[section] ? ApSectionTitleView.preferredHeight : 0.0
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

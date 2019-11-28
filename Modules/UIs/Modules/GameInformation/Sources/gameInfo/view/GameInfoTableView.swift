@@ -12,11 +12,20 @@ import Design
 
 class GameInfoTableView: ApTableView
 {
-    private var gameInfoViewModel: SkeletonViewModel<GameInfoViewModel> = .loading
-    private var achievementsSummaryViewModel: SkeletonViewModel<AchievementsSummaryViewModel?> = .loading
+    typealias Section<T> = ApTableView.TableSection<SkeletonViewModel<T>>
+
+    // Для массива
+    private enum TypedSection {
+        case gameInfo(Section<GameInfoViewModel>)
+        case achievementsSummary(Section<AchievementsSummaryViewModel?>)
+    }
+    private var sections: [TypedSection] = []
+
+    private var gameInfoSection = Section<GameInfoViewModel>(content: .loading)
+    private var achievementsSummarySection = Section<AchievementsSummaryViewModel?>(content: .loading)
 
     init() {
-        super.init(frame: .zero, style: .plain)
+        super.init(frame: .zero, style: .grouped)
         commonInit()
     }
 
@@ -24,18 +33,42 @@ class GameInfoTableView: ApTableView
         fatalError("init(coder:) has not been implemented")
     }
 
+    func setTitles(gameInfo: String, achievementsSummary: String) {
+        gameInfoSection.title = gameInfo
+        achievementsSummarySection.title = achievementsSummary
+    }
+
     func updateGameInfo(_ gameInfo: SkeletonViewModel<GameInfoViewModel>) {
-        gameInfoViewModel = gameInfo
+        gameInfoSection.content = gameInfo
+        updateSections()
         reloadData()
     }
 
     func updateAchiementSummary(_ achievementsSummary: SkeletonViewModel<AchievementsSummaryViewModel?>) {
-        achievementsSummaryViewModel = achievementsSummary
+        achievementsSummarySection.content = achievementsSummary
+        updateSections()
         reloadData()
+    }
+
+    private func updateSections() {
+        func hasAchievementsSummaryCell() -> Bool {
+            if case .done(let viewModel) = achievementsSummarySection.content {
+                return viewModel != nil
+            }
+            return true
+        }
+
+        var newSections: [TypedSection] = []
+        newSections.append(.gameInfo(gameInfoSection))
+        if hasAchievementsSummaryCell() {
+            newSections.append(.achievementsSummary(achievementsSummarySection))
+        }
+        sections = newSections
     }
 
     private func commonInit() {
         register(GameInfoCell.self, forCellReuseIdentifier: GameInfoCell.identifier)
+        register(AchievementsSummaryCell.self, forCellReuseIdentifier: AchievementsSummaryCell.identifier)
         self.dataSource = self
         self.delegate = self
 
@@ -44,6 +77,10 @@ class GameInfoTableView: ApTableView
 }
 
 extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sections.count
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
@@ -57,21 +94,59 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
     }
 
     private func calculateHeight(for indexPath: IndexPath) -> CGFloat {
-        if 0 == indexPath.section {
+        switch sections[indexPath.section] {
+        case .gameInfo:
             return GameInfoCell.preferredHeight
+        case .achievementsSummary:
+            return AchievementsSummaryCell.preferredHeight
         }
-        return GameInfoCell.preferredHeight
     }
 
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard let title = getSectionTitle(for: section), !title.isEmpty else {
+            return 0
+        }
+        return ApSectionTitleView.preferredHeight
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let title = getSectionTitle(for: section), !title.isEmpty else {
+            return nil
+        }
+
+        let view = ApSectionTitleView(text: title)
+        addViewForStylizing(view)
+
+        return view
+    }
+
+    private func getSectionTitle(for section: Int) -> String? {
+        switch sections[section] {
+        case .gameInfo(let viewModel):
+            return viewModel.title
+        case .achievementsSummary(let viewModel):
+            return viewModel.title
+        }
+    }
+
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //if 0 == indexPath.section {
-        return tableView.dequeueReusableCell(withIdentifier: GameInfoCell.identifier, for: indexPath)
+        switch sections[indexPath.section] {
+        case .gameInfo:
+            return tableView.dequeueReusableCell(withIdentifier: GameInfoCell.identifier, for: indexPath)
+        case .achievementsSummary:
+            return tableView.dequeueReusableCell(withIdentifier: AchievementsSummaryCell.identifier, for: indexPath)
+        }
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if let gameInfoCell = cell as? GameInfoCell {
-            gameInfoCell.configure(gameInfoViewModel)
+            gameInfoCell.configure(gameInfoSection.content)
             addViewForStylizing(gameInfoCell)
+        }
+        if let achievementsSummaryCell = cell as? AchievementsSummaryCell {
+            achievementsSummaryCell.configure(achievementsSummarySection.content)
+            addViewForStylizing(achievementsSummaryCell)
         }
     }
 }

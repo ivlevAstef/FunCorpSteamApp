@@ -23,7 +23,7 @@ public struct SteamGameProgress
     }
 
     public struct Stat {
-        public let count: Int
+        public let count: Double
 
         private init() { fatalError("Not support empty initialization") }
     }
@@ -61,7 +61,7 @@ extension SteamGameProgress.Achievement
 
 extension SteamGameProgress.Stat
 {
-    public init(count: Int) {
+    public init(count: Double) {
         self.count = count
     }
 }

@@ -39,6 +39,10 @@ final class GameInfoScreenView: ApViewController, GameInfoScreenViewContract
         needUpdateNotifier.notify(())
     }
 
+    func setTitles(gameInfo: String, achievementsSummary: String) {
+        tableView.setTitles(gameInfo: gameInfo, achievementsSummary: achievementsSummary)
+    }
+
     func beginLoading() {
         tableView.updateGameInfo(.loading)
         tableView.updateAchiementSummary(.loading)
