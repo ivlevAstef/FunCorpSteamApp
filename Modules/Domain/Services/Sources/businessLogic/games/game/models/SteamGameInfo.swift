@@ -8,8 +8,6 @@
 
 import Foundation
 
-public typealias SteamGameID = UInt32
-
 public struct SteamGameInfo
 {
     public let gameId: SteamGameID

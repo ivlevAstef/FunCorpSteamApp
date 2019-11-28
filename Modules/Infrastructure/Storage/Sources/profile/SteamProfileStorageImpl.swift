@@ -24,15 +24,15 @@ class SteamProfileStorageImpl: SteamProfileStorage
 
 
 
-    func fetchProfile(by steamId: SteamID) -> SteamProfile? {
+    func fetchProfile(by steamId: SteamID) -> StorageResult<SteamProfile> {
         return nil
     }
 
-    func fetchGames(by steamId: SteamID) -> [SteamProfileGameInfo]? {
+    func fetchGames(by steamId: SteamID) -> StorageResult<[SteamProfileGameInfo]> {
         return nil
     }
 
-    func fetchGame(by steamId: SteamID, gameId: SteamGameID) -> SteamProfileGameInfo? {
+    func fetchGame(by steamId: SteamID, gameId: SteamGameID) -> StorageResult<SteamProfileGameInfo> {
         return nil
     }
 }

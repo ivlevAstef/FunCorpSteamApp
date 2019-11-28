@@ -8,9 +8,6 @@
 
 import Foundation
 
-public typealias SteamAchievementID = String
-public typealias SteamStatID = String
-
 public typealias SteamGameProgressResult = Result<SteamGameProgress, ServiceError>
 public typealias SteamGameProgressHistoryResult = Result<[SteamGameProgress], ServiceError>
 

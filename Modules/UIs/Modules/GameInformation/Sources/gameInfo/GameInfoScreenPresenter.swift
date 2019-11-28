@@ -91,7 +91,7 @@ final class GameInfoScreenPresenter
             break
         case .failure(.notConnection):
             view.showError(loc["Errors.NotConnect"])
-        case .failure(.notFound), .failure(.incorrectResponse):
+        case .failure(.incorrectResponse):
             view.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let game):
@@ -123,7 +123,7 @@ final class GameInfoScreenPresenter
             break
         case .failure(.notConnection):
             view.showError(loc["Errors.NotConnect"])
-        case .failure(.notFound), .failure(.incorrectResponse):
+        case .failure(.incorrectResponse):
             view.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let achievementsSummary):

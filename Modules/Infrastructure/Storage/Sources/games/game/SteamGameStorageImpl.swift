@@ -18,14 +18,14 @@ class SteamGameStorageImpl: SteamGameStorage {
 
     }
 
-    func fetchScheme(by gameId: SteamGameID, loc: SteamLocalization) -> SteamGameScheme? {
+    func fetchScheme(by gameId: SteamGameID, loc: SteamLocalization) -> StorageResult<SteamGameScheme> {
         return nil
     }
-    func fetchGameProgress(by gameId: SteamGameID, steamId: SteamID) -> SteamGameProgress? {
+    func fetchGameProgress(by gameId: SteamGameID, steamId: SteamID) -> StorageResult<SteamGameProgress> {
         return nil
     }
-    func fetchGameProgressHistory(by gameId: SteamGameID, steamId: SteamID) -> [SteamGameProgress]? {
-        return nil
+    func fetchGameProgressHistory(by gameId: SteamGameID, steamId: SteamID) -> [SteamGameProgress] {
+        return []
     }
 }
 

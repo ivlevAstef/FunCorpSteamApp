@@ -12,7 +12,7 @@ import Services
 
 private enum Consts
 {
-    static let apiBaseURL = URL(string: "http://api.steampowered.com")!
+    static let apiBaseURL = URL(string: "https://api.steampowered.com")!
     static let apiMediaURL = URL(string: "http://media.steampowered.com")!
     static let key = "4A90F8A38B026CAF2588190E5DBBCF04"
     static let format = "json"

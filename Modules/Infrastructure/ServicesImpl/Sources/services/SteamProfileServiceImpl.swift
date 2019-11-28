@@ -12,13 +12,14 @@ import Services
 
 final class SteamProfileServiceImpl: SteamProfileService
 {
-    private lazy var universalService = {
+    private lazy var universalService = { [unowned self] in
         UniversalServiceImpl(
-            fetcher: { [unowned self] steamId in
-                return self.fetch(by: steamId)
-            },
-            updater: { [unowned self] (steamId, completion) in
-                self.update(by: steamId, completion: completion)
+            fetcher: { steamId in
+                self.storage.fetchProfile(by: steamId)
+            }, updater: { (steamId, completion) in
+                self.network.requestProfile(by: steamId, completion: completion)
+            }, saver: { (_, profile) in
+                self.storage.put(profile: profile)
             }
         )
     }()
@@ -37,22 +38,5 @@ final class SteamProfileServiceImpl: SteamProfileService
 
     func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileResult> {
         universalService.getNotifier(for: steamId)
-    }
-
-    private func fetch(by steamId: SteamID) -> SteamProfileResult {
-        guard let profile = storage.fetchProfile(by: steamId) else {
-            return .failure(.notFound)
-        }
-        return .success(profile)
-    }
-
-    private func update(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
-        network.requestUser(by: steamId, completion: { [weak storage] result in
-            if case let .success(profile) = result {
-                storage?.put(profile: profile)
-            }
-
-            completion(result)
-        })
     }
 }

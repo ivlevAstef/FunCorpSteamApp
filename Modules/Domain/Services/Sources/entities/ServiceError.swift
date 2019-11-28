@@ -7,7 +7,6 @@
 //
 
 public enum ServiceError: Error {
-    case notFound
     case notConnection
     case incorrectResponse
     case cancelled

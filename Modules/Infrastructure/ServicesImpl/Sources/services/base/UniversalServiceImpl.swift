@@ -10,42 +10,72 @@ import Foundation
 import Common
 import Services
 
-final class UniversalServiceImpl<ResultType, Params: Hashable>
+final class UniversalServiceImpl<Content, Params: Hashable>
 {
-    typealias UniversalResult = Result<ResultType, ServiceError>
+    typealias UniversalResult = Result<Content, ServiceError>
+    typealias UpdateResult = Result<Content, ServiceError>
+    typealias FetchResult = StorageResult<Content>
 
     private class SubscribeInfo {
         let notifier = Notifier<UniversalResult>()
-        var isWorked: Bool = false
+
+        var contentCompletions: [(UniversalResult) -> Void] = []
         var completions: [(Bool) -> Void] = []
 
+        private(set) var isWorked: Bool = false
+
+        func start() {
+            isWorked = true
+        }
+
         func notify(result: UniversalResult) {
+           log.assert(Thread.isMainThread, "Thread.isMainThread")
+
+           notifier.notify(result)
+        }
+
+        func end(result: UniversalResult) {
             log.assert(Thread.isMainThread, "Thread.isMainThread")
 
-            /// игнорируем ошибки что в БД нет данных - всеравно будет сетевой запрос
-            if case .failure(.notFound) = result {
-                return
-            }
+            contentCompletions.forEach { $0(result) }
+            contentCompletions.removeAll()
 
-            notifier.notify(result)
+            if case .success = result {
+                completions.forEach { $0(true) }
+            } else {
+                completions.forEach { $0(false) }
+            }
+            completions.removeAll()
         }
     }
 
-    private let fetcher: (Params) -> UniversalResult
-    private let updater: (Params, @escaping (UniversalResult) -> Void) -> Void
+    private let fetcher: (Params) -> FetchResult
+    private let updater: (Params, @escaping (UpdateResult) -> Void) -> Void
+    private let saver: (Params, Content) -> Void
 
     private var subscribers: [Params: SubscribeInfo] = [:]
 
-    init(fetcher: @escaping (Params) -> UniversalResult,
-         updater: @escaping (Params, @escaping (UniversalResult) -> Void) -> Void) {
+    /// - Parameter fetcher: Функция получения данных из хранилища
+    /// - Parameter updater: Функция для запроса данных по сети
+    /// - Parameter saver: Функция записи данных в хранилище
+    init(fetcher: @escaping (Params) -> FetchResult,
+         updater: @escaping (Params, @escaping (UpdateResult) -> Void) -> Void,
+         saver: @escaping (Params, Content) -> Void) {
         self.fetcher = fetcher
         self.updater = updater
+        self.saver = saver
     }
 
-    func refresh(for params: Params, completion: ((Bool) -> Void)?) {
+    func refresh(for params: Params,
+                 contentCompletion: ((UniversalResult) -> Void)? = nil,
+                 completion: ((Bool) -> Void)? = nil) {
         log.assert(Thread.isMainThread, "Thread.isMainThread")
 
         let subscribeInfo = getOrMakeSubscriber(for: params)
+
+        if let contentCompletion = contentCompletion {
+            subscribeInfo.contentCompletions.append(contentCompletion)
+        }
 
         if let completion = completion {
             subscribeInfo.completions.append(completion)
@@ -55,23 +85,32 @@ final class UniversalServiceImpl<ResultType, Params: Hashable>
             return
         }
 
-        subscribeInfo.isWorked = true
-        fetch(by: params) { [weak self] cacheResult in
-            subscribeInfo.notify(result: cacheResult)
+        subscribeInfo.start()
+        fetch(by: params) { [weak self] fetchResult in
+            switch fetchResult {
+            case .none: // Если в хранище пусто, то пытаемся получить по сети
+                break
+            case .noRelevant(let content): // Если данные не актуальны, то оповещаем, и запускаем закачку
+                subscribeInfo.notify(result: .success(content))
+                break
+            case .done(let content): // Если данные актуальные, то оповещаем, и завершаем
+                subscribeInfo.notify(result: .success(content))
+                subscribeInfo.end(result: .success(content))
+                return
+            }
+
             self?.update(by: params) { result in
-                subscribeInfo.notify(result: result)
-
-                var success: Bool = false
-                if case .success = cacheResult {
-                    success = true
-                } else if case .success = result {
-                    success = true
+                if case .success(let content) = result {
+                    self?.saver(params, content)
+                    subscribeInfo.notify(result: result)
+                    subscribeInfo.end(result: result)
+                } else if case .noRelevant(let content) = fetchResult {
+                    // Уже оповещали о этих результатах
+                    subscribeInfo.end(result: .success(content))
+                } else { // все данные не удачные
+                    subscribeInfo.notify(result: result)
+                    subscribeInfo.end(result: result)
                 }
-
-                subscribeInfo.completions.forEach { $0(success) }
-                subscribeInfo.completions.removeAll()
-
-                subscribeInfo.isWorked = false
             }
         }
     }
@@ -89,7 +128,7 @@ final class UniversalServiceImpl<ResultType, Params: Hashable>
         return subscribeInfo
     }
 
-    private func fetch(by params: Params, completion: @escaping (UniversalResult) -> Void) {
+    private func fetch(by params: Params, completion: @escaping (FetchResult) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async { [fetcher] in
             let result = fetcher(params)
             DispatchQueue.main.async {
@@ -98,7 +137,7 @@ final class UniversalServiceImpl<ResultType, Params: Hashable>
         }
     }
 
-    private func update(by params: Params, completion: @escaping (UniversalResult) -> Void) {
+    private func update(by params: Params, completion: @escaping (UpdateResult) -> Void) {
         updater(params) { result in
             DispatchQueue.main.async {
                 completion(result)

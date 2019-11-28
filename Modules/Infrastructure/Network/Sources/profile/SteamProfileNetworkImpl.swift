@@ -18,7 +18,7 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
         self.session = session
     }
 
-    func requestUser(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
+    func requestProfile(by steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
         session.request(SteamRequest(
             interface: "ISteamUser",
             method: "GetPlayerSummaries",

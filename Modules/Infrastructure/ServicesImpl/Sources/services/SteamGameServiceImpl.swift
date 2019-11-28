@@ -14,14 +14,28 @@ import WebKit
 
 final class SteamGameServiceImpl: SteamGameService
 {
+    private struct GameIdLocPair: Hashable { let gameId: SteamGameID; let loc: SteamLocalization; }
+    private lazy var universalSchemeService = { [unowned self] in
+        UniversalServiceImpl<SteamGameScheme, GameIdLocPair>(
+            fetcher: { pair in
+                self.storage.fetchScheme(by: pair.gameId, loc: pair.loc)
+            }, updater: { (pair, completion) in
+                self.network.requestScheme(by: pair.gameId, loc: pair.loc, completion: completion)
+            }, saver: { (pair, scheme) in
+                self.storage.put(scheme: scheme, loc: pair.loc)
+            }
+        )
+    }()
+
     private struct GameIdSteamIdPair: Hashable { let gameId: SteamGameID; let steamId: SteamID; }
-    private lazy var universalGameProgressService = {
+    private lazy var universalGameProgressService = { [unowned self] in
         UniversalServiceImpl<SteamGameProgress, GameIdSteamIdPair>(
-            fetcher: { [unowned self] pair in
-                return self.fetchGameProgress(for: pair.gameId, steamId: pair.steamId)
-            },
-            updater: { [unowned self] (pair, completion) in
-                self.updateGameProgress(for: pair.gameId, steamId: pair.steamId, completion: completion)
+            fetcher: { pair in
+                self.storage.fetchGameProgress(by: pair.gameId, steamId: pair.steamId)
+            }, updater: { (pair, completion) in
+                self.network.requestGameProgress(by: pair.gameId, steamId: pair.steamId, completion: completion)
+            }, saver: { (_, gameProgress) in
+                self.storage.put(gameProgress: gameProgress)
             }
         )
     }()
@@ -36,19 +50,7 @@ final class SteamGameServiceImpl: SteamGameService
 
 
     func getScheme(for gameId: SteamGameID, loc: SteamLocalization, completion: @escaping (SteamGameSchemeResult) -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async { [network, storage] in
-            if let scheme = storage.fetchScheme(by: gameId, loc: loc) {
-                completion(.success(scheme))
-                return
-            }
-
-            network.requestScheme(by: gameId, loc: loc) { [weak storage] result in
-                if case let .success(scheme) = result {
-                    storage?.put(scheme: scheme, loc: loc)
-                }
-                completion(result)
-            }
-        }
+        universalSchemeService.refresh(for: GameIdLocPair(gameId: gameId, loc: loc), contentCompletion: completion)
     }
 
     // MARK: - game progress
@@ -60,30 +62,10 @@ final class SteamGameServiceImpl: SteamGameService
         universalGameProgressService.refresh(for: GameIdSteamIdPair(gameId: gameId, steamId: steamId), completion: completion)
     }
 
-    private func fetchGameProgress(for gameId: SteamGameID, steamId: SteamID) -> SteamGameProgressResult {
-        guard let gameProgress = storage.fetchGameProgress(by: gameId, steamId: steamId) else {
-            return .failure(.notFound)
-        }
-        return .success(gameProgress)
-    }
-
-    private func updateGameProgress(for gameId: SteamGameID, steamId: SteamID, completion: @escaping (SteamGameProgressResult) -> Void) {
-        network.requestGameProgress(by: gameId, steamId: steamId, completion: { [weak storage] result in
-            if case let .success(gameProgress) = result {
-                storage?.put(gameProgress: gameProgress)
-            }
-
-            completion(result)
-        })
-    }
-
     func getGameProgressHistory(for gameId: SteamGameID, steamId: SteamID,
                                 completion: @escaping (SteamGameProgressHistoryResult) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async { [storage] in
-            guard let history = storage.fetchGameProgressHistory(by: gameId, steamId: steamId) else {
-                completion(.failure(.notFound))
-                return
-            }
+            let history = storage.fetchGameProgressHistory(by: gameId, steamId: steamId)
             completion(.success(history))
         }
     }

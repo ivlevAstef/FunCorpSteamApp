@@ -25,7 +25,6 @@ final class SteamAchievementServiceImpl: SteamAchievementService
         self.gameService = gameService
     }
 
-
     // MARK: - Achievements Summary
 
     func getAchievementsSummaryNotifier(for gameId: SteamGameID, steamId: SteamID) -> Notifier<SteamAchievementsSummaryResult> {

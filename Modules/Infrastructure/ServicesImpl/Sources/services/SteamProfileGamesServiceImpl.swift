@@ -12,25 +12,27 @@ import Services
 
 final class SteamProfileGamesServiceImpl: SteamProfileGamesService
 {
-    private lazy var universalGamesService = {
+    private lazy var universalGamesService = { [unowned self] in
         UniversalServiceImpl(
-            fetcher: { [unowned self] steamId in
-                return self.fetchGames(by: steamId)
-            },
-            updater: { [unowned self] (steamId, completion) in
-                self.updateGames(by: steamId, completion: completion)
+            fetcher: { steamId in
+                self.storage.fetchGames(by: steamId)
+            }, updater: { (steamId, completion) in
+                self.network.requestGames(by: steamId, completion: completion)
+            }, saver: { (_, games) in
+                self.storage.put(games: games)
             }
         )
     }()
 
     private struct SteamIdGameIdPair: Hashable { let steamId: SteamID; let gameId: SteamGameID; }
-    private lazy var universalGameService = {
+    private lazy var universalGameService = { [unowned self] in
         UniversalServiceImpl<SteamProfileGameInfo, SteamIdGameIdPair>(
-            fetcher: { [unowned self] pair in
-                return self.fetchGame(by: pair.steamId, gameId: pair.gameId)
-            },
-            updater: { [unowned self] (pair, completion) in
-                self.updateGame(by: pair.steamId, gameId: pair.gameId, completion: completion)
+            fetcher: { pair in
+                self.storage.fetchGame(by: pair.steamId, gameId: pair.gameId)
+            }, updater: { (pair, completion) in
+                self.network.requestGame(by: pair.steamId, gameId: pair.gameId, completion: completion)
+            }, saver: { (_, game) in
+                self.storage.put(game: game)
             }
         )
     }()
@@ -43,33 +45,6 @@ final class SteamProfileGamesServiceImpl: SteamProfileGamesService
         self.storage = storage
     }
 
-    // MARK: - game
-
-    func getGameNotifier(for steamId: SteamID, gameId: SteamGameID) -> Notifier<SteamProfileGameInfoResult> {
-        universalGameService.getNotifier(for: SteamIdGameIdPair(steamId: steamId, gameId: gameId))
-    }
-    func refreshGame(for steamId: SteamID, gameId: SteamGameID, completion: ((Bool) -> Void)?) {
-        universalGameService.refresh(for: SteamIdGameIdPair(steamId: steamId, gameId: gameId), completion: completion)
-    }
-
-    private func fetchGame(by steamId: SteamID, gameId: SteamGameID) -> SteamProfileGameInfoResult {
-        guard let game = storage.fetchGame(by: steamId, gameId: gameId) else {
-            return .failure(.notFound)
-        }
-        return .success(game)
-    }
-
-    private func updateGame(by steamId: SteamID, gameId: SteamGameID, completion: @escaping (SteamProfileGameInfoResult) -> Void) {
-        network.requestGame(by: steamId, gameId: gameId, completion: { [weak storage] result in
-            if case let .success(game) = result {
-                storage?.put(game: game)
-            }
-
-            completion(result)
-        })
-    }
-
-
     // MARK: - games
 
     func getGamesNotifier(for steamId: SteamID) -> Notifier<SteamProfileGamesInfoResult> {
@@ -79,20 +54,12 @@ final class SteamProfileGamesServiceImpl: SteamProfileGamesService
         universalGamesService.refresh(for: steamId, completion: completion)
     }
 
-    private func fetchGames(by steamId: SteamID) -> SteamProfileGamesInfoResult {
-        guard let games = storage.fetchGames(by: steamId) else {
-            return .failure(.notFound)
-        }
-        return .success(games)
+    // MARK: - game
+
+    func getGameNotifier(for steamId: SteamID, gameId: SteamGameID) -> Notifier<SteamProfileGameInfoResult> {
+        universalGameService.getNotifier(for: SteamIdGameIdPair(steamId: steamId, gameId: gameId))
     }
-
-    private func updateGames(by steamId: SteamID, completion: @escaping (SteamProfileGamesInfoResult) -> Void) {
-        network.requestGames(by: steamId, completion: { [weak storage] result in
-            if case let .success(games) = result {
-                storage?.put(games: games)
-            }
-
-            completion(result)
-        })
+    func refreshGame(for steamId: SteamID, gameId: SteamGameID, completion: ((Bool) -> Void)?) {
+        universalGameService.refresh(for: SteamIdGameIdPair(steamId: steamId, gameId: gameId), completion: completion)
     }
 }

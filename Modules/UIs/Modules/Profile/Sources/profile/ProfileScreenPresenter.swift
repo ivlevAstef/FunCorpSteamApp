@@ -97,7 +97,7 @@ final class ProfileScreenPresenter
             break
         case .failure(.notConnection):
             view.showError(loc["Errors.NotConnect"])
-        case .failure(.notFound), .failure(.incorrectResponse):
+        case .failure(.incorrectResponse):
             view.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let profile):
@@ -139,7 +139,7 @@ final class ProfileScreenPresenter
             break
         case .failure(.notConnection):
             view.showError(loc["Errors.NotConnect"])
-        case .failure(.notFound), .failure(.incorrectResponse):
+        case .failure(.incorrectResponse):
             view.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let games):

@@ -14,7 +14,7 @@ public protocol SteamProfileStorage: class
     func put(games: [SteamProfileGameInfo])
     func put(game: SteamProfileGameInfo)
 
-    func fetchProfile(by steamId: SteamID) -> SteamProfile?
-    func fetchGames(by steamId: SteamID) -> [SteamProfileGameInfo]?
-    func fetchGame(by steamId: SteamID, gameId: SteamGameID) -> SteamProfileGameInfo?
+    func fetchProfile(by steamId: SteamID) -> StorageResult<SteamProfile>
+    func fetchGames(by steamId: SteamID) -> StorageResult<[SteamProfileGameInfo]>
+    func fetchGame(by steamId: SteamID, gameId: SteamGameID) -> StorageResult<SteamProfileGameInfo>
 }
