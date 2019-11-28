@@ -13,12 +13,14 @@ let package = Package(
         .package(path: "../../Domain/Services"),
         .package(path: "../../Core"),
         .package(path: "../../Common"),
+        .package(url: "https://github.com/realm/realm-cocoa.git", from: "4.1.1")
     ],
     targets: [
         .target(name: "Storage", dependencies: [
             "Services",
             "Core",
-            "Common"
+            "Common",
+            "RealmSwift"
         ], path: "./Sources"),
     ]
 )

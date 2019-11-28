@@ -6,26 +6,36 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
+import Foundation
+import RealmSwift
 import Services
 
+private let profileUpdateInterval: TimeInterval = .minutes(5)
 
 class SteamProfileStorageImpl: SteamProfileStorage
 {
-    // TODO: make real storage
-    func put(profile: SteamProfile) {
+    private let realm: Realm
 
+    init(realm: Realm) {
+        self.realm = realm
+    }
+
+    func put(profile: SteamProfile) {
+        let data = SteamProfileData(profile: profile)
+        _ = try? realm.threadSafe?.write {
+            realm.add(data, update: .all)
+        }
+    }
+
+    func fetchProfile(by steamId: SteamID) -> StorageResult<SteamProfile> {
+        let data = realm.threadSafe?.object(ofType: SteamProfileData.self, forPrimaryKey: "\(steamId)")
+        return dataToResult(data, updateInterval: profileUpdateInterval, map: { $0.profile })
     }
 
     func put(games: [SteamProfileGameInfo]) {
     }
 
     func put(game: SteamProfileGameInfo) {
-    }
-
-
-
-    func fetchProfile(by steamId: SteamID) -> StorageResult<SteamProfile> {
-        return nil
     }
 
     func fetchGames(by steamId: SteamID) -> StorageResult<[SteamProfileGameInfo]> {
@@ -36,4 +46,3 @@ class SteamProfileStorageImpl: SteamProfileStorage
         return nil
     }
 }
-
