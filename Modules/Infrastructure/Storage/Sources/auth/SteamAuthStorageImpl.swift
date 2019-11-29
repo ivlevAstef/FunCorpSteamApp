@@ -25,7 +25,7 @@ class SteamAuthStorageImpl: SteamAuthStorage {
             }
         }
         get {
-            realm.threadSafe?.object(ofType: SteamAuthData.self, forPrimaryKey: SteamAuthData.singlePrimaryKey)?.steamId
+            realm.ts?.object(ofType: SteamAuthData.self, forPrimaryKey: SteamAuthData.singlePrimaryKey)?.steamId
         }
     }
 

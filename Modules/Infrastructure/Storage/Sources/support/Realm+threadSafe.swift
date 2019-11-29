@@ -10,6 +10,8 @@ import RealmSwift
 import Common
 
 extension Realm {
+    var ts: Realm? { threadSafe }
+
     var threadSafe: Realm? {
         if Thread.isMainThread {
             return self

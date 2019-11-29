@@ -16,8 +16,8 @@ public struct SteamGameScheme
         public let id: SteamAchievementID
         public let hidden: Bool
 
-        public let localizedName: String?
-        public let localizedDescription: String?
+        public let localizedName: String
+        public let localizedDescription: String
 
         public let iconUrl: URL?
         public let iconGrayUrl: URL?

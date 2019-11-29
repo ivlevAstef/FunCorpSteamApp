@@ -34,8 +34,8 @@ final class SteamGameServiceImpl: SteamGameService
                 self.storage.fetchGameProgress(by: pair.gameId, steamId: pair.steamId)
             }, updater: { (pair, completion) in
                 self.network.requestGameProgress(by: pair.gameId, steamId: pair.steamId, completion: completion)
-            }, saver: { (_, gameProgress) in
-                self.storage.put(gameProgress: gameProgress)
+            }, saver: { (pair, gameProgress) in
+                self.storage.put(gameProgress: gameProgress, steamId: pair.steamId)
             }
         )
     }()

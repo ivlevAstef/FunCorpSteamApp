@@ -9,7 +9,7 @@
 public protocol SteamGameStorage: class
 {
     func put(scheme: SteamGameScheme, loc: SteamLocalization)
-    func put(gameProgress: SteamGameProgress)
+    func put(gameProgress: SteamGameProgress, steamId: SteamID)
 
     func fetchScheme(by gameId: SteamGameID, loc: SteamLocalization) -> StorageResult<SteamGameScheme>
     func fetchGameProgress(by gameId: SteamGameID, steamId: SteamID) -> StorageResult<SteamGameProgress>

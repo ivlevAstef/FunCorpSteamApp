@@ -1,5 +1,5 @@
 //
-//  TimeInterval+minutes.swift
+//  DataConverters.swift
 //  Storage
 //
 //  Created by Alexander Ivlev on 28/11/2019.
@@ -15,31 +15,35 @@ protocol LimitedUpdated {
     var lastUpdateTime: Date { get }
 }
 
+protocol Ordered {
+    var order: Int64 { get }
+}
+
+func dataToResult<D: Object, T>(_ data: D?, map: (D) -> T?) -> StorageResult<T> {
+    guard let data = data, let object = map(data) else {
+        return .none
+    }
+    return .done(object)
+}
+
 func dataToResult<D: Object & LimitedUpdated, T>(_ data: D?,
                                                  updateInterval: TimeInterval,
                                                  map: (D) -> T?) -> StorageResult<T> {
-    guard let data = data else {
+    guard let data = data, let object = map(data) else {
         return .none
     }
-    guard let object = map(data) else {
-        return .none
-    }
-
     // Если с момента последнего обновления, прошло мало времени, то говорим что объект актуален
     if data.lastUpdateTime.addingTimeInterval(updateInterval) > Date() {
         return .done(object)
     }
+
     return .noRelevant(object)
 }
 
 func dataArrayToResult<D: Object & LimitedUpdated, T>(_ dataArray: Results<D>?,
                                                       updateInterval: TimeInterval,
                                                       map: (D) -> T?) -> StorageResult<[T]> {
-    guard let dataArray = dataArray else {
-        return .none
-    }
-
-    if dataArray.isEmpty {
+    guard let dataArray = dataArray, !dataArray.isEmpty else {
         return .none
     }
 
@@ -70,4 +74,28 @@ func dataArrayToResult<D: Object & LimitedUpdated, T>(_ dataArray: Results<D>?,
         return .done(objectArray)
     }
     return .noRelevant(objectArray)
+}
+
+func dataArrayToResult<D: Object & Ordered, T>(_ dataArray: Results<D>?,
+                                               map: (D) -> T?) -> [T] {
+    guard let dataArray = dataArray, !dataArray.isEmpty else {
+        return []
+    }
+
+    var objectArray: [T] = []
+
+    for data in dataArray.sorted(by: { $0.order < $1.order }) {
+        let localResult = dataToResult(data, map: map)
+        if case .done(let object) = localResult {
+            objectArray.append(object)
+        }
+    }
+
+    if objectArray.isEmpty {
+        return []
+    }
+
+    log.assert(objectArray.count == dataArray.count, "While convert data to object in array, miss objects")
+
+    return objectArray
 }

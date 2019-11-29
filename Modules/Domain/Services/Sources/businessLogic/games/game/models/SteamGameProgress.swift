@@ -11,15 +11,15 @@ import Foundation
 public typealias SteamGameProgressResult = Result<SteamGameProgress, ServiceError>
 public typealias SteamGameProgressHistoryResult = Result<[SteamGameProgress], ServiceError>
 
-public struct SteamGameProgress
+public struct SteamGameProgress: Equatable
 {
-    public struct Achievement {
+    public struct Achievement: Equatable {
         public let achieved: Bool
 
         private init() { fatalError("Not support empty initialization") }
     }
 
-    public struct Stat {
+    public struct Stat: Equatable {
         public let count: Double
 
         private init() { fatalError("Not support empty initialization") }
@@ -28,10 +28,16 @@ public struct SteamGameProgress
     public let gameId: SteamGameID
     public let achievements: [SteamAchievementID: Achievement]
     public let stats: [SteamStatID: Stat]
-    /// Дата когда было такое состояние прогресса
-    public let stateDate: Date
+    /// Начальное время когда точно было такое состояние прогресса
+    public let stateDateBegin: Date
+    /// Конечное время когда точно было такое состояние прогресса
+    public let stateDateEnd: Date
 
     private init() { fatalError("Not support empty initialization") }
+
+    public static func ==(lhs: SteamGameProgress, rhs: SteamGameProgress) -> Bool {
+        return lhs.gameId == rhs.gameId && lhs.achievements == rhs.achievements && lhs.stats == rhs.stats
+    }
 }
 
 extension SteamGameProgress
@@ -40,12 +46,14 @@ extension SteamGameProgress
         gameId: SteamGameID,
         achievements: [SteamAchievementID: Achievement],
         stats: [SteamStatID: Stat],
-        stateDate: Date
+        stateDateBegin: Date,
+        stateDateEnd: Date
     ) {
         self.gameId = gameId
         self.achievements = achievements
         self.stats = stats
-        self.stateDate = stateDate
+        self.stateDateBegin = stateDateBegin
+        self.stateDateEnd = stateDateEnd
     }
 }
 

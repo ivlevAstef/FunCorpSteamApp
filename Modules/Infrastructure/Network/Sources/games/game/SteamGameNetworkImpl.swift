@@ -49,8 +49,8 @@ class SteamGameNetworkImpl: SteamGameNetwork
 
     private static func map(_ response: Scheme, with gameId: SteamGameID) -> SteamGameScheme {
         SteamGameScheme(gameId: gameId,
-                        achivements: (response.availableGameStats.achievements ?? []).map(map),
-                        stats: (response.availableGameStats.stats ?? []).map(map))
+                        achivements: (response.availableGameStats?.achievements ?? []).map(map),
+                        stats: (response.availableGameStats?.stats ?? []).map(map))
     }
 
     private static func map(_ response: SchemeGameAchievement) -> SteamGameScheme.Achivement {
@@ -71,7 +71,12 @@ class SteamGameNetworkImpl: SteamGameNetwork
     // MARK: - parse player game stats
 
     private static func mapGameStats(_ response: PlayerStatsResponse, with gameId: SteamGameID) -> SteamGameProgressResult {
-        let gameProgress = map(response.playerstats, with: gameId)
+        guard let playerstats = response.playerstats else {
+            return .success(SteamGameProgress(gameId: gameId,
+                                              achievements: [:], stats: [:],
+                                              stateDateBegin: Date(), stateDateEnd: Date()))
+        }
+        let gameProgress = map(playerstats, with: gameId)
         return .success(gameProgress)
     }
 
@@ -80,7 +85,8 @@ class SteamGameNetworkImpl: SteamGameNetwork
             gameId: gameId,
             achievements: map(response.achievements ?? []),
             stats: map(response.stats ?? []),
-            stateDate: Date()
+            stateDateBegin: Date(),
+            stateDateEnd: Date()
         )
     }
 
@@ -107,10 +113,10 @@ private struct SchemeResponse: Decodable {
     let game: Scheme
 }
 private struct Scheme: Decodable {
-    let gameName: String
-    let gameVersion: String
+    let gameName: String?
+    let gameVersion: String?
 
-    let availableGameStats: SchemeGameStats
+    let availableGameStats: SchemeGameStats?
 }
 private struct SchemeGameStats: Decodable {
     let achievements: [SchemeGameAchievement]?
@@ -134,7 +140,7 @@ private struct SchemeGameStat: Decodable {
 // MARK: - game user stats
 
 private struct PlayerStatsResponse: Decodable {
-    let playerstats: PlayerStats
+    let playerstats: PlayerStats?
 }
 private struct PlayerStats: Decodable {
     let steamID: String

@@ -21,6 +21,8 @@ class SteamProfileStorageImpl: SteamProfileStorage
         self.realm = realm
     }
 
+    // MARK: - profile
+
     func put(profile: SteamProfile) {
         let data = SteamProfileData(profile: profile)
         _ = try? realm.threadSafe?.write {
@@ -29,9 +31,11 @@ class SteamProfileStorageImpl: SteamProfileStorage
     }
 
     func fetchProfile(by steamId: SteamID) -> StorageResult<SteamProfile> {
-        let data = realm.threadSafe?.object(ofType: SteamProfileData.self, forPrimaryKey: "\(steamId)")
+        let data = realm.ts?.object(ofType: SteamProfileData.self, forPrimaryKey: "\(steamId)")
         return dataToResult(data, updateInterval: profileUpdateInterval, map: { $0.profile })
     }
+
+    // MARK: - games
 
     func put(games: [SteamProfileGameInfo]) {
         let dataOfGames = games.map { SteamProfileGameData(profileGameInfo: $0) }
@@ -40,6 +44,13 @@ class SteamProfileStorageImpl: SteamProfileStorage
         }
     }
 
+    func fetchGames(by steamId: SteamID) -> StorageResult<[SteamProfileGameInfo]> {
+        let dataOfGames = realm.ts?.objects(SteamProfileGameData.self).filter("_steamId = %@", "\(steamId)")
+        return dataArrayToResult(dataOfGames, updateInterval: profileGameInfoUpdateInterval, map: { $0.profileGameInfo })
+    }
+
+    // MARK: - game
+
     func put(game: SteamProfileGameInfo) {
         let data = SteamProfileGameData(profileGameInfo: game)
         _ = try? realm.threadSafe?.write {
@@ -47,14 +58,9 @@ class SteamProfileStorageImpl: SteamProfileStorage
         }
     }
 
-    func fetchGames(by steamId: SteamID) -> StorageResult<[SteamProfileGameInfo]> {
-        let dataOfGames = realm.threadSafe?.objects(SteamProfileGameData.self).filter("_steamId = %@", "\(steamId)")
-        return dataArrayToResult(dataOfGames, updateInterval: profileGameInfoUpdateInterval, map: { $0.profileGameInfo })
-    }
-
     func fetchGame(by steamId: SteamID, gameId: SteamGameID) -> StorageResult<SteamProfileGameInfo> {
         let primaryKey = SteamProfileGameData.generatePrimaryKey(steamId: steamId, gameId: gameId)
-        let data = realm.threadSafe?.object(ofType: SteamProfileGameData.self, forPrimaryKey: primaryKey)
+        let data = realm.ts?.object(ofType: SteamProfileGameData.self, forPrimaryKey: primaryKey)
         return dataToResult(data, updateInterval: profileGameInfoUpdateInterval, map: { $0.profileGameInfo })
     }
 }
