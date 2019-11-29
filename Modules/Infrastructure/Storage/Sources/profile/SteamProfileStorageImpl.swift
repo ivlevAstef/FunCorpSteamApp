@@ -11,6 +11,7 @@ import RealmSwift
 import Services
 
 private let profileUpdateInterval: TimeInterval = .minutes(5)
+private let profileGameInfoUpdateInterval: TimeInterval = .minutes(15)
 
 class SteamProfileStorageImpl: SteamProfileStorage
 {
@@ -33,16 +34,27 @@ class SteamProfileStorageImpl: SteamProfileStorage
     }
 
     func put(games: [SteamProfileGameInfo]) {
+        let dataOfGames = games.map { SteamProfileGameData(profileGameInfo: $0) }
+        _ = try? realm.threadSafe?.write {
+            realm.add(dataOfGames, update: .all)
+        }
     }
 
     func put(game: SteamProfileGameInfo) {
+        let data = SteamProfileGameData(profileGameInfo: game)
+        _ = try? realm.threadSafe?.write {
+            realm.add(data, update: .all)
+        }
     }
 
     func fetchGames(by steamId: SteamID) -> StorageResult<[SteamProfileGameInfo]> {
-        return nil
+        let dataOfGames = realm.threadSafe?.objects(SteamProfileGameData.self).filter("_steamId = %@", "\(steamId)")
+        return dataArrayToResult(dataOfGames, updateInterval: profileGameInfoUpdateInterval, map: { $0.profileGameInfo })
     }
 
     func fetchGame(by steamId: SteamID, gameId: SteamGameID) -> StorageResult<SteamProfileGameInfo> {
-        return nil
+        let primaryKey = SteamProfileGameData.generatePrimaryKey(steamId: steamId, gameId: gameId)
+        let data = realm.threadSafe?.object(ofType: SteamProfileGameData.self, forPrimaryKey: primaryKey)
+        return dataToResult(data, updateInterval: profileGameInfoUpdateInterval, map: { $0.profileGameInfo })
     }
 }

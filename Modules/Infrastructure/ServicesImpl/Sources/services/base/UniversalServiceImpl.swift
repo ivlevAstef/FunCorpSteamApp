@@ -46,6 +46,8 @@ final class UniversalServiceImpl<Content, Params: Hashable>
                 completions.forEach { $0(false) }
             }
             completions.removeAll()
+
+            isWorked = false
         }
     }
 
