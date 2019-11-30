@@ -43,6 +43,10 @@ open class ApViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
 
         styleDidChange(style)
+
+        if nil != navigationController?.presentingViewController {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(tapDoneButton))
+        }
     }
 
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -50,5 +54,10 @@ open class ApViewController: UIViewController {
 
         style = styleMaker.makeStyle(for: self)
         styleDidChange(style)
+    }
+
+    @objc
+    private func tapDoneButton() {
+        navigationController?.dismiss(animated: true)
     }
 }

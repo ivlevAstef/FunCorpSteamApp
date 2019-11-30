@@ -29,6 +29,17 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
         ))
     }
 
+    func requestFriends(for steamId: SteamID, completion: @escaping (SteamFriendsResult) -> Void) {
+         session.request(SteamRequest(
+             interface: "ISteamUser",
+             method: "GetFriendList",
+             version: 1,
+             fields: ["steamid": steamId],
+             parse: { Self.mapFriends($0, with: steamId) },
+             completion: completion
+         ))
+     }
+
     func requestGames(by steamId: SteamID, completion: @escaping (SteamProfileGamesInfoResult) -> Void) {
         // Вот такая несостыковочка - где-то это игры, а где-то приложения. Решил использовать App
         session.request(SteamRequest(
@@ -142,6 +153,20 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
             )
         )
     }
+
+    // MARK: - friends mapper
+    private static func mapFriends(_ response: ResponseFriends, with steamId: SteamID) -> SteamFriendsResult {
+        let friends = response.friendslist?.friends?.compactMap { map($0, with: steamId) } ?? []
+        return .success(friends)
+    }
+
+    private static func map(_ friend: Friend, with steamId: SteamID) -> SteamFriend? {
+        guard let friendSteamId = SteamID(friend.steamid) else {
+            return nil
+        }
+        let friendSince = friend.friend_since?.unixTimeToDate
+        return SteamFriend(ownerSteamId: steamId, steamId: friendSteamId, friendSince: friendSince)
+    }
 }
 
 // MARK: - profile data
@@ -213,4 +238,19 @@ private struct Game: Decodable {
     let playtime_forever: Int64?
     /// summary in game time
     let playtime_2weeks: Int64?
+}
+
+// MARK: - friends data
+private struct ResponseFriends: Decodable {
+    let friendslist: FriendsList?
+}
+
+private struct FriendsList: Decodable {
+    let friends: [Friend]?
+}
+
+private struct Friend: Decodable {
+    let steamid: String
+    let relationship: String?
+    let friend_since: Int64?
 }

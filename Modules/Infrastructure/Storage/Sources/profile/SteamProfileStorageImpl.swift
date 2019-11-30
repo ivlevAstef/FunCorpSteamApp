@@ -12,6 +12,7 @@ import Services
 
 private let profileUpdateInterval: TimeInterval = .minutes(5)
 private let profileGameInfoUpdateInterval: TimeInterval = .minutes(15)
+private let friendsUpdateInterval: TimeInterval = .minutes(10)
 
 class SteamProfileStorageImpl: SteamProfileStorage
 {
@@ -33,6 +34,20 @@ class SteamProfileStorageImpl: SteamProfileStorage
     func fetchProfile(by steamId: SteamID) -> StorageResult<SteamProfile> {
         let data = realm.ts?.object(ofType: SteamProfileData.self, forPrimaryKey: "\(steamId)")
         return dataToResult(data, updateInterval: profileUpdateInterval, map: { $0.profile })
+    }
+
+    // MARK: - friends
+
+    func put(friends: [SteamFriend]) {
+        let dataOfFriends = friends.map { SteamFriendData(friend: $0) }
+        _ = try? realm.threadSafe?.write {
+            realm.add(dataOfFriends, update: .all)
+        }
+    }
+
+    func fetchFriends(for steamId: SteamID) -> StorageResult<[SteamFriend]> {
+        let dataOfFriends = realm.ts?.objects(SteamFriendData.self).filter("_ownerSteamId = %@", "\(steamId)")
+        return dataArrayToResult(dataOfFriends, updateInterval: friendsUpdateInterval, map: { $0.friend })
     }
 
     // MARK: - games

@@ -17,10 +17,10 @@ protocol GameInfoScreenViewContract: class
 
     func beginLoading()
 
-    func endLoadingGameInfo(_ success: Bool)
+    func failedLoadingGameInfo()
     func showGameInfo(_ gameInfo: GameInfoViewModel)
 
-    func endLoadingAchievementsSummary(_ success: Bool)
+    func failedLoadingAchievementsSummary()
     func showAchievementsSummary(_ achievementsSummary: AchievementsSummaryViewModel?)
 
     func showError(_ text: String)
@@ -70,11 +70,15 @@ final class GameInfoScreenPresenter
             view.beginLoading()
 
             profileGamesService.refreshGame(for: steamId, gameId: gameId) { [weak view] success in
-                view?.endLoadingGameInfo(success)
+                if !success {
+                    view?.failedLoadingGameInfo()
+                }
             }
 
             achievementService.refreshAchievementsSummary(for: gameId, steamId: steamId) { [weak view] success in
-                view?.endLoadingAchievementsSummary(success)
+                if !success {
+                    view?.failedLoadingAchievementsSummary()
+                }
             }
         } else {
             profileGamesService.refreshGame(for: steamId, gameId: gameId)

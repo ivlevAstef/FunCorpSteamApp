@@ -15,13 +15,14 @@ import UIComponents
 import Services
 
 typealias ProfileScreen = Screen<ProfileScreenView, ProfileScreenPresenter>
+typealias FriendsScreen = Screen<FriendsScreenView, FriendsScreenPresenter>
 
 final class ProfileRouter: IRouter
 {
-    let tapOnProfileNotifier = Notifier<SteamID>()
-    let tapOnGameNotifier = Notifier<(SteamID, SteamGameID)>()
+    let tapOnGameNotifier = Notifier<(SteamID, SteamGameID, Navigator)>()
 
     /*dependency*/var profileScreenProvider = Provider<ProfileScreen>()
+    /*dependency*/var friendsScreenProvider = Provider<FriendsScreen>()
 
     private let navigator: Navigator
     private let authService: SteamAuthService
@@ -41,28 +42,64 @@ final class ProfileRouter: IRouter
 
         let steamIdKey = ProfileStartPoint.RoutingOptions.steamId
         if let steamId = parameters.options[steamIdKey].flatMap({ SteamID($0) }) {
-            showProfileScreen(steamId: steamId)
+            showProfileScreen(steamId: steamId, on: navigator)
         } else if let steamId = authService.steamId {
-            showProfileScreen(steamId: steamId)
+            showProfileScreen(steamId: steamId, on: navigator)
         } else {
             log.fatal("Unsupport show profile without steamId for options or auth")
         }
     }
 
-    private func showProfileScreen(steamId: SteamID) {
-        let screen = makeProfileScreen(steamId: steamId)
+    // MARK: - profile
+
+    private func showProfileScreen(steamId: SteamID, on navigator: Navigator) {
+        let screen = makeProfileScreen(steamId: steamId, use: navigator)
 
         navigator.push(screen.view)
     }
 
-    private func makeProfileScreen(steamId: SteamID) -> ProfileScreen {
+    private func presentProfileScreen(steamId: SteamID, on navigator: Navigator) {
+        let presentedNavigator = navigator.copy()
+
+        let screen = makeProfileScreen(steamId: steamId, use: presentedNavigator)
+        presentedNavigator.push(screen.view)
+
+        navigator.present(presentedNavigator.controller)
+    }
+
+    private func makeProfileScreen(steamId: SteamID, use navigator: Navigator) -> ProfileScreen {
         let screen = profileScreenProvider.value
         screen.setRouter(self)
 
-        screen.presenter.tapOnProfileNotifier.join(tapOnProfileNotifier)
-        screen.presenter.tapOnGameNotifier.join(tapOnGameNotifier)
+        screen.presenter.tapOnProfileNotifier.join(listener: { [weak self, navigator] steamId in
+            self?.showFriendsScreen(for: steamId, on: navigator)
+        })
+        screen.presenter.tapOnGameNotifier.join(tapOnGameNotifier) { (steamId, gameId) in
+            return (steamId, gameId, navigator)
+        }
 
         screen.presenter.configure(steamId: steamId)
         return screen
     }
+
+    // MARK: - friends
+
+    private func showFriendsScreen(for steamId: SteamID, on navigator: Navigator) {
+        let screen = makeFriendsScreen(for: steamId, use: navigator)
+
+        navigator.push(screen.view)
+    }
+
+    private func makeFriendsScreen(for steamId: SteamID, use navigator: Navigator) -> FriendsScreen {
+        let screen = friendsScreenProvider.value
+        screen.setRouter(self)
+
+        screen.presenter.tapOnProfileNotifier.join(listener: { [weak self, navigator] steamId in
+            self?.presentProfileScreen(steamId: steamId, on: navigator)
+        })
+
+        screen.presenter.configure(steamId: steamId)
+        return screen
+    }
+
 }

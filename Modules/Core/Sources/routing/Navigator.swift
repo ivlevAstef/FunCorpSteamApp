@@ -29,6 +29,13 @@ public final class Navigator
         self.controllerProvider = controllerProvider
     }
 
+    public func copy() -> Navigator {
+        let navigator = Navigator(controllerProvider: controllerProvider)
+        navigator.showNavigationBar = showNavigationBar
+
+        return navigator
+    }
+
     // MARK: - View Controllers
 
     public func push(_ vc: UIViewController, animated: Bool = true) {

@@ -44,9 +44,6 @@
          <FileRef
             location = "group:News">
          </FileRef>
-         <FileRef
-            location = "group:Friends">
-         </FileRef>
       </Group>
       <FileRef
          location = "group:Modules/UIs/AppUIComponents">

@@ -20,8 +20,8 @@ protocol ProfileScreenViewContract: class
 
     func beginLoading()
 
-    func endLoadingProfile(_ success: Bool)
-    func endLoadingGames(_ success: Bool)
+    func failedLoadingProfile()
+    func failedLoadingGames()
 
     func showProfile(_ profile: ProfileViewModel)
     func showGamesInfo(_ games: [ProfileGameInfoViewModel])
@@ -35,6 +35,7 @@ final class ProfileScreenPresenter
     let tapOnGameNotifier = Notifier<(SteamID, SteamGameID)>()
 
     private let view: ProfileScreenViewContract
+    // TODO: из auth service можно свой steamId узнать, и понять твой профиль или нет - как-нибудь менять интерфейс.
     private let authService: SteamAuthService
     private let profileService: SteamProfileService
     private let profileGamesService: SteamProfileGamesService
@@ -77,10 +78,14 @@ final class ProfileScreenPresenter
             view.beginLoading()
 
             profileService.refresh(for: steamId) { [weak view] success in
-                view?.endLoadingProfile(success)
+                if !success {
+                    view?.failedLoadingProfile()
+                }
             }
             profileGamesService.refreshGames(for: steamId) { [weak view] success in
-                view?.endLoadingGames(success)
+                if !success {
+                    view?.failedLoadingGames()
+                }
             }
         } else {
             profileService.refresh(for: steamId)

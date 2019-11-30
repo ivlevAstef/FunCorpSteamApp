@@ -32,6 +32,8 @@
 "SteamProfile.Games" = "Игры";
 "SteamProfile.Game.PlayTimePrefix" = "Время в игре: ";
 
+"SteamFriends.Title" = "Друзья";
+
 "SteamGame.Title" = "Информация по игре";
 "SteamGame.PlayTimeForeverPrefix" = "Время в игре: ";
 "SteamGame.PlayTime2weeksPrefix" = "За последние 2 недели: ";

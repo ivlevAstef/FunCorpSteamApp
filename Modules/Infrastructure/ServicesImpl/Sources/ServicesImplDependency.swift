@@ -35,6 +35,10 @@ final class ServicesImplDependency: DIFramework
         container.register(SteamAchievementServiceImpl.init)
             .as(SteamAchievementService.self)
             .lifetime(.perRun(.weak))
+
+        container.register(SteamFriendsServiceImpl.init)
+            .as(SteamFriendsService.self)
+            .lifetime(.perRun(.weak))
     }
 }
 

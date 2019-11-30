@@ -21,7 +21,6 @@
 		AB89F4CC238310C500E4BCFF /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4CB238310C500E4BCFF /* Common */; };
 		AB89F4CE238310C600E4BCFF /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4CD238310C600E4BCFF /* Core */; };
 		AB89F4D0238310C600E4BCFF /* Design in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4CF238310C600E4BCFF /* Design */; };
-		AB89F4D2238310D400E4BCFF /* Friends in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D1238310D400E4BCFF /* Friends */; };
 		AB89F4D4238310D400E4BCFF /* GameInformation in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D3238310D400E4BCFF /* GameInformation */; };
 		AB89F4D6238310D400E4BCFF /* Menu in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D5238310D400E4BCFF /* Menu */; };
 		AB89F4DA238310D400E4BCFF /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D9238310D400E4BCFF /* Network */; };
@@ -81,7 +80,6 @@
 				AB89F4CC238310C500E4BCFF /* Common in Frameworks */,
 				ABD9706D238B0A2B00256437 /* AppUIComponents in Frameworks */,
 				ABD970602386375B00256437 /* ServicesImpl in Frameworks */,
-				AB89F4D2238310D400E4BCFF /* Friends in Frameworks */,
 				AB89F4CE238310C600E4BCFF /* Core in Frameworks */,
 				AB89F4D4238310D400E4BCFF /* GameInformation in Frameworks */,
 				AB89F4DE238310D400E4BCFF /* Profile in Frameworks */,
@@ -195,7 +193,6 @@
 				AB89F4CB238310C500E4BCFF /* Common */,
 				AB89F4CD238310C600E4BCFF /* Core */,
 				AB89F4CF238310C600E4BCFF /* Design */,
-				AB89F4D1238310D400E4BCFF /* Friends */,
 				AB89F4D3238310D400E4BCFF /* GameInformation */,
 				AB89F4D5238310D400E4BCFF /* Menu */,
 				AB89F4D9238310D400E4BCFF /* Network */,
@@ -496,10 +493,6 @@
 		AB89F4CF238310C600E4BCFF /* Design */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Design;
-		};
-		AB89F4D1238310D400E4BCFF /* Friends */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Friends;
 		};
 		AB89F4D3238310D400E4BCFF /* GameInformation */ = {
 			isa = XCSwiftPackageProductDependency;

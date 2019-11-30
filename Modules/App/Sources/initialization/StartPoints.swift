@@ -20,7 +20,6 @@ import Menu
 
 import News
 import Profile
-import Friends
 import GameInformation
 import Sessions
 
@@ -31,7 +30,6 @@ enum StartPoints
 
     static let news = NewsStartPoint()
     static let profile = ProfileStartPoint()
-    static let friends = FriendsStartPoint()
     static let gameInfo = GameInfoStartPoint()
     static let sessions = SessionsStartPoint()
 
@@ -51,7 +49,6 @@ enum StartPoints
         MenuStartPoint.name: menu,
         NewsStartPoint.name: news,
         ProfileStartPoint.name: profile,
-        FriendsStartPoint.name: friends,
         GameInfoStartPoint.name: gameInfo,
         SessionsStartPoint.name: sessions,
     ]

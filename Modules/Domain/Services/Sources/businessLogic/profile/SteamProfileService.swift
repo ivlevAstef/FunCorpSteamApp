@@ -13,6 +13,8 @@ public protocol SteamProfileService: class
     func getNotifier(for steamId: SteamID) -> Notifier<SteamProfileResult>
 
     func refresh(for steamId: SteamID, completion: ((Bool) -> Void)?)
+
+    func getProfile(for steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void)
 }
 
 extension SteamProfileService

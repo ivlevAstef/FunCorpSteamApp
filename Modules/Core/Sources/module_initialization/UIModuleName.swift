@@ -12,7 +12,6 @@ public enum UIModuleName {
 
     case news
     case profile
-    case friends
     case gameInfo
     case sessions
 
@@ -22,7 +21,6 @@ public enum UIModuleName {
         case .menu: return "menu"
         case .news: return "news"
         case .profile: return "profile"
-        case .friends: return "friends"
         case .gameInfo: return "gameInfo"
         case .sessions: return "sessions"
         }

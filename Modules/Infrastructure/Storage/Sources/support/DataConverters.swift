@@ -33,7 +33,7 @@ func dataToResult<D: Object & LimitedUpdated, T>(_ data: D?,
         return .none
     }
     // Если с момента последнего обновления, прошло мало времени, то говорим что объект актуален
-    if data.lastUpdateTime.addingTimeInterval(updateInterval) > Date() {
+    if data.lastUpdateTime.timeIntervalSinceNow + updateInterval > 0 {
         return .done(object)
     }
 

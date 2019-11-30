@@ -49,10 +49,8 @@ final class GameInfoScreenView: ApViewController, GameInfoScreenViewContract
     }
 
     // MARK: - GameInfo
-    func endLoadingGameInfo(_ success: Bool) {
-        if !success {
-            tableView.updateGameInfo(.failed)
-        }
+    func failedLoadingGameInfo() {
+        tableView.updateGameInfo(.failed)
     }
 
     func showGameInfo(_ gameInfo: GameInfoViewModel) {
@@ -60,10 +58,8 @@ final class GameInfoScreenView: ApViewController, GameInfoScreenViewContract
     }
 
     // MARK: - Achievements
-    func endLoadingAchievementsSummary(_ success: Bool) {
-        if !success {
-            tableView.updateAchiementSummary(.failed)
-        }
+    func failedLoadingAchievementsSummary() {
+        tableView.updateAchiementSummary(.failed)
     }
 
     func showAchievementsSummary(_ achievementsSummary: AchievementsSummaryViewModel?) {

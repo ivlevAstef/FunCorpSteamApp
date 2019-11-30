@@ -16,11 +16,11 @@ public final class ProfileStartPoint: UIStartPoint
 {
     public enum RoutingOptions {
         public static let steamId = "ProfileSteamId"
+        // TODO: в будущем можно будет поддержать переход сразу на друга, от себя (то есть с полной навигацией)
     }
 
     public struct Subscribers {
-        public let tapOnProfileNotifier: Notifier<SteamID>
-        public let tapOnGameNotifier: Notifier<(SteamID, SteamGameID)>
+        public let tapOnGameNotifier: Notifier<(SteamID, SteamGameID, Navigator)>
     }
     public var subscribersFiller: (_ navigator: Navigator, _ subscribers: Subscribers) -> Void = { _, _ in }
 
@@ -58,7 +58,6 @@ public final class ProfileStartPoint: UIStartPoint
     public func makeRouter(use navigator: Navigator) -> IRouter {
         let router = routerProvider.value(navigator)
         subscribersFiller(navigator, Subscribers(
-            tapOnProfileNotifier: router.tapOnProfileNotifier,
             tapOnGameNotifier: router.tapOnGameNotifier
         ))
 

@@ -1,8 +1,8 @@
 //
-//  ProfileScreenView.swift
+//  FriendsScreenView.swift
 //  Profile
 //
-//  Created by Alexander Ivlev on 22/11/2019.
+//  Created by Alexander Ivlev on 26/11/2019.
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
@@ -12,12 +12,13 @@ import UIComponents
 import Common
 import Design
 import SnapKit
+import Services
 
-final class ProfileScreenView: ApViewController, ProfileScreenViewContract
+final class FriendsScreenView: ApViewController, FriendsScreenViewContract
 {
     let needUpdateNotifier = Notifier<Void>()
 
-    private let tableView = ProfileTableView()
+    private let tableView = FriendsTableView()
 
     override init() {
         super.init()
@@ -30,7 +31,7 @@ final class ProfileScreenView: ApViewController, ProfileScreenViewContract
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = loc["SteamProfile.Title"]
+        title = loc["SteamFriends.Title"]
 
         configureViews()
     }
@@ -42,31 +43,15 @@ final class ProfileScreenView: ApViewController, ProfileScreenViewContract
     }
 
     func beginLoading() {
-        tableView.updateProfile(.loading)
-        tableView.updateGames(Array(repeating: .loading, count: 6))
+        tableView.updateFriends(Array(repeating: FriendViewModel(empty: .loading), count: 8))
     }
 
-    // MARK: - profile
-    func failedLoadingProfile() {
-        tableView.updateProfile(.failed)
+    func failedLoading() {
+        tableView.updateFriends(Array(repeating: FriendViewModel(empty: .failed), count: 8))
     }
 
-    func showProfile(_ profile: ProfileViewModel) {
-        tableView.updateProfile(.done(profile))
-    }
-
-    // MARK: - games
-
-    func failedLoadingGames() {
-        tableView.updateGames(Array(repeating: .failed, count: 6))
-    }
-
-    func showGamesInfo(_ games: [ProfileGameInfoViewModel]) {
-        tableView.updateGames(games.map { .done($0) })
-    }
-
-    func setGamesSectionText(_ text: String) {
-        tableView.setGamesSectionTitle(text)
+    func updateFriends(_ friends: [FriendViewModel]) {
+        tableView.updateFriends(friends)
     }
 
     // MARK: - other
