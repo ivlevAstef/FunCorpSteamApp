@@ -61,31 +61,25 @@ final class SteamAuthServiceImpl: SteamAuthService
             steamLoginVC?.dismiss(animated: true)
         })
 
-        // На 13 оси и так все красиво смотриться
-        if #available(iOS 13.0, *) {
-            rootVC.present(steamLoginVC, animated: true)
-        } else {
-            // А вот на более старых стоит сделать покрасивее
-            let navController = UINavigationController(rootViewController: steamLoginVC)
+        let navController = UINavigationController(rootViewController: steamLoginVC)
 
-            steamLoginVC.title = loc["SteamAuth.Title"]
-            steamLoginVC.navigationItem.leftBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .cancel,
-                target: steamLoginVC,
-                action: #selector(SteamLoginViewController.clickCloseButton)
-            )
-            navController.navigationBar.isTranslucent = false
-            navController.navigationBar.tintColor = .white
-            navController.navigationBar.titleTextAttributes = [
-                .foregroundColor : UIColor.white
-            ]
-            navController.navigationBar.barTintColor = UIColor(red: 0.0902,
-                                                               green: 0.1019,
-                                                               blue: 0.1294,
-                                                               alpha: 1.0)
+        steamLoginVC.title = loc["SteamAuth.Title"]
+        steamLoginVC.navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: steamLoginVC,
+            action: #selector(SteamLoginViewController.clickCloseButton)
+        )
+        navController.navigationBar.isTranslucent = false
+        navController.navigationBar.tintColor = .white
+        navController.navigationBar.titleTextAttributes = [
+            .foregroundColor : UIColor.white
+        ]
+        navController.navigationBar.barTintColor = UIColor(red: 0.0902,
+                                                           green: 0.1019,
+                                                           blue: 0.1294,
+                                                           alpha: 1.0)
 
-            rootVC.present(navController, animated: true)
-        }
+        rootVC.present(navController, animated: true)
     }
 
     func logout(completion: @escaping (Result<SteamID, SteamLogoutError>) -> Void) {

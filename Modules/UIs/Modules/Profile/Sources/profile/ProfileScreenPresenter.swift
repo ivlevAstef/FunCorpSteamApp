@@ -34,7 +34,7 @@ final class ProfileScreenPresenter
     let tapOnProfileNotifier = Notifier<SteamID>()
     let tapOnGameNotifier = Notifier<(SteamID, SteamGameID)>()
 
-    private let view: ProfileScreenViewContract
+    private weak var view: ProfileScreenViewContract?
     // TODO: из auth service можно свой steamId узнать, и понять твой профиль или нет - как-нибудь менять интерфейс.
     private let authService: SteamAuthService
     private let profileService: SteamProfileService
@@ -59,7 +59,7 @@ final class ProfileScreenPresenter
     }
 
     func configure(steamId: SteamID) {
-        view.setGamesSectionText(loc["SteamProfile.Games"])
+        view?.setGamesSectionText(loc["SteamProfile.Games"])
 
         profileService.getNotifier(for: steamId).weakJoin(listener: { (self, result) in
             self.processProfileResult(result)
@@ -68,14 +68,14 @@ final class ProfileScreenPresenter
             self.processProfileGamesInfoResult(result)
         }, owner: self)
 
-        view.needUpdateNotifier.join(listener: { [weak self] in
+        view?.needUpdateNotifier.join(listener: { [weak self] in
             self?.refresh(for: steamId)
         })
     }
 
     private func refresh(for steamId: SteamID) {
         if isFirstRefresh {
-            view.beginLoading()
+            view?.beginLoading()
 
             profileService.refresh(for: steamId) { [weak view] success in
                 if !success {
@@ -101,9 +101,9 @@ final class ProfileScreenPresenter
         case .failure(.cancelled):
             break
         case .failure(.notConnection):
-            view.showError(loc["Errors.NotConnect"])
+            view?.showError(loc["Errors.NotConnect"])
         case .failure(.incorrectResponse):
-            view.showError(loc["Errors.IncorrectResponse"])
+            view?.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let profile):
             processProfile(profile)
@@ -111,6 +111,10 @@ final class ProfileScreenPresenter
     }
 
     private func processProfile(_ profile: SteamProfile) {
+        guard let view = view else {
+            return
+        }
+
         var viewModel = ProfileViewModel(
             avatar: cachedProfileViewModel?.avatar ?? ChangeableImage(placeholder: nil, image: nil),
             avatarLetter: String(profile.nickName.prefix(2)),
@@ -143,9 +147,9 @@ final class ProfileScreenPresenter
         case .failure(.cancelled):
             break
         case .failure(.notConnection):
-            view.showError(loc["Errors.NotConnect"])
+            view?.showError(loc["Errors.NotConnect"])
         case .failure(.incorrectResponse):
-            view.showError(loc["Errors.IncorrectResponse"])
+            view?.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let games):
             processGamesInfo(games)
@@ -153,6 +157,10 @@ final class ProfileScreenPresenter
     }
 
     private func processGamesInfo(_ profileGamesInfo: [SteamProfileGameInfo]) {
+        guard let view = view else {
+            return
+        }
+
         let viewModels: [ProfileGameInfoViewModel] = profileGamesInfo.map { profileGame in
             let cachedViewModel = cachedGameInfoViewModels[profileGame.gameInfo.gameId]
             let viewModel = ProfileGameInfoViewModel(

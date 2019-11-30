@@ -25,7 +25,7 @@ final class AuthScreenPresenter
 {
     let authSuccessNotifier = Notifier<Void>()
 
-    private let view: AuthScreenViewContract
+    private weak var view: AuthScreenViewContract?
     private let authService: SteamAuthService
 
     init(view: AuthScreenViewContract, authService: SteamAuthService) {
@@ -38,16 +38,20 @@ final class AuthScreenPresenter
 
     private func subscribeOn(_ view: AuthScreenViewContract) {
         view.startSteamAuthNotifier.join(listener: { [weak self, authService] in
-            self?.view.blockUI()
+            self?.view?.blockUI()
             log.info("Start authorization in steam")
             authService.login { result in
                 self?.processLoginResult(result)
-                self?.view.unblockUI()
+                self?.view?.unblockUI()
             }
         })
     }
 
     private func processLoginResult(_ result: Result<SteamID, SteamLoginError>) {
+        guard let view = view else {
+            return
+        }
+
         switch result {
         case .success(_):
             log.info("Success authorization in steam")

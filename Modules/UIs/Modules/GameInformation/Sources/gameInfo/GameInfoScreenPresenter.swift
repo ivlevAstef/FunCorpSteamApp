@@ -28,7 +28,7 @@ protocol GameInfoScreenViewContract: class
 
 final class GameInfoScreenPresenter
 {
-    private let view: GameInfoScreenViewContract
+    private weak var view: GameInfoScreenViewContract?
 
     private let profileGamesService: SteamProfileGamesService
     private let gameService: SteamGameService
@@ -51,7 +51,7 @@ final class GameInfoScreenPresenter
     }
 
     func configure(steamId: SteamID, gameId: SteamGameID) {
-        view.setTitles(gameInfo: "", achievementsSummary: loc["SteamGame.AchievementsSummaryTitle"])
+        view?.setTitles(gameInfo: "", achievementsSummary: loc["SteamGame.AchievementsSummaryTitle"])
 
         profileGamesService.getGameNotifier(for: steamId, gameId: gameId).weakJoin(listener: { (self, result) in
             self.processProfileGameInfoResult(result)
@@ -60,14 +60,14 @@ final class GameInfoScreenPresenter
             self.processAchievementsSummaryResult(result)
         }, owner: self)
 
-        view.needUpdateNotifier.join(listener: { [weak self] in
+        view?.needUpdateNotifier.join(listener: { [weak self] in
             self?.refresh(for: steamId, gameId: gameId)
         })
     }
 
     private func refresh(for steamId: SteamID, gameId: SteamGameID) {
         if isFirstRefresh {
-            view.beginLoading()
+            view?.beginLoading()
 
             profileGamesService.refreshGame(for: steamId, gameId: gameId) { [weak view] success in
                 if !success {
@@ -94,9 +94,9 @@ final class GameInfoScreenPresenter
         case .failure(.cancelled):
             break
         case .failure(.notConnection):
-            view.showError(loc["Errors.NotConnect"])
+            view?.showError(loc["Errors.NotConnect"])
         case .failure(.incorrectResponse):
-            view.showError(loc["Errors.IncorrectResponse"])
+            view?.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let game):
             processGameInfo(game)
@@ -104,6 +104,10 @@ final class GameInfoScreenPresenter
     }
 
     private func processGameInfo(_ profileGameInfo: SteamProfileGameInfo) {
+        guard let view = view else {
+            return
+        }
+
         let viewModel = GameInfoViewModel(
             icon: cachedGameInfoViewModel?.icon ?? ChangeableImage(placeholder: nil, image: nil),
             name: profileGameInfo.gameInfo.name,
@@ -123,12 +127,9 @@ final class GameInfoScreenPresenter
 
     private func processAchievementsSummaryResult(_ result: SteamAchievementsSummaryResult) {
         switch result {
-        case .failure(.cancelled):
+        case .failure:
+            // Тут не будем показывать ошибки, так как не настолько важная информация, а глючит она частенько...
             break
-        case .failure(.notConnection):
-            view.showError(loc["Errors.NotConnect"])
-        case .failure(.incorrectResponse):
-            view.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let achievementsSummary):
             processAchievementsSummary(achievementsSummary)
@@ -136,6 +137,10 @@ final class GameInfoScreenPresenter
     }
 
     private func processAchievementsSummary(_ achievementsSummary: SteamAchievementsSummary) {
+        guard let view = view else {
+            return
+        }
+        
         // у игры нет достижений - тогда можно вообще не показывать о них информацию
         if achievementsSummary.any.isEmpty {
             view.showAchievementsSummary(nil)

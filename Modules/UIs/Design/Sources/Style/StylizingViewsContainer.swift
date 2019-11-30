@@ -20,11 +20,10 @@ public final class StylizingViewsContainer
     }
 
     public func addView(_ view: StylizingView, immediately: Bool) {
-        if viewsForStylizing.contains(where: { $0 === view }) {
-            return
+        if !viewsForStylizing.contains(where: { $0 === view }) {
+            viewsForStylizing.append(view)
         }
 
-        viewsForStylizing.append(view)
         if let style = style, immediately {
             view.apply(use: style)
             apply(style, viewsForStylizing: view.stylizingSubviews)

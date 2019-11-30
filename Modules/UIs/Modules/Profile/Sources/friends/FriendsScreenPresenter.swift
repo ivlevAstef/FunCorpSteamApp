@@ -29,7 +29,7 @@ final class FriendsScreenPresenter
 {
     let tapOnProfileNotifier = Notifier<SteamID>()
 
-    private let view: FriendsScreenViewContract
+    private weak var view: FriendsScreenViewContract?
     private let profileService: SteamProfileService
     private let friendsService: SteamFriendsService
     private let imageService: ImageService
@@ -56,14 +56,14 @@ final class FriendsScreenPresenter
             self.processFriendsResult(result)
         }, owner: self)
 
-        view.needUpdateNotifier.join(listener: { [weak self] in
+        view?.needUpdateNotifier.join(listener: { [weak self] in
             self?.refresh(for: steamId)
         })
     }
 
     private func refresh(for steamId: SteamID) {
         if isFirstRefresh {
-            view.beginLoading()
+            view?.beginLoading()
             friendsService.refresh(for: steamId) { [weak view] success in
                 if !success {
                     view?.failedLoading()
@@ -83,9 +83,9 @@ final class FriendsScreenPresenter
         case .failure(.cancelled):
             break
         case .failure(.notConnection):
-            view.showError(loc["Errors.NotConnect"])
+            view?.showError(loc["Errors.NotConnect"])
         case .failure(.incorrectResponse):
-            view.showError(loc["Errors.IncorrectResponse"])
+            view?.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let friends):
             processFriends(friends)
@@ -102,7 +102,7 @@ final class FriendsScreenPresenter
             return makeFriendViewModel(steamId: friend.steamId, state: .loading)
         }
 
-        view.updateFriends(friends)
+        view?.updateFriends(friends)
     }
 
     private func updateFriend(on viewModel: FriendViewModel) {
@@ -119,7 +119,7 @@ final class FriendsScreenPresenter
         }
 
         friends[index] = viewModel
-        view.updateFriends(friends)
+        view?.updateFriends(friends)
     }
 
     private func makeFriendViewModel(steamId: SteamID, state: FriendViewModel.State) -> FriendViewModel {

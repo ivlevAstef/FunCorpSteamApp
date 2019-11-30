@@ -156,7 +156,7 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
 
     // MARK: - friends mapper
     private static func mapFriends(_ response: ResponseFriends, with steamId: SteamID) -> SteamFriendsResult {
-        let friends = response.friendslist?.friends?.compactMap { map($0, with: steamId) } ?? []
+        let friends = response.friendslist.friends.compactMap { map($0, with: steamId) }
         return .success(friends)
     }
 
@@ -189,7 +189,7 @@ private struct Player: Decodable {
     let personastate: Int
 
     /// Have community profile or not. 1	- have
-    let profilestate: Int
+    let profilestate: Int?
     /// unix time
     let lastlogoff: Int64
 
@@ -242,11 +242,11 @@ private struct Game: Decodable {
 
 // MARK: - friends data
 private struct ResponseFriends: Decodable {
-    let friendslist: FriendsList?
+    let friendslist: FriendsList
 }
 
 private struct FriendsList: Decodable {
-    let friends: [Friend]?
+    let friends: [Friend]
 }
 
 private struct Friend: Decodable {

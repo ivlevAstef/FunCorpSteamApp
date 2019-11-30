@@ -12,9 +12,17 @@ import SwiftLazy
 
 public final class Navigator
 {
-    public private(set) lazy var controller: UINavigationController = {
-        return controllerProvider.value
-    }()
+    public var controller: UINavigationController {
+        if let controller = _controller {
+            return controller
+        }
+
+        let newController = controllerProvider.value
+        _controller = newController
+        return newController
+    }
+
+    private weak var _controller: UINavigationController?
 
     public var showNavigationBar: Bool = true {
         didSet {

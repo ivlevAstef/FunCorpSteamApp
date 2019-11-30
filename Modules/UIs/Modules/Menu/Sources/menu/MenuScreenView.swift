@@ -48,6 +48,7 @@ final class MenuScreenView: ApTabBarController, UITabBarControllerDelegate, Menu
     }
 
     private func configureViewControllers() {
+        var selectedIndex: Int = 0
         var newViewControllers: [UIViewController] = []
         for viewModel in viewModels {
             if !viewModel.viewGetter.hasCallback() {
@@ -63,9 +64,14 @@ final class MenuScreenView: ApTabBarController, UITabBarControllerDelegate, Menu
             let vc = navigator.controller
             vc.tabBarItem = UITabBarItem(title: viewModel.title, image: viewModel.icon.image, tag: 0)
 
+            if viewModel.selected {
+                selectedIndex = newViewControllers.count
+            }
+
             newViewControllers.append(vc)
         }
 
         viewControllers = newViewControllers
+        self.selectedIndex = selectedIndex
     }
 }

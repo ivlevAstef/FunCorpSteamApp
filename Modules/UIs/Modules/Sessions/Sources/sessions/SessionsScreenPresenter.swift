@@ -9,13 +9,13 @@
 
 import Common
 
-protocol SessionsScreenViewContract
+protocol SessionsScreenViewContract: class
 {
 }
 
 final class SessionsScreenPresenter
 {
-    private let view: SessionsScreenViewContract
+    private weak var view: SessionsScreenViewContract?
 
     init(view: SessionsScreenViewContract) {
         self.view = view

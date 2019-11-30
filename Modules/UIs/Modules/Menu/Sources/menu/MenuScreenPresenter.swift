@@ -20,7 +20,7 @@ final class MenuScreenPresenter
     let myProfileGetter = Getter<Navigator, IRouter>()
     let sessionsGetter = Getter<Navigator, IRouter>()
 
-    private let view: MenuScreenViewContract
+    private weak var view: MenuScreenViewContract?
 
     init(view: MenuScreenViewContract) {
         self.view = view
@@ -31,20 +31,23 @@ final class MenuScreenPresenter
     }
 
     private func configure() {
-        view.viewModels = [
+        view?.viewModels = [
             MenuViewModel(
                 icon: ConstImage(named: "tabbarNews"),
                 title: loc["SteamMenu.News"],
+                selected: false,
                 viewGetter: newsGetter
             ),
             MenuViewModel(
                 icon: ConstImage(named: "tabbarProfile"),
                 title: loc["SteamMenu.Profile"],
+                selected: true,
                 viewGetter: myProfileGetter
             ),
             MenuViewModel(
                 icon: ConstImage(named: "tabbarSessions"),
                 title: loc["SteamMenu.Sessions"],
+                selected: false,
                 viewGetter: sessionsGetter
             ),
         ]

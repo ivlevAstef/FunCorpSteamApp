@@ -60,7 +60,6 @@ final class ProfileRouter: IRouter
 
     private func presentProfileScreen(steamId: SteamID, on navigator: Navigator) {
         let presentedNavigator = navigator.copy()
-
         let screen = makeProfileScreen(steamId: steamId, use: presentedNavigator)
         presentedNavigator.push(screen.view)
 

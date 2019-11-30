@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Common"),
-        .package(url: "https://github.com/ivlevAstef/DITranquillity.git", from: "3.9.0")
+        .package(url: "https://github.com/ivlevAstef/DITranquillity.git", from: "3.9.1")
     ],
     targets: [
         .target(name: "Core", dependencies: [

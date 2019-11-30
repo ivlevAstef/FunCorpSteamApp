@@ -83,7 +83,9 @@ extension FriendsTableView: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if case let .done(content) = friendsViewModels[indexPath.row].state {
-            content.tapNotifier.notify(())
+            DispatchQueue.main.async {
+                content.tapNotifier.notify(())
+            }
         }
 
         tableView.deselectRow(at: indexPath, animated: true)

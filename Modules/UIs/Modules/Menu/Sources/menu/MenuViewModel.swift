@@ -12,6 +12,7 @@ import Common
 struct MenuViewModel {
     let icon: ConstImage
     let title: String
+    let selected: Bool
 
     let viewGetter: Getter<Navigator, IRouter>
 }

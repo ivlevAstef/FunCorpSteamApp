@@ -138,11 +138,15 @@ extension ProfileTableView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
             if case let .done(viewModel) = profileViewModel {
-                viewModel.tapNotifier.notify(())
+                DispatchQueue.main.async {
+                    viewModel.tapNotifier.notify(())
+                }
             }
         } else {
             if case let .done(viewModel) = gamesViewModels[indexPath.row] {
-                viewModel.tapNotifier.notify(())
+                DispatchQueue.main.async {
+                    viewModel.tapNotifier.notify(())
+                }
             }
         }
 

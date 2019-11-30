@@ -79,8 +79,8 @@ final class AuthScreenView: ApViewController, AuthScreenViewContract
         steamAuthButton.addTarget(self, action: #selector(clickOnSteamAuthButton), for: .touchDown)
 
         containerView.snp.makeConstraints { maker in
-            maker.left.equalToSuperview()
-            maker.right.equalToSuperview()
+            maker.left.equalToSuperview().offset(24.0)
+            maker.right.equalToSuperview().offset(-24.0)
             maker.centerY.equalToSuperview()
         }
 

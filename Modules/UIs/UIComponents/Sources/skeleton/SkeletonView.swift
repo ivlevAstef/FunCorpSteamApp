@@ -17,7 +17,7 @@ public final class SkeletonView: UIView {
     }
 
     private let gradientLayer = CAGradientLayer()
-    private var gradient: Gradient = Gradient(from: .white, to: .white)
+    private var gradient: Gradient = Gradient(from: .brown, to: .brown)
     private var failedColor: UIColor = .red
 
     private var state: State = .stopped
