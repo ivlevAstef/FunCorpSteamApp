@@ -14,29 +14,38 @@ extension UIView {
         if !subviews.contains(where: { $0 is SkeletonView }) {
             let subview = SkeletonView()
             addSubview(subview)
+
             subview.snp.makeConstraints { maker in
                 maker.edges.equalToSuperview()
             }
         }
 
-        let skeletons = subviews.compactMap({ $0 as? SkeletonView })
+        let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
 
-        for subview in skeletons {
+        for subview in skeletonViews {
             subview.start()
         }
 
-        return skeletons.last!
+        return skeletonViews.last!
     }
 
     public func endSkeleton() {
-        for subview in subviews.compactMap({ $0 as? SkeletonView }) {
-            subview.end()
-            subview.removeFromSuperview()
-        }
+        let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
+        UIView.animate(withDuration: 0.15, animations: {
+            for subview in skeletonViews {
+                subview.alpha = 0.0
+            }
+        }, completion: { _ in
+            for subview in skeletonViews {
+                subview.end()
+                subview.removeFromSuperview()
+            }
+        })
     }
 
     public func failedSkeleton() {
-        for subview in subviews.compactMap({ $0 as? SkeletonView }) {
+        let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
+        for subview in skeletonViews {
             subview.failed()
         }
     }

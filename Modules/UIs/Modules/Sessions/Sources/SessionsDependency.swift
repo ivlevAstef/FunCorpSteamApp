@@ -17,7 +17,7 @@ final class SessionsDependency: DIFramework
 
         container.register(SessionsScreen.init)
             .lifetime(.prototype)
-        container.register { SessionsScreenView(nibName: nil, bundle: nil) }
+        container.register { SessionsScreenView() }
             .as(SessionsScreenViewContract.self)
             .lifetime(.objectGraph)
         container.register(SessionsScreenPresenter.init)

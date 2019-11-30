@@ -18,6 +18,7 @@ protocol FriendsScreenViewContract: class
     func failedLoading()
 
     func updateFriends(_ friends: [FriendViewModel])
+    func updateFriend(_ friend: FriendViewModel)
 
     func showError(_ text: String)
 }
@@ -38,6 +39,7 @@ final class FriendsScreenPresenter
     private var isFirstRefresh: Bool = true
 
     private var friends: [FriendViewModel] = []
+    private var loadedFriends: [SteamFriend] = []
     // Дабы слишком часто не дергать запросы
     private var lastLoadingProfiles: [SteamID: Date] = [:]
 
@@ -93,6 +95,12 @@ final class FriendsScreenPresenter
     }
 
     private func processFriends(_ result: [SteamFriend]) {
+        /// Зачем обновлять не измененное?
+        if loadedFriends == result {
+            return
+        }
+        loadedFriends = result
+
         friends = result.map { friend in
             // Если до этого была уже модель, то не будем её терять
             if let viewModel = friends.first(where: { $0.steamId == friend.steamId }) {
@@ -111,6 +119,11 @@ final class FriendsScreenPresenter
             return
         }
 
+        // Если модели идентичны, то обновлять смысла нет.
+        if friends[index] == viewModel {
+            return
+        }
+
         if case .done = friends[index].state {
             // Если старое состояние, что все хорошо, а новое нет, то зачем перетирать хорошие данные?
             if case .done = viewModel.state { } else {
@@ -119,7 +132,7 @@ final class FriendsScreenPresenter
         }
 
         friends[index] = viewModel
-        view?.updateFriends(friends)
+        view?.updateFriend(viewModel)
     }
 
     private func makeFriendViewModel(steamId: SteamID, state: FriendViewModel.State) -> FriendViewModel {
@@ -134,6 +147,12 @@ final class FriendsScreenPresenter
         // Защита от того, чтобы лишний раз не грузить.
         // Без подобного хака, во первых уйдет в бесконечную перезагрузку, а во вторых дергать по любому поводу, тоже не ок.
         if let date = lastLoadingProfiles[steamId], date.timeIntervalSinceNow + profileLoadCooldown > 0 {
+            return
+        }
+
+        /// Уже загруженные профиля друзей не перезагружаем - да могут устареть, но тут шанс почти нулевой.
+        if let friend = friends.first(where: { $0.steamId == steamId }),
+           case .done = friend.state {
             return
         }
 
@@ -161,6 +180,7 @@ final class FriendsScreenPresenter
 
         let content = FriendViewModel.Content(
             avatar: cachedContent?.avatar ?? ChangeableImage(placeholder: nil, image: nil),
+            avatarURL: profile.avatarURL,
             avatarLetter: String(profile.nickName.prefix(2)),
             nick: profile.nickName,
             tapNotifier: Notifier<Void>()

@@ -10,8 +10,6 @@ import UIKit
 import Common
 import Design
 
-private class AvatarUnique {}
-
 open class AvatarView: IdImageView {
 
     public init() {

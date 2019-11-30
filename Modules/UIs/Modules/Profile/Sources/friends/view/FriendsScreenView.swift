@@ -54,6 +54,10 @@ final class FriendsScreenView: ApViewController, FriendsScreenViewContract
         tableView.updateFriends(friends)
     }
 
+    func updateFriend(_ friend: FriendViewModel) {
+        tableView.updateFriend(friend)
+    }
+
     // MARK: - other
 
     func showError(_ text: String) {

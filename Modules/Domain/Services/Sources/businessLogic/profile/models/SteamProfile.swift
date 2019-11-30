@@ -44,8 +44,9 @@ public struct SteamProfile: Equatable
     public let avatarURL: URL?
     public let mediumAvatarURL: URL?
     /// Когда пользователь был последний раз онлайн
-    public let lastlogoff: Date
+    public let lastlogoff: Date?
 
+    public let hasCommunityProfile: Bool
     public let visibilityState: VisibilityState
 
     private init() { fatalError("Not support empty initialization") }
@@ -59,7 +60,8 @@ extension SteamProfile
         nickName: String,
         avatarURL: URL?,
         mediumAvatarURL: URL?,
-        lastlogoff: Date,
+        lastlogoff: Date?,
+        hasCommunityProfile: Bool,
         visibilityState: VisibilityState
     ) {
         self.steamId = steamId
@@ -68,6 +70,7 @@ extension SteamProfile
         self.avatarURL = avatarURL
         self.mediumAvatarURL = mediumAvatarURL
         self.lastlogoff = lastlogoff
+        self.hasCommunityProfile = hasCommunityProfile
         self.visibilityState = visibilityState
     }
 }

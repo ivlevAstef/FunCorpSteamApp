@@ -15,9 +15,9 @@ open class ApTableViewCell: UITableViewCell, StylizingView
     public var stylizingSubviews = WeakArray<StylizingView>()
 
     open func apply(use style: Design.Style) {
-        contentView.backgroundColor = style.colors.accent
+        self.backgroundColor = style.colors.accent
 
-        selectionStyle = .none
+        selectionStyle = .default
         let selectedView = UIView()
         selectedView.backgroundColor = style.colors.separator
         selectedBackgroundView = selectedView

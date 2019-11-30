@@ -16,8 +16,10 @@ final class SteamProfileData: Object, LimitedUpdated {
     @objc dynamic var _nickName: String = ""
     @objc dynamic var _avatarURL: String? = nil
     @objc dynamic var _mediumAvatarURL: String? = nil
-    @objc dynamic var _lastlogoff: Date = Date()
+    @objc dynamic var _lastlogoff: Date? = nil
 
+
+    @objc dynamic var _hasCommunityProfile: Bool = false
     @objc dynamic var _visibleState: Int = 0
     @objc dynamic var _state: Int = 0
     @objc dynamic var _realName: String? = nil
@@ -98,6 +100,7 @@ extension SteamProfileData {
             avatarURL: _avatarURL.flatMap{ URL(string: $0) },
             mediumAvatarURL: _mediumAvatarURL.flatMap{ URL(string: $0) },
             lastlogoff: _lastlogoff,
+            hasCommunityProfile: _hasCommunityProfile,
             visibilityState: visibleState
         )
     }

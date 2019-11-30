@@ -44,7 +44,7 @@ final class ProfileGameCell: ApTableViewCell {
             nameLabel.endSkeleton()
             timeLabel.endSkeleton()
             
-            viewModel.icon.weakJoin(imageView: iconImageView, owner: self, completion: { [weak iconImageView] in
+            viewModel.icon.join(imageView: iconImageView, completion: { [weak iconImageView] in
                 iconImageView?.endSkeleton()
             })
 

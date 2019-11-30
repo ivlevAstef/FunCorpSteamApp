@@ -8,6 +8,10 @@
 
 import UIKit
 
+public final class AbstractImageUnique {
+    public init() { }
+}
+
 public final class ChangeableImage
 {
     private let changeImageNotifier = Notifier<UIImage?>()
@@ -46,23 +50,29 @@ public final class ChangeableImage
     public func join(
         listener: @escaping (UIImage?) -> Void,
         file: String = #file, line: UInt = #line) {
-        runFetching()
         changeImageNotifier.join(listener: listener, file: file, line: line)
+        runFetchingAndIfNeededNotify()
     }
 
     public func weakJoin<Owner: AnyObject>(
         listener: @escaping (Owner, UIImage?) -> Void,
         owner: Owner,
         file: String = #file, line: UInt = #line) {
-        runFetching()
         changeImageNotifier.weakJoin(listener: listener, owner: owner, file: file, line: line)
+        runFetchingAndIfNeededNotify()
     }
 
-    private func runFetching() {
+    private func runFetchingAndIfNeededNotify() {
         DispatchQueue.mainSync {
-            isFetching = true
+            if isFetching {
+                return
+            }
+
             if currentImage === placeholder || nil == currentImage {
+                isFetching = true
                 fetcher?()
+            } else {
+                changeImageNotifier.notify(currentImage)
             }
         }
     }
@@ -71,18 +81,18 @@ public final class ChangeableImage
 // MARK: - UIImageView
 extension ChangeableImage {
     public func join(imageView: UIImageView, file: String = #file, line: UInt = #line) {
-        runFetching()
         imageView.image = image
         join(listener: { [weak imageView] image in
             imageView?.image = image
         }, file: file, line: line)
+        runFetchingAndIfNeededNotify()
     }
 
     public func join(imageView: UIImageView, owner: AnyObject, file: String = #file, line: UInt = #line) {
-        runFetching()
         imageView.image = image
         weakJoin(listener: { [weak imageView] (_, image) in
             imageView?.image = image
         }, owner: owner, file: file, line: line)
+        runFetchingAndIfNeededNotify()
     }
 }

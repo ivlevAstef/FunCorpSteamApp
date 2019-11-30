@@ -19,14 +19,14 @@ public struct Style
         public let accent: UIColor
         /// used for separate cell or other views. Also used for select cell
         public let separator: UIColor
-        /// used for navigation bar
-        public let barStyle: UIBarStyle
-        /// used for navigation bar buttons, or other small elements. for example icons
-        public let tint: UIColor
+
         /// use for show skeleton loading
         public let skeleton: Gradient
         /// use for show skeleton failed loading
         public let skeletonFailed: UIColor
+
+        /// used for navigation bar buttons, or other small elements. for example icons
+        public let tint: UIColor
 
         // MARK: - text
         /// main text

@@ -35,10 +35,10 @@ public class StyleMaker
             case .light:
                 return ConstColors.lightColors
             default:
-                return ConstColors.darkColors
+                return ConstColors.defaultColors
             }
         } else {
-            return ConstColors.darkColors
+            return ConstColors.defaultColors
         }
    }
 

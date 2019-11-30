@@ -33,6 +33,22 @@ final class FriendsTableView: ApTableView
         reloadData()
     }
 
+    func updateFriend(_ friend: FriendViewModel) {
+        log.assert(Thread.isMainThread, "Thread.isMainThread")
+
+        if let index = friendsViewModels.firstIndex(where: { $0.steamId == friend.steamId }) {
+            friendsViewModels[index] = friend
+            /// Не через reload, так как такой способ быстрее, и не приводит к архифактам скролла
+            for cell in visibleCells {
+                if let friendCell = cell as? FriendCell, friendCell.visibleViewModel?.steamId == friend.steamId {
+                    friendCell.configure(friend)
+                }
+            }
+        } else {
+            log.assert("Can't found friend in table view models...")
+        }
+    }
+
     private func commonInit() {
         register(FriendCell.self, forCellReuseIdentifier: FriendCell.identifier)
         self.dataSource = self
@@ -57,10 +73,6 @@ extension FriendsTableView: UITableViewDelegate, UITableViewDataSource {
 
     private func calculateHeight(for indexPath: IndexPath) -> CGFloat {
         return FriendCell.preferredHeight
-    }
-
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0.0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

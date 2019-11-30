@@ -9,12 +9,11 @@
 
 import UIKit
 import Common
+import UIComponents
 
-final class SessionsScreenView: UIViewController, SessionsScreenViewContract
+final class SessionsScreenView: ApViewController, SessionsScreenViewContract
 {
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .cyan
     }
 }

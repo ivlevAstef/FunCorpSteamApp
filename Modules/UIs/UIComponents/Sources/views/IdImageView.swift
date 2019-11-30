@@ -12,6 +12,7 @@ import Common
 open class IdImageView: UIImageView
 {
     fileprivate var owner: ChangeableImage?
+    fileprivate var unique = AbstractImageUnique()
 }
 
 // MARK: - UIImageView
@@ -20,23 +21,12 @@ extension ChangeableImage {
         imageView.image = image
         imageView.owner = self
 
-        join(listener: { [weak self, weak imageView] image in
-            if imageView?.owner === self {
-                imageView?.image = image
-                completion?()
-            }
-        }, file: file, line: line)
-    }
-
-    public func weakJoin(imageView: IdImageView, owner: AnyObject, completion: (() -> Void)? = nil, file: String = #file, line: UInt = #line) {
-        imageView.image = image
-        imageView.owner = self
-
+        imageView.unique = AbstractImageUnique()
         weakJoin(listener: { [weak self, weak imageView] (_, image) in
             if imageView?.owner === self {
                 imageView?.image = image
                 completion?()
             }
-        }, owner: owner, file: file, line: line)
+        }, owner: imageView.unique, file: file, line: line)
     }
 }

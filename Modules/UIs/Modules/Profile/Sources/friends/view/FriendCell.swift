@@ -22,7 +22,8 @@ final class FriendCell: ApTableViewCell
     static let preferredHeight: CGFloat = 52.0
     static let identifier = "\(FriendCell.self)"
 
-    private var placeholderUpdater: ((Style) -> Void)?
+    private(set) var visibleViewModel: FriendViewModel?
+
     private let avatarView = SteamAvatarView()
     private let nickNameLabel = UILabel(frame: .zero)
 
@@ -36,6 +37,8 @@ final class FriendCell: ApTableViewCell
     }
 
     func configure(_ viewModel: FriendViewModel) {
+        self.visibleViewModel = viewModel
+
         switch viewModel.state {
         case .loading:
             contentView.subviews.forEach { stylizingSubviews.append($0.startSkeleton()) }
@@ -46,12 +49,7 @@ final class FriendCell: ApTableViewCell
         case .done(let content):
             nickNameLabel.endSkeleton()
 
-            placeholderUpdater = { style in
-                let avatarPlaceholder = AvatarView.generateAvatar(letter: content.avatarLetter, size: Consts.avatarSize, style: style)
-                content.avatar.updatePlaceholder(avatarPlaceholder)
-            }
-
-            content.avatar.weakJoin(imageView: avatarView, owner: self, completion: { [weak avatarView] in
+            content.avatar.join(imageView: avatarView, completion: { [weak avatarView] in
                 avatarView?.endSkeleton()
             })
 
@@ -75,7 +73,7 @@ final class FriendCell: ApTableViewCell
     override func apply(use style: Style) {
         super.apply(use: style)
 
-        placeholderUpdater?(style)
+        avatarView.backgroundColor = style.colors.accent
         avatarView.apply(use: style)
 
         nickNameLabel.font = style.fonts.large

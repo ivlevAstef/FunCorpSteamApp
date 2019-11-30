@@ -53,6 +53,13 @@ public final class SkeletonView: UIView {
 
         if !prevSize.equalTo(frame.size) {
             prevSize = frame.size
+
+            layer.cornerRadius = min(frame.size.width, frame.size.height) * 0.1
+            // Переносим скругление с родителя, если оно у него есть
+            if let superCornerRadius = superview?.layer.cornerRadius, superCornerRadius >= 1 {
+                layer.cornerRadius = superCornerRadius
+            }
+
             update()
         }
     }
@@ -74,6 +81,9 @@ public final class SkeletonView: UIView {
 
         if state == .failed {
             gradientLayer.colors = [failedColor.cgColor, failedColor.cgColor]
+            gradientLayer.locations = [0.0, 1.0]
+        } else if state == .stopped {
+            gradientLayer.colors = [UIColor.clear.cgColor, UIColor.clear.cgColor]
             gradientLayer.locations = [0.0, 1.0]
         } else {
             gradientLayer.colors = [gradient.from.cgColor, gradient.to.cgColor, gradient.from.cgColor]

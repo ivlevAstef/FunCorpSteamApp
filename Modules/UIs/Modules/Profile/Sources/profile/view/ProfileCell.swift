@@ -51,7 +51,7 @@ final class ProfileCell: ApTableViewCell
                 viewModel.avatar.updatePlaceholder(avatarPlaceholder)
             }
 
-            viewModel.avatar.weakJoin(imageView: avatarView, owner: self, completion: { [weak avatarView] in
+            viewModel.avatar.join(imageView: avatarView, completion: { [weak avatarView] in
                 avatarView?.endSkeleton()
             })
 

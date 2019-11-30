@@ -118,7 +118,8 @@ class SteamProfileNetworkImpl: SteamProfileNetwork
             nickName: result.personaname,
             avatarURL: URL(string: result.avatarfull),
             mediumAvatarURL: URL(string: result.avatarmedium),
-            lastlogoff: result.lastlogoff.unixTimeToDate,
+            lastlogoff: result.lastlogoff?.unixTimeToDate,
+            hasCommunityProfile: result.profilestate == 1,
             visibilityState: visibilityState
         )
     }
@@ -191,7 +192,7 @@ private struct Player: Decodable {
     /// Have community profile or not. 1	- have
     let profilestate: Int?
     /// unix time
-    let lastlogoff: Int64
+    let lastlogoff: Int64?
 
     /// 32x32
     let avatar: String
