@@ -14,6 +14,8 @@ protocol FriendsScreenViewContract: class
 {
     var needUpdateNotifier: Notifier<Void> { get }
 
+    func setTitle(_ text: String)
+
     func beginLoading()
     func failedLoading()
 
@@ -31,6 +33,7 @@ final class FriendsScreenPresenter
     let tapOnProfileNotifier = Notifier<SteamID>()
 
     private weak var view: FriendsScreenViewContract?
+    private let authService: SteamAuthService
     private let profileService: SteamProfileService
     private let friendsService: SteamFriendsService
     private let imageService: ImageService
@@ -44,16 +47,28 @@ final class FriendsScreenPresenter
     private var lastLoadingProfiles: [SteamID: Date] = [:]
 
     init(view: FriendsScreenViewContract,
+         authService: SteamAuthService,
          profileService: SteamProfileService,
          friendsService: SteamFriendsService,
          imageService: ImageService) {
         self.view = view
+        self.authService = authService
         self.profileService = profileService
         self.friendsService = friendsService
         self.imageService = imageService
     }
 
     func configure(steamId: SteamID) {
+        view?.setTitle(loc["SteamFriends.Title"])
+
+        if authService.steamId != steamId {
+            profileService.getProfile(for: steamId) { [weak view] result in
+                if case .success(let profile) = result {
+                    view?.setTitle(loc["SteamFriends.Title"] + " \(profile.nickName)")
+                }
+            }
+        }
+
         friendsService.getNotifier(for: steamId).weakJoin(listener: { (self, result) in
             self.processFriendsResult(result)
         }, owner: self)

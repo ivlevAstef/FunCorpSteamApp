@@ -42,6 +42,10 @@ final class FriendsScreenView: ApViewController, FriendsScreenViewContract
         needUpdateNotifier.notify(())
     }
 
+    func setTitle(_ text: String) {
+        title = text
+    }
+
     func beginLoading() {
         tableView.updateFriends(Array(repeating: FriendViewModel(empty: .loading), count: 8))
     }
