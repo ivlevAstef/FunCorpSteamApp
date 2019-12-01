@@ -59,11 +59,18 @@ final class ProfileRouter: IRouter
     }
 
     private func presentProfileScreen(steamId: SteamID, on navigator: Navigator) {
-        let presentedNavigator = navigator.copy()
-        let screen = makeProfileScreen(steamId: steamId, use: presentedNavigator)
-        presentedNavigator.push(screen.view)
+        // При первом показе показываем present, а все остальные пушом.
+        // Дабы была возможность легко закрыть всех друзей, ну и лагов не было из-за кучи present на ios13
+        if nil == self.navigator.controller.presentedViewController {
+            let presentedNavigator = navigator.copy()
+            let screen = makeProfileScreen(steamId: steamId, use: presentedNavigator)
+            presentedNavigator.push(screen.view)
 
-        navigator.present(presentedNavigator.controller)
+            navigator.present(presentedNavigator.controller)
+        } else {
+            let screen = makeProfileScreen(steamId: steamId, use: navigator)
+            navigator.push(screen.view)
+        }
     }
 
     private func makeProfileScreen(steamId: SteamID, use navigator: Navigator) -> ProfileScreen {
