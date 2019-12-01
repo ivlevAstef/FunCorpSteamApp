@@ -91,13 +91,11 @@ final class GameInfoScreenPresenter
 
     private func processProfileGameInfoResult(_ result: SteamProfileGameInfoResult) {
         switch result {
-        case .failure(.cancelled):
+        case .failure(.cancelled), .failure(.incorrectResponse):
             break
         case .failure(.notConnection):
             view?.showError(loc["Errors.NotConnect"])
-        case .failure(.incorrectResponse):
-            view?.showError(loc["Errors.IncorrectResponse"])
-
+        
         case .success(let game):
             processGameInfo(game)
         }
@@ -111,10 +109,11 @@ final class GameInfoScreenPresenter
         let viewModel = GameInfoViewModel(
             icon: cachedGameInfoViewModel?.icon ?? ChangeableImage(placeholder: nil, image: nil),
             name: profileGameInfo.gameInfo.name,
-            playtimeForeverPrefix: loc["SteamGame.PlayTimeForeverPrefix"],
+            playtimeForeverPrefix: loc["Game.PlayTimeForeverPrefix"],
             playtimeForever: profileGameInfo.playtimeForever,
-            playtime2weeksPrefix: loc["SteamGame.PlayTime2weeksPrefix"],
-            playtime2weeks: profileGameInfo.playtime2weeks
+            playtime2weeksPrefix: loc["Game.PlayTime2weeksPrefix"],
+            playtime2weeks: profileGameInfo.playtime2weeks,
+            playtime2weeksSuffix: loc["Game.PlayTime2weeksSuffix"]
         )
         cachedGameInfoViewModel = viewModel
 
@@ -127,9 +126,10 @@ final class GameInfoScreenPresenter
 
     private func processAchievementsSummaryResult(_ result: SteamAchievementsSummaryResult) {
         switch result {
-        case .failure:
-            // Тут не будем показывать ошибки, так как не настолько важная информация, а глючит она частенько...
+        case .failure(.cancelled), .failure(.incorrectResponse):
             break
+        case .failure(.notConnection):
+            view?.showError(loc["Errors.NotConnect"])
 
         case .success(let achievementsSummary):
             processAchievementsSummary(achievementsSummary)

@@ -10,7 +10,7 @@ import Foundation
 import Common
 import Services
 
-class SteamGameNetworkImpl: SteamGameNetwork
+final class SteamGameNetworkImpl: SteamGameNetwork
 {
     private let session: NetworkSession
 

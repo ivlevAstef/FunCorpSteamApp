@@ -17,6 +17,7 @@ import Menu
 
 import Profile
 import GameInformation
+import Sessions
 
 final class AppRouter: IRouter
 {
@@ -37,6 +38,7 @@ final class AppRouter: IRouter
         StartPoints.menu.subscribersFiller = subscriberFiller
 
         StartPoints.profile.subscribersFiller = subscriberFiller
+        StartPoints.sessions.subscribersFiller = subscriberFiller
     }
 
     func start(parameters: RoutingParamaters) {
@@ -95,6 +97,13 @@ final class AppRouter: IRouter
     }
 
     private func subscriberFiller(_ navigator: Navigator, subscribers: ProfileStartPoint.Subscribers) {
+        subscribers.tapOnGameNotifier.join(listener: { (steamId, gameId, navigator) in
+            let router = StartPoints.gameInfo.makeRouter(use: navigator)
+            router.start(parameters: StartPoints.gameInfo.makeParams(steamId: steamId, gameId: gameId))
+        })
+    }
+
+    private func subscriberFiller(_ navigator: Navigator, subscribers: SessionsStartPoint.Subscribers) {
         subscribers.tapOnGameNotifier.join(listener: { (steamId, gameId, navigator) in
             let router = StartPoints.gameInfo.makeRouter(use: navigator)
             router.start(parameters: StartPoints.gameInfo.makeParams(steamId: steamId, gameId: gameId))

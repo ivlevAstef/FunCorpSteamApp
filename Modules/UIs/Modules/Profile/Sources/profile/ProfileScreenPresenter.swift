@@ -98,12 +98,10 @@ final class ProfileScreenPresenter
 
     private func processProfileResult(_ result: SteamProfileResult) {
         switch result {
-        case .failure(.cancelled):
+        case .failure(.cancelled), .failure(.incorrectResponse):
             break
         case .failure(.notConnection):
             view?.showError(loc["Errors.NotConnect"])
-        case .failure(.incorrectResponse):
-            view?.showError(loc["Errors.IncorrectResponse"])
 
         case .success(let profile):
             processProfile(profile)
@@ -144,13 +142,11 @@ final class ProfileScreenPresenter
 
     private func processProfileGamesInfoResult(_ result: SteamProfileGamesInfoResult) {
         switch result {
-        case .failure(.cancelled):
+        case .failure(.cancelled), .failure(.incorrectResponse):
             break
         case .failure(.notConnection):
             view?.showError(loc["Errors.NotConnect"])
-        case .failure(.incorrectResponse):
-            view?.showError(loc["Errors.IncorrectResponse"])
-
+        
         case .success(let games):
             processGamesInfo(games)
         }
@@ -166,7 +162,7 @@ final class ProfileScreenPresenter
             let viewModel = ProfileGameInfoViewModel(
                 icon: cachedViewModel?.icon ?? ChangeableImage(placeholder: nil, image: nil),
                 name: profileGame.gameInfo.name,
-                playtimePrefix: loc["SteamProfile.Game.PlayTimePrefix"],
+                playtimePrefix: loc["Game.PlayTimeForeverPrefix"],
                 playtime: profileGame.playtimeForever,
                 tapNotifier: Notifier<Void>()
             )

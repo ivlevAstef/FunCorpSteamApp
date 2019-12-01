@@ -25,6 +25,8 @@ public struct Style
         /// use for show skeleton failed loading
         public let skeletonFailed: UIColor
 
+        /// used for navigation bar
+        public let barStyle: UIBarStyle
         /// used for navigation bar buttons, or other small elements. for example icons
         public let tint: UIColor
 

@@ -31,7 +31,7 @@ class SteamGameStorageImpl: SteamGameStorage {
 
     func fetchScheme(by gameId: SteamGameID, loc: SteamLocalization) -> StorageResult<SteamGameScheme> {
         let primaryKey = SteamGameSchemeData.generatePrimaryKey(gameId: gameId, loc: loc)
-        let data = realm.threadSafe?.object(ofType: SteamGameSchemeData.self, forPrimaryKey: primaryKey)
+        let data = realm.ts?.object(ofType: SteamGameSchemeData.self, forPrimaryKey: primaryKey)
         return dataToResult(data, updateInterval: gameSchemeUpdateInterval, map: { $0.scheme })
     }
 

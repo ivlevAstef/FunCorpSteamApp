@@ -30,6 +30,10 @@ final class StorageDependency: DIFramework
         container.register(SteamGameStorageImpl.init)
             .as(SteamGameStorage.self)
             .lifetime(.prototype)
+
+        container.register(SteamSessionsStorageImpl.init)
+            .as(SteamSessionsStorage.self)
+            .lifetime(.prototype)
     }
 }
 

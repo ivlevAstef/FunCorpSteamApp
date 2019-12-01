@@ -10,7 +10,7 @@ import Foundation
 import Common
 import Services
 
-class SteamAuthNetworkImpl: SteamAuthNetwork
+final class SteamAuthNetworkImpl: SteamAuthNetwork
 {
     private let appRedirectName = "funcorp.steam.app"
 

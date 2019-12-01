@@ -35,7 +35,7 @@ final class MenuScreenView: ApTabBarController, UITabBarControllerDelegate, Menu
     override func styleDidChange(_ style: Style) {
         super.styleDidChange(style)
 
-        tabBar.barStyle = .default
+        tabBar.barStyle = style.colors.barStyle
         tabBar.tintColor = style.colors.tint
     }
 

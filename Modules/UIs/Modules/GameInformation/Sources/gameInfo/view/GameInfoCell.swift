@@ -53,7 +53,9 @@ final class GameInfoCell: ApTableViewCell
 
             nameLabel.text = viewModel.name
             timeForeverLabel.text = viewModel.playtimeForeverPrefix + viewModel.playtimeForever.adaptiveString
-            time2weeksLabel.text = viewModel.playtime2weeksPrefix + viewModel.playtime2weeks.adaptiveString
+            time2weeksLabel.text = viewModel.playtime2weeksPrefix +
+                viewModel.playtime2weeks.adaptiveString +
+                viewModel.playtime2weeksSuffix
         }
     }
 

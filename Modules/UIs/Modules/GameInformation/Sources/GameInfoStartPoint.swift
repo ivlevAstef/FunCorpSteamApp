@@ -14,7 +14,7 @@ import Services
 public final class GameInfoStartPoint: UIStartPoint
 {
     public enum RoutingOptions {
-        public static let steamId = "ProfileSteamId"
+        public static let steamId = "SteamId"
         public static let gameId = "GameId"
     }
 

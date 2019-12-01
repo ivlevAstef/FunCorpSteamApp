@@ -26,6 +26,10 @@ final class NetworkDependency: DIFramework
         container.register(SteamGameNetworkImpl.init)
             .as(SteamGameNetwork.self)
             .lifetime(.prototype)
+
+        container.register(SteamSessionsNetworkImpl.init)
+            .as(SteamSessionsNetwork.self)
+            .lifetime(.prototype)
     }
 }
 

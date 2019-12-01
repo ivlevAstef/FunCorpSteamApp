@@ -15,7 +15,7 @@ import Services
 public final class ProfileStartPoint: UIStartPoint
 {
     public enum RoutingOptions {
-        public static let steamId = "ProfileSteamId"
+        public static let steamId = "SteamId"
         // TODO: в будущем можно будет поддержать переход сразу на друга, от себя (то есть с полной навигацией)
     }
 

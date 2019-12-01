@@ -11,7 +11,7 @@ import DITranquillity
 final class SessionsDependency: DIFramework
 {
     static func load(container: DIContainer) {
-        container.register { SessionsRouter(navigator: arg($0)) }
+        container.register { SessionsRouter(navigator: arg($0), authService: $1) }
             .injection(\.sessionsScreenProvider)
             .lifetime(.objectGraph)
 

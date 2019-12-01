@@ -54,6 +54,7 @@ public final class ChangeableImage
         runFetchingAndIfNeededNotify()
     }
 
+    // TODO: отказаться от этой фигни... Лучше возвращать объект, который бы отвечал за время жизни подписки.
     public func weakJoin<Owner: AnyObject>(
         listener: @escaping (Owner, UIImage?) -> Void,
         owner: Owner,

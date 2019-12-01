@@ -126,6 +126,7 @@ public final class Notifier<Result>
     public func weakJoin<Owner: AnyObject>(listener: @escaping (Owner, Result) -> Void,
                                            owner: Owner,
                                            file: String = #file, line: UInt = #line) {
+        // TODO: отказаться от этой фигни... Лучше возвращать объект, который бы отвечал за время жизни подписки.
         let name = file.components(separatedBy: ["\\","/"]).last ?? "unknown"
 
         locker.lock()
@@ -142,6 +143,7 @@ public final class Notifier<Result>
     /// If all retains removed from listeners then listener not notify about changes.
     /// - Parameter listener: If don't deinited notifier for receive result, and notify self listeners.
     public func weakJoin(_ listener: Notifier<Result>) {
+        // TODO: отказаться от этой фигни... Лучше возвращать объект, который бы отвечал за время жизни подписки.
         locker.lock()
         defer { locker.unlock() }
 
@@ -156,6 +158,7 @@ public final class Notifier<Result>
     /// - Parameter map: Method for convert result to listener result type.
     public func weakJoin<ListenerResult>(_ listener: Notifier<ListenerResult>,
                                          map: @escaping (Result) -> ListenerResult) {
+        // TODO: отказаться от этой фигни... Лучше возвращать объект, который бы отвечал за время жизни подписки.
         locker.lock()
         defer { locker.unlock() }
 
@@ -173,6 +176,7 @@ public final class Notifier<Result>
     public func weakJoin<ListenerResult, Owner: AnyObject>(_ listener: Notifier<ListenerResult>,
                                                            owner: Owner,
                                                            map: @escaping (Owner, Result) -> ListenerResult) {
+        // TODO: отказаться от этой фигни... Лучше возвращать объект, который бы отвечал за время жизни подписки.
         locker.lock()
         defer { locker.unlock() }
 

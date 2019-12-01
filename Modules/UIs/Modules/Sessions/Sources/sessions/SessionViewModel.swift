@@ -1,15 +1,15 @@
 //
-//  GameInfoViewModel.swift
-//  GameInformation
+//  SessionViewModel.swift
+//  Sessions
 //
-//  Created by Alexander Ivlev on 26/11/2019.
+//  Created by Alexander Ivlev on 01/12/2019.
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
 import Foundation
 import Common
 
-struct GameInfoViewModel
+struct SessionViewModel
 {
     let icon: ChangeableImage
     let name: String
@@ -20,4 +20,6 @@ struct GameInfoViewModel
     let playtime2weeksPrefix: String
     let playtime2weeks: TimeInterval
     let playtime2weeksSuffix: String
+
+    let tapNotifier: Notifier<Void>
 }

@@ -16,8 +16,6 @@ open class ApViewController: UIViewController {
 
     private let stylizingViewsContainer = StylizingViewsContainer()
 
-    private var updateStyleDelayWorkItem: DispatchWorkItem?
-
     public init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -33,7 +31,7 @@ open class ApViewController: UIViewController {
     open func styleDidChange(_ style: Style) {
         view.backgroundColor = style.colors.background
 
-        navigationController?.navigationBar.barStyle = .default
+        navigationController?.navigationBar.barStyle = style.colors.barStyle
         navigationController?.navigationBar.tintColor = style.colors.tint
 
         stylizingViewsContainer.styleDidChange(style)

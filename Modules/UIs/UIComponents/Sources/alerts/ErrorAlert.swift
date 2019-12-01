@@ -11,12 +11,14 @@ import Common
 
 public final class ErrorAlert
 {
-    private static var isShown: Bool = false
+    private static var onShownViewController = WeakArray<UIViewController>()
 
     public static func show(_ text: String, on viewController: UIViewController) {
         log.assert(Thread.isMainThread, "Thread.isMainThread")
 
-        if isShown {
+        let onShownVC = (viewController.navigationController ?? viewController)
+
+        if onShownViewController.contains(where: { $0 === onShownVC}) {
             return
         }
 
@@ -28,11 +30,11 @@ public final class ErrorAlert
             title: loc["Alert.Ok"],
             style: .default,
             handler: { _ in
-                isShown = false
+                onShownViewController.remove(onShownVC)
             }
         ))
         
-        isShown = true
-        (viewController.navigationController ?? viewController).present(alertController, animated: true)
+        onShownViewController.append(onShownVC)
+        onShownVC.present(alertController, animated: true)
     }
 }

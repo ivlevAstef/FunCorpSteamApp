@@ -1,8 +1,8 @@
 //
-//  ProfileGameCell.swift
-//  Profile
+//  SessionCell.swift
+//  Sessions
 //
-//  Created by Alexander Ivlev on 23/11/2019.
+//  Created by Alexander Ivlev on 01/12/2019.
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
@@ -17,13 +17,14 @@ private enum Consts {
     static let iconSize: CGFloat = 44.0
 }
 
-final class ProfileGameCell: ApTableViewCell {
-    static let preferredHeight: CGFloat = 54.0
-    static let identifier = "\(ProfileGameCell.self)"
+final class SessionCell: ApTableViewCell {
+    static let preferredHeight: CGFloat = 72.0
+    static let identifier = "\(SessionCell.self)"
 
     private let iconImageView = SteamGameImageView(image: nil)
     private let nameLabel = UILabel(frame: .zero)
-    private let timeLabel = UILabel(frame: .zero)
+    private let timeForeverLabel = UILabel(frame: .zero)
+    private let time2weeksLabel = UILabel(frame: .zero)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -34,7 +35,7 @@ final class ProfileGameCell: ApTableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(_ viewModel: SkeletonViewModel<ProfileGameInfoViewModel>) {
+    func configure(_ viewModel: SkeletonViewModel<SessionViewModel>) {
         switch viewModel {
         case .loading:
             contentView.subviews.forEach { stylizingSubviews.append($0.startSkeleton()) }
@@ -42,28 +43,35 @@ final class ProfileGameCell: ApTableViewCell {
             contentView.subviews.forEach { $0.failedSkeleton() }
         case .done(let viewModel):
             nameLabel.endSkeleton()
-            timeLabel.endSkeleton()
-            
+            timeForeverLabel.endSkeleton()
+            time2weeksLabel.endSkeleton()
+
             viewModel.icon.join(imageView: iconImageView, completion: { [weak iconImageView] in
                 iconImageView?.endSkeleton()
             })
 
             nameLabel.text = viewModel.name
-            timeLabel.text = viewModel.playtimePrefix + viewModel.playtime.adaptiveString
+            timeForeverLabel.text = viewModel.playtimeForeverPrefix + viewModel.playtimeForever.adaptiveString
+            time2weeksLabel.text = viewModel.playtime2weeksPrefix +
+                viewModel.playtime2weeks.adaptiveString +
+                viewModel.playtime2weeksSuffix
         }
     }
 
     private func commonInit() {
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+        timeForeverLabel.translatesAutoresizingMaskIntoConstraints = false
+        time2weeksLabel.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(iconImageView)
         contentView.addSubview(nameLabel)
-        contentView.addSubview(timeLabel)
+        contentView.addSubview(timeForeverLabel)
+        contentView.addSubview(time2weeksLabel)
 
         nameLabel.text = " "
-        timeLabel.text = " "
+        timeForeverLabel.text = " "
+        time2weeksLabel.text = " "
     }
 
     override func apply(use style: Style) {
@@ -76,9 +84,13 @@ final class ProfileGameCell: ApTableViewCell {
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.numberOfLines = 1
 
-        timeLabel.font = style.fonts.subtitle
-        timeLabel.textColor = style.colors.notAccentText
-        timeLabel.numberOfLines = 1
+        timeForeverLabel.font = style.fonts.subtitle
+        timeForeverLabel.textColor = style.colors.notAccentText
+        timeForeverLabel.numberOfLines = 1
+
+        time2weeksLabel.font = style.fonts.subtitle
+        time2weeksLabel.textColor = style.colors.notAccentText
+        time2weeksLabel.numberOfLines = 1
 
         relayout(use: style.layout)
     }
@@ -96,9 +108,15 @@ final class ProfileGameCell: ApTableViewCell {
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
         }
 
-        timeLabel.snp.remakeConstraints { maker in
+        timeForeverLabel.snp.remakeConstraints { maker in
             maker.top.equalTo(nameLabel.snp.bottom).offset(4.0)
             maker.left.equalTo(iconImageView.snp.right).offset(8.0)
+            maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
+        }
+
+        time2weeksLabel.snp.remakeConstraints { maker in
+            maker.top.equalTo(timeForeverLabel.snp.bottom).offset(2.0)
+            maker.left.equalTo(timeForeverLabel.snp.left)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
         }
     }
