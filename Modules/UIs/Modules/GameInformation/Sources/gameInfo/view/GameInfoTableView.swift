@@ -6,6 +6,7 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
+import Common
 import UIKit
 import UIComponents
 import Design
@@ -18,13 +19,19 @@ class GameInfoTableView: ApTableView
     private enum TypedSection {
         case gameInfo(Section<GameInfoViewModel>)
         case achievementsSummary(Section<AchievementsSummaryViewModel?>)
+        case custom(style: CustomViewModelStyle, section: Section<CustomViewModel>)
     }
     private var sections: [TypedSection] = []
 
     private var gameInfoSection = Section<GameInfoViewModel>(content: .loading)
     private var achievementsSummarySection = Section<AchievementsSummaryViewModel?>(content: .loading)
 
-    init() {
+    private let customCellConfigurator: CustomTableCellConfiguratorComposite
+
+    private var customSections: [UInt: TypedSection] = [:]
+
+    init(cellConfigurator: CustomTableCellConfiguratorComposite) {
+        customCellConfigurator = cellConfigurator
         super.init(frame: .zero, style: .grouped)
         commonInit()
     }
@@ -44,8 +51,33 @@ class GameInfoTableView: ApTableView
         reloadData()
     }
 
-    func updateAchiementSummary(_ achievementsSummary: SkeletonViewModel<AchievementsSummaryViewModel?>) {
+    func updateAchievementSummary(_ achievementsSummary: SkeletonViewModel<AchievementsSummaryViewModel?>) {
         achievementsSummarySection.content = achievementsSummary
+        updateSections()
+        reloadData()
+    }
+
+    func addCustomSection(title: String?, style: CustomViewModelStyle, order: UInt) {
+        log.assert(customSections[order] == nil, "call add custom section for order: \(order) but this section haven")
+        var section = Section<CustomViewModel>(content: .loading)
+        section.title = title
+
+        customSections[order] = .custom(style: style, section: section)
+    }
+
+    func removeCustomSection(order: UInt) {
+        customSections.removeValue(forKey: order)
+    }
+
+    func updateCustom(_ custom: SkeletonViewModel<CustomViewModel>, order: UInt) {
+        guard case .custom(let style, var section) = customSections[order] else {
+            log.assert("Can't found custom section, or section incorret by order: \(order)")
+            return
+        }
+
+        section.content = custom
+        customSections[order] = .custom(style: style, section: section)
+
         updateSections()
         reloadData()
     }
@@ -63,12 +95,24 @@ class GameInfoTableView: ApTableView
         if hasAchievementsSummaryCell() {
             newSections.append(.achievementsSummary(achievementsSummarySection))
         }
+
+        let orders = Set(customSections.keys).sorted()
+        for order in orders {
+            guard let section = customSections[order] else {
+                log.assert("WTF... not found custom section, but order in table")
+                continue
+            }
+
+            newSections.append(section)
+        }
+
         sections = newSections
     }
 
     private func commonInit() {
         register(GameInfoCell.self, forCellReuseIdentifier: GameInfoCell.identifier)
         register(AchievementsSummaryCell.self, forCellReuseIdentifier: AchievementsSummaryCell.identifier)
+        customCellConfigurator.registerCells(in: self)
         self.dataSource = self
         self.delegate = self
 
@@ -85,6 +129,8 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
         return 1
     }
 
+    // MARK:  height
+
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return calculateHeight(for: indexPath)
     }
@@ -99,8 +145,12 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return GameInfoCell.preferredHeight
         case .achievementsSummary:
             return AchievementsSummaryCell.preferredHeight
+        case .custom(let style, _):
+            return customCellConfigurator.heightCell(style, indexPath: indexPath)
         }
     }
+
+    // MARK:  section title
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard let title = getSectionTitle(for: section), !title.isEmpty else {
@@ -126,9 +176,12 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return viewModel.title
         case .achievementsSummary(let viewModel):
             return viewModel.title
+        case .custom(_, let section):
+            return section.title
         }
     }
 
+    // MARK: table content
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch sections[indexPath.section] {
@@ -136,6 +189,8 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return tableView.dequeueReusableCell(withIdentifier: GameInfoCell.identifier, for: indexPath)
         case .achievementsSummary:
             return tableView.dequeueReusableCell(withIdentifier: AchievementsSummaryCell.identifier, for: indexPath)
+        case .custom(let style, _):
+            return customCellConfigurator.makeCell(in: tableView, style: style, indexPath: indexPath)
         }
     }
 
@@ -143,10 +198,20 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
         if let gameInfoCell = cell as? GameInfoCell {
             gameInfoCell.configure(gameInfoSection.content)
             addViewForStylizing(gameInfoCell)
+            return
         }
+
         if let achievementsSummaryCell = cell as? AchievementsSummaryCell {
             achievementsSummaryCell.configure(achievementsSummarySection.content)
             addViewForStylizing(achievementsSummaryCell)
+            return
+        }
+
+        if case let .custom(style, section) = sections[indexPath.section] {
+            customCellConfigurator.configureCell(cell, style: style, viewModel: section.content)
+            if let stylizingView = cell as? StylizingView {
+                addViewForStylizing(stylizingView)
+            }
         }
     }
 }

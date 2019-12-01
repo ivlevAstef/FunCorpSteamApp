@@ -11,13 +11,14 @@ import Common
 import Design
 import UIComponents
 
-final class GameInfoScreenView: ApViewController, GameInfoScreenViewContract
+final class GameInfoScreenView: ApViewController, CustomGameInfoViewContract, GameInfoScreenViewContract
 {
     let needUpdateNotifier = Notifier<Void>()
 
-    private let tableView = GameInfoTableView()
+    private let tableView: GameInfoTableView
 
-    override init() {
+    init(cellConfigurator: CustomTableCellConfiguratorComposite) {
+        tableView = GameInfoTableView(cellConfigurator: cellConfigurator)
         super.init()
     }
 
@@ -43,9 +44,9 @@ final class GameInfoScreenView: ApViewController, GameInfoScreenViewContract
         tableView.setTitles(gameInfo: gameInfo, achievementsSummary: achievementsSummary)
     }
 
-    func beginLoading() {
+    func beginLoadingGameInfoAndAchievements() {
         tableView.updateGameInfo(.loading)
-        tableView.updateAchiementSummary(.loading)
+        tableView.updateAchievementSummary(.loading)
     }
 
     // MARK: - GameInfo
@@ -58,17 +59,42 @@ final class GameInfoScreenView: ApViewController, GameInfoScreenViewContract
     }
 
     // MARK: - Achievements
+
     func failedLoadingAchievementsSummary() {
-        tableView.updateAchiementSummary(.failed)
+        tableView.updateAchievementSummary(.failed)
     }
 
     func showAchievementsSummary(_ achievementsSummary: AchievementsSummaryViewModel?) {
-        tableView.updateAchiementSummary(.done(achievementsSummary))
+        tableView.updateAchievementSummary(.done(achievementsSummary))
     }
 
     func showError(_ text: String) {
         ErrorAlert.show(text, on: self)
     }
+
+    // MARK: - Custom
+
+    func addCustomSection(title: String?, style: CustomViewModelStyle, order: UInt) {
+        tableView.addCustomSection(title: title, style: style, order: order)
+    }
+
+    func removeCustomSection(order: UInt) {
+        tableView.removeCustomSection(order: order)
+    }
+
+    func beginCustomLoading(style: CustomViewModelStyle, order: UInt) {
+        tableView.updateCustom(.loading, order: order)
+    }
+
+    func failedCustomLoading(style: CustomViewModelStyle, order: UInt) {
+        tableView.updateCustom(.failed, order: order)
+    }
+
+    func showCustom(_ viewModel: CustomViewModel, order: UInt) {
+        tableView.updateCustom(.done(viewModel), order: order)
+    }
+
+    // MARK: - other
 
     private func configureViews() {
         view.addSubview(tableView)
