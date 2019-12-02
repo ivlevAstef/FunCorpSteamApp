@@ -11,10 +11,6 @@ import Services
 import UIKit
 import WebKit
 
-private enum Consts {
-    static let magicSteamIDMapNumber: SteamID = 76561197960265728
-}
-
 final class SteamAuthServiceImpl: SteamAuthService
 {
     var isLogined: Bool { steamId != nil }
@@ -23,7 +19,7 @@ final class SteamAuthServiceImpl: SteamAuthService
     }
 
     var accountId: AccountID? {
-        return steamId.flatMap { AccountID($0 - Consts.magicSteamIDMapNumber) }
+        return steamId?.accountId
     }
 
     private let authStorage: SteamAuthStorage

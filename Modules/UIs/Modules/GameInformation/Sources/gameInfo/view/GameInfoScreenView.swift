@@ -74,24 +74,24 @@ final class GameInfoScreenView: ApViewController, CustomGameInfoViewContract, Ga
 
     // MARK: - Custom
 
-    func addCustomSection(title: String?, style: CustomViewModelStyle, order: UInt) {
-        tableView.addCustomSection(title: title, style: style, order: order)
+    func addCustomSection(title: String?, order: UInt, styles: [CustomViewModelStyle]) {
+        tableView.addCustomSection(title: title, order: order, styles: styles)
     }
 
     func removeCustomSection(order: UInt) {
         tableView.removeCustomSection(order: order)
     }
 
-    func beginCustomLoading(style: CustomViewModelStyle, order: UInt) {
-        tableView.updateCustom(.loading, order: order)
+    func beginCustomLoading(order: UInt, row: UInt) {
+        tableView.updateCustom(.loading, order: order, row: row)
     }
 
-    func failedCustomLoading(style: CustomViewModelStyle, order: UInt) {
-        tableView.updateCustom(.failed, order: order)
+    func failedCustomLoading(order: UInt, row: UInt) {
+        tableView.updateCustom(.failed, order: order, row: row)
     }
 
-    func showCustom(_ viewModel: CustomViewModel, order: UInt) {
-        tableView.updateCustom(.done(viewModel), order: order)
+    func showCustom(_ viewModel: CustomViewModel, order: UInt, row: UInt) {
+        tableView.updateCustom(.done(viewModel), order: order, row: row)
     }
 
     // MARK: - other

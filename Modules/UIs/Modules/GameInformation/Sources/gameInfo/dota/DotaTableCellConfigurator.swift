@@ -17,7 +17,7 @@ final class DotaTableCellConfigurator: CustomTableCellConfigurator
         tableView.register(CustomDotaCell.self, forCellReuseIdentifier: CustomDotaCell.identifier)
     }
 
-    func heightCell(indexPath: IndexPath) -> CGFloat {
+    func calculateHeightCell() -> CGFloat {
         return CustomDotaCell.preferredHeight
     }
 

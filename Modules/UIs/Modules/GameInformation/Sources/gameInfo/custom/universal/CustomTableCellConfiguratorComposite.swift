@@ -32,8 +32,8 @@ final class CustomTableCellConfiguratorComposite
         }
     }
 
-    func heightCell(_ style: CustomViewModelStyle, indexPath: IndexPath) -> CGFloat {
-        return configurators[style]!.heightCell(indexPath: indexPath)
+    func calculateHeightCell(_ style: CustomViewModelStyle) -> CGFloat {
+        return configurators[style]!.calculateHeightCell()
     }
 
     func makeCell(in tableView: UITableView, style: CustomViewModelStyle, indexPath: IndexPath) -> UITableViewCell {

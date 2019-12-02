@@ -24,20 +24,18 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
 
     func requestSectionsCount(gameId: SteamGameID) -> UInt {
         if gameId == 570 {
-            return 3
+            return 2
         }
         return 0
     }
 
     func configure(steamId: SteamID, gameId: SteamGameID) {
 
-        view?.addCustomSection(title: "Dota2", style: .dota, order: orders[0])
-        view?.addCustomSection(title: "Dota10", style: .dota, order: orders[1])
-        view?.addCustomSection(title: "Team fortres", style: .dota, order: orders[2])
+        view?.addCustomSection(title: "Dota2", order: orders[0], styles: [.dota, .dota])
+        view?.addCustomSection(title: "Team fortres", order: orders[1], styles: [.dota, .dota])
 
-        view?.failedCustomLoading(style: .dota, order: orders[1])
-
-        view?.showCustom(CustomViewModel(), order: orders[2])
+        view?.failedCustomLoading(order: orders[0], row: 0)
+        view?.showCustom(CustomViewModel(), order: orders[1], row: 1)
     }
 
     func refresh(steamId: SteamID, gameId: SteamGameID) {
