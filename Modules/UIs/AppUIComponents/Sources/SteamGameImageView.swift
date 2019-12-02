@@ -13,6 +13,7 @@ import Design
 public class SteamGameImageView: IdImageView
 {
     public func apply(use style: Style, size: CGFloat) {
+        backgroundColor = style.colors.shadowColor
         layer.cornerRadius = 0.12 * size
         clipsToBounds = true
     }

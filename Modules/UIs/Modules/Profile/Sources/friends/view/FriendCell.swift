@@ -39,9 +39,10 @@ final class FriendCell: ApTableViewCell
     func configure(_ viewModel: FriendViewModel) {
         self.visibleViewModel = viewModel
 
+        contentView.subviews.forEach { stylizingSubviews.append($0.skeletonView) }
         switch viewModel.state {
         case .loading:
-            contentView.subviews.forEach { stylizingSubviews.append($0.startSkeleton()) }
+            contentView.subviews.forEach { $0.startSkeleton() }
 
         case .failed:
             contentView.subviews.forEach { $0.failedSkeleton() }
@@ -50,7 +51,7 @@ final class FriendCell: ApTableViewCell
             nickNameLabel.endSkeleton()
 
             content.avatar.join(imageView: avatarView, completion: { [weak avatarView] in
-                avatarView?.endSkeleton()
+                avatarView?.endSkeleton(success: nil != avatarView?.image)
             })
 
             nickNameLabel.text = content.nick

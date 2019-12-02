@@ -14,6 +14,10 @@ import SnapKit
 
 public final class SteamAvatarView: UIView
 {
+    public var image: UIImage? {
+        return avatarView.image
+    }
+
     fileprivate let shadowView: UIView = UIView(frame: .zero)
     fileprivate let avatarView: AvatarView = AvatarView()
 

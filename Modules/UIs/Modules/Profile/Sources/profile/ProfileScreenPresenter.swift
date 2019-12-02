@@ -115,7 +115,7 @@ final class ProfileScreenPresenter
 
         var viewModel = ProfileViewModel(
             avatar: cachedProfileViewModel?.avatar ?? ChangeableImage(placeholder: nil, image: nil),
-            avatarLetter: String(profile.nickName.prefix(2)),
+            avatarLetter: String(profile.nickName.prefix(2).uppercased()),
             nick: profile.nickName,
             tapNotifier: Notifier<Void>()
         )

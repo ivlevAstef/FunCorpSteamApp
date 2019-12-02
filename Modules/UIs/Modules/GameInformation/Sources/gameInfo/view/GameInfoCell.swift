@@ -37,9 +37,10 @@ final class GameInfoCell: ApTableViewCell
     }
 
     func configure(_ viewModel: SkeletonViewModel<GameInfoViewModel>) {
+        contentView.subviews.forEach { stylizingSubviews.append($0.skeletonView) }
         switch viewModel {
         case .loading:
-            contentView.subviews.forEach { stylizingSubviews.append($0.startSkeleton()) }
+            contentView.subviews.forEach { $0.startSkeleton() }
         case .failed:
             contentView.subviews.forEach { $0.failedSkeleton() }
         case .done(let viewModel):
@@ -48,7 +49,7 @@ final class GameInfoCell: ApTableViewCell
             time2weeksLabel.endSkeleton()
 
             viewModel.icon.join(imageView: iconImageView, completion: { [weak iconImageView] in
-                iconImageView?.endSkeleton()
+                iconImageView?.endSkeleton(success: nil != iconImageView?.image)
             })
 
             nameLabel.text = viewModel.name

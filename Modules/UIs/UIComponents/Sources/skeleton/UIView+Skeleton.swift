@@ -10,23 +10,26 @@ import UIKit
 import SnapKit
 
 extension UIView {
-    public func startSkeleton() -> SkeletonView {
-        if !subviews.contains(where: { $0 is SkeletonView }) {
-            let subview = SkeletonView()
-            addSubview(subview)
-
-            subview.snp.makeConstraints { maker in
-                maker.edges.equalToSuperview()
-            }
+    public var skeletonView: SkeletonView {
+        if let skeleton = subviews.compactMap({ $0 as? SkeletonView}).last {
+            return skeleton
         }
 
-        let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
+        let skeleton = SkeletonView()
+        addSubview(skeleton)
 
+        skeleton.snp.makeConstraints { maker in
+            maker.edges.equalToSuperview()
+        }
+
+        return skeleton
+    }
+
+    public func startSkeleton() {
+        let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
         for subview in skeletonViews {
             subview.start()
         }
-
-        return skeletonViews.last!
     }
 
     public func endSkeleton() {
@@ -38,7 +41,6 @@ extension UIView {
         }, completion: { _ in
             for subview in skeletonViews {
                 subview.end()
-                subview.removeFromSuperview()
             }
         })
     }
@@ -47,6 +49,14 @@ extension UIView {
         let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
         for subview in skeletonViews {
             subview.failed()
+        }
+    }
+
+    public func endSkeleton(success: Bool) {
+        if success {
+            endSkeleton()
+        } else {
+            failedSkeleton()
         }
     }
 
