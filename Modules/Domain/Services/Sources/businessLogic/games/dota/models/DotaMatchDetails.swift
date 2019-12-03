@@ -13,6 +13,7 @@ public typealias DotaMatchDetailsResult = Result<DotaMatchDetails, ServiceError>
 public struct DotaMatchDetails
 {
     public struct Player {
+        /// Иногда он не приходит, а иногда приходит равным UInt32.max... для простоты все к UInt32.max свожу
         public let accountId: AccountID
         public let heroId: DotaHeroID
         public let side: DotaSide
@@ -38,6 +39,7 @@ public struct DotaMatchDetails
 
     public let matchId: DotaMatchID
     public let startTime: Date
+    public let seqNumber: Int64
     public let winSide: DotaSide
     public let duration: TimeInterval
     public let lobby: DotaLobby?
@@ -53,6 +55,7 @@ extension DotaMatchDetails
     public init(
         matchId: DotaMatchID,
         startTime: Date,
+        seqNumber: Int64,
         winSide: DotaSide,
         duration: TimeInterval,
         lobby: DotaLobby?,
@@ -60,6 +63,7 @@ extension DotaMatchDetails
     ) {
         self.matchId = matchId
         self.startTime = startTime
+        self.seqNumber = seqNumber
         self.winSide = winSide
         self.duration = duration
         self.lobby = lobby

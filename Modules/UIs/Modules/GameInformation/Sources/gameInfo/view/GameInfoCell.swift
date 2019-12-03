@@ -14,12 +14,12 @@ import AppUIComponents
 import SnapKit
 
 private enum Consts {
-    static let iconSize: CGFloat = 76.0
+    static let iconSize: CGFloat = 66.0
 }
 
 final class GameInfoCell: ApTableViewCell
 {
-    static let preferredHeight: CGFloat = 96.0
+    static let preferredHeight: CGFloat = 90.0
     static let identifier = "\(GameInfoCell.self)"
 
     private let iconImageView = SteamGameImageView(image: nil)

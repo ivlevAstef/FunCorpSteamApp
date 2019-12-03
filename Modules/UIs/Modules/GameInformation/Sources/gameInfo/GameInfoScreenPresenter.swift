@@ -98,7 +98,7 @@ final class GameInfoScreenPresenter
 
     private func processProfileGameInfoResult(_ result: SteamProfileGameInfoResult) {
         switch result {
-        case .failure(.cancelled), .failure(.incorrectResponse):
+        case .failure(.cancelled), .failure(.incorrectResponse), .failure(.customError):
             break
         case .failure(.notConnection):
             view?.showError(loc["Errors.NotConnect"])
@@ -133,7 +133,7 @@ final class GameInfoScreenPresenter
 
     private func processAchievementsSummaryResult(_ result: SteamAchievementsSummaryResult) {
         switch result {
-        case .failure(.cancelled), .failure(.incorrectResponse):
+        case .failure(.cancelled), .failure(.incorrectResponse), .failure(.customError):
             break
         case .failure(.notConnection):
             view?.showError(loc["Errors.NotConnect"])

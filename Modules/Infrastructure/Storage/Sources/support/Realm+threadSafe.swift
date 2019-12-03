@@ -18,9 +18,18 @@ extension Realm {
         }
 
         guard let realm = try? Realm(configuration: self.configuration) else {
-            log.assert("Can't make real for thread safe")
+            log.assert("Can't make realm for thread safe")
             return nil
         }
         return realm
+    }
+
+    func threadSafeWrite(_ closure: (_ realm: Realm) -> Void) {
+        guard let realm = self.threadSafe else {
+            return
+        }
+        try? realm.write {
+            closure(realm)
+        }
     }
 }

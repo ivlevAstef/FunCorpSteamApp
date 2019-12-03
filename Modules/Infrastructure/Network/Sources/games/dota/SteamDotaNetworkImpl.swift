@@ -48,29 +48,50 @@ final class SteamDotaNetworkImpl: SteamDotaNetwork
         ))
     }
 
+    func requestHeroes(loc: SteamLocalization, completion: @escaping (DotaHeroesResult) -> Void) {
+        session.request(SteamRequest(
+            interface: "IEconDOTA2_570",
+            method: "GetHeroes",
+            version: 1,
+            // Локализация возможно не рабочая, в силу того что код языка должен быть в другом формате.
+            // Но на русский я так и не нашел перевода - возможно его и нет, поэтому пофиг
+            fields: ["language": loc.toString],
+            parse: { Self.mapHeroes($0) },
+            completion: completion
+        ))
+    }
+
     // MARK: - matches history parser
 
     private static func mapMatchesHistory(_ response: MatchHistoryResponse) -> DotaMatchHistoryResult {
-        let matches = response.result.matches.map(map)
-        return .success(matches)
+        if 1 == response.result.status {
+            let matches = response.result.matches?.map(map) ?? []
+            return .success(matches)
+        } else if 15 == response.result.status {
+            return .failure(.customError(SteamDotaError.notAllowed))
+        } else {
+            return .failure(.incorrectResponse)
+        }
     }
 
     private static func map(_ match: MatchHistory) -> DotaMatch {
         return DotaMatch(
             matchId: DotaMatchID(match.match_id),
             startTime: match.start_time.unixTimeToDate,
+            seqNumber: match.match_seq_num,
             lobby: map(match.lobby_type),
             players: match.players.map(map)
         )
     }
 
-    private static func map(_ match: MatchHistoryPlayer) -> DotaMatch.Player {
-        return DotaMatch.Player(accountId: AccountID(match.account_id),
-                                heroId: match.hero_id,
-                                side: map(match.player_slot))
+    private static func map(_ player: MatchHistoryPlayer) -> DotaMatch.Player {
+        return DotaMatch.Player(accountId: AccountID(player.account_id ?? UInt32.max),
+                                heroId: player.hero_id,
+                                side: map(player.player_slot))
     }
 
     // MARK: - match details parser
+
     private static func mapMatchDetails(_ response: MatchDetailsResponse) -> DotaMatchDetailsResult {
         let details = map(response.result)
         return .success(details)
@@ -80,6 +101,7 @@ final class SteamDotaNetworkImpl: SteamDotaNetwork
         return DotaMatchDetails(
             matchId: DotaMatchID(details.match_id),
             startTime: details.start_time.unixTimeToDate,
+            seqNumber: details.match_seq_num,
             winSide: details.radiant_win ? .radiant : .dire,
             duration: TimeInterval(details.duration),
             lobby: map(details.lobby_type),
@@ -89,7 +111,7 @@ final class SteamDotaNetworkImpl: SteamDotaNetwork
 
     private static func map(_ player: MatchDetailsPlayer) -> DotaMatchDetails.Player {
         return DotaMatchDetails.Player(
-            accountId: AccountID(player.account_id),
+            accountId: AccountID(player.account_id ?? UInt32.max),
             heroId: player.hero_id,
             side: map(player.player_slot),
             items: [player.item_0, player.item_1, player.item_2, player.item_3, player.item_4, player.item_5] +
@@ -103,6 +125,33 @@ final class SteamDotaNetworkImpl: SteamDotaNetwork
             xpm: player.xp_per_min,
             level: player.level
         )
+    }
+
+    // MARK: - heroes parser
+
+    private static func mapHeroes(_ response: HeroesResponse) -> DotaHeroesResult {
+        let heroes = response.result.heroes.map(map)
+        return .success(heroes)
+    }
+
+    private static func map(_ hero: Hero) -> DotaHero {
+        return DotaHero(id: hero.id,
+                        name: hero.localized_name ?? localizeHeroName(hero.name),
+                        iconURL: heroUrl(name: hero.name, suffix: "lg.png"),
+                        iconFullHorizontalURL: heroUrl(name: hero.name, suffix: "full.png"),
+                        iconFullVerticalURL: heroUrl(name: hero.name, suffix: "vert.jpg"))
+    }
+
+    private static func heroUrl(name: String, suffix: String) -> URL? {
+        let name = name.replacingOccurrences(of: "npc_dota_hero_", with: "")
+        let urlOfStr = "http://cdn.dota2.com/apps/dota2/images/heroes/\(name)_\(suffix)"
+
+        return URL(string: urlOfStr)
+    }
+
+    private static func localizeHeroName(_ name: String) -> String {
+        let name = name.replacingOccurrences(of: "npc_dota_hero_", with: "")
+        return name.components(separatedBy: "_").map { $0.localizedCapitalized }.joined(separator: " ")
     }
 
     // MARK: - utility
@@ -142,18 +191,18 @@ private struct MatchHistoryResponse: Decodable {
     let result: MatchHistoryResult
 }
 private struct MatchHistoryResult: Decodable {
-    let num_results: Int
-    let total_result: Int
-    let matches: [MatchHistory]
+    let status: Int
+    let matches: [MatchHistory]?
 }
 private struct MatchHistory: Decodable {
     let match_id: UInt64
     let start_time: Int64
     let lobby_type: Int?
+    let match_seq_num: Int64
     let players: [MatchHistoryPlayer]
 }
 private struct MatchHistoryPlayer: Decodable {
-    let account_id: UInt32
+    let account_id: UInt32? // Да его на самом деле может не быть... сам был в шоке
     let player_slot: UInt8
     let hero_id: UInt16
 }
@@ -168,10 +217,11 @@ private struct MatchDetailsResult: Decodable {
     let duration: Int
     let start_time: Int64
     let lobby_type: Int?
+    let match_seq_num: Int64
     let players: [MatchDetailsPlayer]
 }
 private struct MatchDetailsPlayer: Decodable {
-    let account_id: UInt32
+    let account_id: UInt32? // Да его на самом деле может не быть... сам был в шоке
     let player_slot: UInt8
     let hero_id: UInt16
 
@@ -195,4 +245,17 @@ private struct MatchDetailsPlayer: Decodable {
     let gold_per_min: UInt
     let xp_per_min: UInt
     let level: UInt
+}
+
+// MARK: - heroes data
+private struct HeroesResponse: Decodable {
+    let result: HeroesResult
+}
+private struct HeroesResult: Decodable {
+    let heroes: [Hero]
+}
+private struct Hero: Decodable {
+    let id: UInt16
+    let name: String
+    let localized_name: String?
 }

@@ -15,15 +15,21 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     var orders: [UInt] = []
 
     private weak var view: CustomGameInfoViewContract?
+    private let dotaService: SteamDotaService
+    private let imageService: ImageService
     private var isFirstRefresh: Bool = true
 
-    init(view: CustomGameInfoViewContract) {
+    init(view: CustomGameInfoViewContract,
+         dotaService: SteamDotaService,
+         imageService: ImageService) {
         self.view = view
+        self.dotaService = dotaService
+        self.imageService = imageService
     }
 
 
     func requestSectionsCount(gameId: SteamGameID) -> UInt {
-        if gameId == 570 {
+        if gameId == dotaService.gameId {
             return 2
         }
         return 0
@@ -43,6 +49,15 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     }
 
     func refresh(steamId: SteamID, gameId: SteamGameID) {
-
+        dotaService.matchesInLast2weeks(for: steamId.accountId) { completion in
+            switch completion {
+            case .actual(let count):
+                print("!!DOTA actual: \(count)")
+            case .notActual(let count):
+                print("!!DOTA not actual: \(count)")
+            case .failure(let error):
+            print("!!DOTA failure: \(error)")
+            }
+        }
     }
 }

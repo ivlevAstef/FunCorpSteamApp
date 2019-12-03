@@ -127,11 +127,12 @@ final class NetworkSession {
         }
 
         log.trace("Response data: \(String(describing: String(data: data, encoding: .utf8)))")
-        guard let object = try? JSONDecoder().decode(Success.self, from: data) else {
-            log.warning("Failure parse data")
+        do {
+            let object = try JSONDecoder().decode(Success.self, from: data)
+            return .success(object)
+        } catch {
+            log.warning("Failure parse data: \(error)")
             return .failure(.failureParse)
         }
-
-        return .success(object)
     }
 }

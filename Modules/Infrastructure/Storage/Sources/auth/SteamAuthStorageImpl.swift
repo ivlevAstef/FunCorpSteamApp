@@ -18,10 +18,14 @@ class SteamAuthStorageImpl: SteamAuthStorage {
     var steamId: SteamID? {
         set {
             if let steamId = newValue {
-                let data = SteamAuthData(steamId: steamId)
-                _ = try? realm.threadSafe?.write { realm.add(data, update: .all) }
-            } else if let object = realm.object(ofType: SteamAuthData.self, forPrimaryKey: SteamAuthData.singlePrimaryKey) {
-                _ = try? realm.threadSafe?.write { realm.delete(object) }
+                realm.threadSafeWrite { realm in
+                    let data = SteamAuthData(steamId: steamId)
+                    realm.add(data, update: .all)
+                }
+            } else if let object = realm.ts?.object(ofType: SteamAuthData.self, forPrimaryKey: SteamAuthData.singlePrimaryKey) {
+                realm.threadSafeWrite { realm in
+                    realm.delete(object)
+                }
             }
         }
         get {

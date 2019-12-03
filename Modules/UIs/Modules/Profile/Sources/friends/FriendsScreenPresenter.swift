@@ -97,7 +97,7 @@ final class FriendsScreenPresenter
 
     private func processFriendsResult(_ result: SteamFriendsResult) {
         switch result {
-        case .failure(.cancelled), .failure(.incorrectResponse):
+        case .failure(.cancelled), .failure(.incorrectResponse), .failure(.customError):
             break
         case .failure(.notConnection):
             view?.showError(loc["Errors.NotConnect"])

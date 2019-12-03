@@ -25,8 +25,8 @@ class SteamProfileStorageImpl: SteamProfileStorage
     // MARK: - profile
 
     func put(profile: SteamProfile) {
-        let data = SteamProfileData(profile: profile)
-        _ = try? realm.threadSafe?.write {
+        realm.threadSafeWrite { realm in
+            let data = SteamProfileData(profile: profile)
             realm.add(data, update: .all)
         }
     }
@@ -39,8 +39,8 @@ class SteamProfileStorageImpl: SteamProfileStorage
     // MARK: - friends
 
     func put(friends: [SteamFriend]) {
-        let dataOfFriends = friends.map { SteamFriendData(friend: $0) }
-        _ = try? realm.threadSafe?.write {
+        realm.threadSafeWrite { realm in
+            let dataOfFriends = friends.map { SteamFriendData(friend: $0) }
             realm.add(dataOfFriends, update: .all)
         }
     }
@@ -53,8 +53,8 @@ class SteamProfileStorageImpl: SteamProfileStorage
     // MARK: - games
 
     func put(games: [SteamProfileGameInfo]) {
-        let dataOfGames = games.map { SteamProfileGameData(profileGameInfo: $0) }
-        _ = try? realm.threadSafe?.write {
+        realm.threadSafeWrite { realm in
+            let dataOfGames = games.map { SteamProfileGameData(profileGameInfo: $0) }
             realm.add(dataOfGames, update: .all)
         }
     }
@@ -67,8 +67,8 @@ class SteamProfileStorageImpl: SteamProfileStorage
     // MARK: - game
 
     func put(game: SteamProfileGameInfo) {
-        let data = SteamProfileGameData(profileGameInfo: game)
-        _ = try? realm.threadSafe?.write {
+        realm.threadSafeWrite { realm in
+            let data = SteamProfileGameData(profileGameInfo: game)
             realm.add(data, update: .all)
         }
     }

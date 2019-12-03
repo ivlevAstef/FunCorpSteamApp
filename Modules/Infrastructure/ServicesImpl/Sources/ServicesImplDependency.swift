@@ -43,6 +43,10 @@ final class ServicesImplDependency: DIFramework
         container.register(SteamSessionsServiceImpl.init)
             .as(SteamSessionsService.self)
             .lifetime(.perRun(.weak))
+
+        container.register(SteamDotaServiceImpl.init)
+            .as(SteamDotaService.self)
+            .lifetime(.perRun(.weak))
     }
 }
 

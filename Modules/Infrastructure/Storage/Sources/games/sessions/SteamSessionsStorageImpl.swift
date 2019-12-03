@@ -23,8 +23,8 @@ final class SteamSessionsStorageImpl: SteamSessionsStorage
     // MARK: - sessions
 
     func put(sessions: [SteamSession], steamId: SteamID) {
-        let data = SteamSessionsData(sessions: sessions, steamId: steamId)
-        _ = try? realm.threadSafe?.write {
+        realm.threadSafeWrite { realm in
+            let data = SteamSessionsData(sessions: sessions, steamId: steamId)
             realm.add(data, update: .all)
         }
     }

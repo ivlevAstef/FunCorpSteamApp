@@ -9,5 +9,6 @@
 public enum ServiceError: Error {
     case notConnection
     case incorrectResponse
+    case customError(Error)
     case cancelled
 }

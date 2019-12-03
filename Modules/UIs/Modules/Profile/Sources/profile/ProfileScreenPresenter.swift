@@ -98,7 +98,7 @@ final class ProfileScreenPresenter
 
     private func processProfileResult(_ result: SteamProfileResult) {
         switch result {
-        case .failure(.cancelled), .failure(.incorrectResponse):
+        case .failure(.cancelled), .failure(.incorrectResponse), .failure(.customError):
             break
         case .failure(.notConnection):
             view?.showError(loc["Errors.NotConnect"])
@@ -142,7 +142,7 @@ final class ProfileScreenPresenter
 
     private func processProfileGamesInfoResult(_ result: SteamProfileGamesInfoResult) {
         switch result {
-        case .failure(.cancelled), .failure(.incorrectResponse):
+        case .failure(.cancelled), .failure(.incorrectResponse), .failure(.customError):
             break
         case .failure(.notConnection):
             view?.showError(loc["Errors.NotConnect"])

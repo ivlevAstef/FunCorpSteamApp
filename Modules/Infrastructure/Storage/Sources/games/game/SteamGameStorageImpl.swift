@@ -23,8 +23,8 @@ class SteamGameStorageImpl: SteamGameStorage {
     // MARK: - scheme
 
     func put(scheme: SteamGameScheme, loc: SteamLocalization) {
-        let data = SteamGameSchemeData(scheme: scheme, loc: loc)
-        _ = try? realm.threadSafe?.write {
+        _ = try? realm.threadSafeWrite { realm in
+            let data = SteamGameSchemeData(scheme: scheme, loc: loc)
             realm.add(data, update: .all)
         }
     }
@@ -40,7 +40,7 @@ class SteamGameStorageImpl: SteamGameStorage {
     func put(gameProgress: SteamGameProgress, steamId: SteamID) {
         let oldData = fetchGameProgressData(by: gameProgress.gameId, steamId: steamId)
 
-        _ = try? realm.threadSafe?.write {
+        realm.threadSafeWrite { realm in
             let data: SteamGameProgressData
             if let oldData = oldData {
                 // если объект изменился, то добавляем новую запись, если не изменился, то обновляем старую

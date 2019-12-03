@@ -70,7 +70,7 @@ final class SessionsScreenPresenter
 
     private func processSessionsResult(_ result: SteamSessionsResult, steamId: SteamID) {
         switch result {
-        case .failure(.cancelled), .failure(.incorrectResponse):
+        case .failure(.cancelled), .failure(.incorrectResponse), .failure(.customError):
             break
         case .failure(.notConnection):
             view?.showError(loc["Errors.NotConnect"])
