@@ -8,13 +8,13 @@
 
 protocol CustomGameInfoViewContract: class
 {
-    func addCustomSection(title: String?, order: UInt, styles: [CustomViewModelStyle])
+    func addCustomSection(title: String?, order: UInt, configurators: [CustomTableCellConfigurator])
     func removeCustomSection(order: UInt)
 
     func beginCustomLoading(order: UInt, row: UInt)
     func failedCustomLoading(order: UInt, row: UInt)
 
-    func showCustom(_ viewModel: CustomViewModel, order: UInt, row: UInt)
+    func showCustom(order: UInt, row: UInt)
 
     func showError(_ text: String)
 }

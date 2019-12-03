@@ -49,7 +49,7 @@ final class SteamGameServiceImpl: SteamGameService
     }
 
 
-    func getScheme(for gameId: SteamGameID, loc: SteamLocalization, completion: @escaping (SteamGameSchemeResult) -> Void) {
+    func getScheme(for gameId: SteamGameID, loc: SteamLocalization, completion: @escaping (SteamGameSchemeCompletion) -> Void) {
         universalSchemeService.refresh(for: GameIdLocPair(gameId: gameId, loc: loc), contentCompletion: completion)
     }
 
@@ -63,7 +63,7 @@ final class SteamGameServiceImpl: SteamGameService
     }
 
     func getGameProgressHistory(for gameId: SteamGameID, steamId: SteamID,
-                                completion: @escaping (SteamGameProgressHistoryResult) -> Void) {
+                                completion: @escaping (SteamGameProgressHistoryCompletion) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async { [storage] in
             let history = storage.fetchGameProgressHistory(by: gameId, steamId: steamId)
             completion(.success(history))

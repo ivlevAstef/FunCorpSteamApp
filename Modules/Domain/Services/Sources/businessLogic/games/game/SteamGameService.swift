@@ -14,7 +14,7 @@ public protocol SteamGameService: class
     /// Схема выдает основную информацию о внутренностях игры - список ачивок, и список показателей.
     /// Универсально для любой игры.
     /// Схема не меняется, поэтому ей всяких нотификаторов не надо.
-    func getScheme(for gameId: SteamGameID, loc: SteamLocalization, completion: @escaping (SteamGameSchemeResult) -> Void)
+    func getScheme(for gameId: SteamGameID, loc: SteamLocalization, completion: @escaping (SteamGameSchemeCompletion) -> Void)
 
     /// Позволяет получить универсальный прогресс по игре - ачивки, и некоторую универсальную статистиску
     func getGameProgressNotifier(for gameId: SteamGameID, steamId: SteamID) -> Notifier<SteamGameProgressResult>
@@ -23,7 +23,7 @@ public protocol SteamGameService: class
 
     /// Выдает универсальную историю прогресса - то есть как менялось состояние ачивок, и универсальной статистики
     func getGameProgressHistory(for gameId: SteamGameID, steamId: SteamID,
-                                completion: @escaping (SteamGameProgressHistoryResult) -> Void)
+                                completion: @escaping (SteamGameProgressHistoryCompletion) -> Void)
 }
 
 extension SteamGameService

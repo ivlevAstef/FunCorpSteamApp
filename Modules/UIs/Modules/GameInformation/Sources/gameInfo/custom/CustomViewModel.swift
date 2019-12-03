@@ -8,12 +8,5 @@
 
 import Foundation
 
-enum CustomViewModelStyle
-{
-    case dota
-}
-
-struct CustomViewModel
-{
-    
-}
+/// Позволяет определять какую именно ячейку надо отображать
+typealias CustomViewModelID = String

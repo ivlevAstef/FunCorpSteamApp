@@ -12,6 +12,7 @@ import Services
 
 final class UniversalServiceImpl<Content, Params: Hashable>
 {
+    typealias CompletionResult = ServiceCompletion<Content>
     typealias UniversalResult = Result<Content, ServiceError>
     typealias UpdateResult = Result<Content, ServiceError>
     typealias FetchResult = StorageResult<Content>
@@ -19,7 +20,7 @@ final class UniversalServiceImpl<Content, Params: Hashable>
     private class SubscribeInfo {
         let notifier = Notifier<UniversalResult>()
 
-        var contentCompletions: [(UniversalResult) -> Void] = []
+        var contentCompletions: [(CompletionResult) -> Void] = []
         var completions: [(Bool) -> Void] = []
 
         private(set) var isWorked: Bool = false
@@ -34,10 +35,14 @@ final class UniversalServiceImpl<Content, Params: Hashable>
            notifier.notify(result)
         }
 
+        func contentCompletion(result: CompletionResult) {
+            log.assert(Thread.isMainThread, "Thread.isMainThread")
+            contentCompletions.forEach { $0(result) }
+        }
+
         func end(result: UniversalResult) {
             log.assert(Thread.isMainThread, "Thread.isMainThread")
 
-            contentCompletions.forEach { $0(result) }
             contentCompletions.removeAll()
 
             if case .success = result {
@@ -69,7 +74,7 @@ final class UniversalServiceImpl<Content, Params: Hashable>
     }
 
     func refresh(for params: Params,
-                 contentCompletion: ((UniversalResult) -> Void)? = nil,
+                 contentCompletion: ((CompletionResult) -> Void)? = nil,
                  completion: ((Bool) -> Void)? = nil) {
         log.assert(Thread.isMainThread, "Thread.isMainThread")
 
@@ -94,9 +99,11 @@ final class UniversalServiceImpl<Content, Params: Hashable>
                 break
             case .noRelevant(let content): // Если данные не актуальны, то оповещаем, и запускаем закачку
                 subscribeInfo.notify(result: .success(content))
+                subscribeInfo.contentCompletion(result: .notRelevant(content))
                 break
             case .done(let content): // Если данные актуальные, то оповещаем, и завершаем
                 subscribeInfo.notify(result: .success(content))
+                subscribeInfo.contentCompletion(result: .db(content))
                 subscribeInfo.end(result: .success(content))
                 return
             }
@@ -105,12 +112,16 @@ final class UniversalServiceImpl<Content, Params: Hashable>
                 if case .success(let content) = result {
                     self?.saver(params, content)
                     subscribeInfo.notify(result: result)
+                    subscribeInfo.contentCompletion(result: .network(content))
                     subscribeInfo.end(result: result)
                 } else if case .noRelevant(let content) = fetchResult {
                     // Уже оповещали о этих результатах
                     subscribeInfo.end(result: .success(content))
                 } else { // все данные не удачные
                     subscribeInfo.notify(result: result)
+                    if case .failure(let error) = result {
+                        subscribeInfo.contentCompletion(result: .failure(error))
+                    }
                     subscribeInfo.end(result: result)
                 }
             }

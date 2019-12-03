@@ -14,25 +14,24 @@ import Design
 class GameInfoTableView: ApTableView
 {
     typealias Section<T> = ApTableView.TableSection<SkeletonViewModel<T>>
-    typealias CustomSection = TableSection<[SkeletonViewModel<CustomViewModel>]>
+    typealias CustomSection = TableSection<[SkeletonViewModel<Void>]>
 
     // Для массива
     private enum TypedSection {
         case gameInfo(Section<GameInfoViewModel>)
         case achievementsSummary(Section<AchievementsSummaryViewModel?>)
-        case custom(styles: [CustomViewModelStyle], section: CustomSection)
+        case custom(configurators: [CustomTableCellConfigurator], section: CustomSection)
     }
     private var sections: [TypedSection] = []
 
     private var gameInfoSection = Section<GameInfoViewModel>(content: .loading)
     private var achievementsSummarySection = Section<AchievementsSummaryViewModel?>(content: .loading)
 
-    private let customCellConfigurator: CustomTableCellConfiguratorComposite
-
     private var customSections: [UInt: TypedSection] = [:]
 
-    init(cellConfigurator: CustomTableCellConfiguratorComposite) {
-        customCellConfigurator = cellConfigurator
+    private var registeredCells: Set<String> = []
+
+    init() {
         super.init(frame: .zero, style: .grouped)
         commonInit()
     }
@@ -58,26 +57,31 @@ class GameInfoTableView: ApTableView
         reloadData()
     }
 
-    func addCustomSection(title: String?, order: UInt, styles: [CustomViewModelStyle]) {
+    func addCustomSection(title: String?, order: UInt, configurators: [CustomTableCellConfigurator]) {
         log.assert(customSections[order] == nil, "call add custom section for order: \(order) but this section haven")
-        var section = CustomSection(content: Array(repeating: .loading, count: styles.count))
+        for configurator in configurators {
+            let (type, identifier) = configurator.registeredCell
+            registerIfNeeded(type, identifier: identifier)
+        }
+
+        var section = CustomSection(content: Array(repeating: .loading, count: configurators.count))
         section.title = title
 
-        customSections[order] = .custom(styles: styles, section: section)
+        customSections[order] = .custom(configurators: configurators, section: section)
     }
 
     func removeCustomSection(order: UInt) {
         customSections.removeValue(forKey: order)
     }
 
-    func updateCustom(_ custom: SkeletonViewModel<CustomViewModel>, order: UInt, row: UInt) {
-        guard case .custom(let styles, var section) = customSections[order] else {
+    func updateCustom(_ custom: SkeletonViewModel<Void>, order: UInt, row: UInt) {
+        guard case .custom(let configurators, var section) = customSections[order] else {
             log.assert("Can't found custom section, or section incorret by order: \(order)")
             return
         }
 
         section.content[Int(row)] = custom
-        customSections[order] = .custom(styles: styles, section: section)
+        customSections[order] = .custom(configurators: configurators, section: section)
 
         updateSections()
         reloadData()
@@ -111,13 +115,21 @@ class GameInfoTableView: ApTableView
     }
 
     private func commonInit() {
-        register(GameInfoCell.self, forCellReuseIdentifier: GameInfoCell.identifier)
-        register(AchievementsSummaryCell.self, forCellReuseIdentifier: AchievementsSummaryCell.identifier)
-        customCellConfigurator.registerCells(in: self)
+        registerIfNeeded(GameInfoCell.self, identifier: GameInfoCell.identifier)
+        registerIfNeeded(AchievementsSummaryCell.self, identifier: AchievementsSummaryCell.identifier)
+        // Custom cell registered after add section
         self.dataSource = self
         self.delegate = self
 
         self.tableFooterView = UIView(frame: .zero)
+    }
+
+    private func registerIfNeeded(_ type: UITableViewCell.Type, identifier: String) {
+        if registeredCells.contains(identifier) {
+            return
+        }
+        registeredCells.insert(identifier)
+        register(type, forCellReuseIdentifier: identifier)
     }
 }
 
@@ -132,8 +144,8 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return 1
         case .achievementsSummary:
             return 1
-        case .custom(let styles, _):
-            return styles.count
+        case .custom(let configurators, _):
+            return configurators.count
         }
     }
 
@@ -153,8 +165,8 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return GameInfoCell.preferredHeight
         case .achievementsSummary:
             return AchievementsSummaryCell.preferredHeight
-        case .custom(let styles, _):
-            return customCellConfigurator.calculateHeightCell(styles[indexPath.row])
+        case .custom(let configurators, _):
+            return configurators[indexPath.row].calculateHeightCell()
         }
     }
 
@@ -197,8 +209,8 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return tableView.dequeueReusableCell(withIdentifier: GameInfoCell.identifier, for: indexPath)
         case .achievementsSummary:
             return tableView.dequeueReusableCell(withIdentifier: AchievementsSummaryCell.identifier, for: indexPath)
-        case .custom(let styles, _):
-            return customCellConfigurator.makeCell(in: tableView, style: styles[indexPath.row], indexPath: indexPath)
+        case .custom(let configurators, _):
+            return configurators[indexPath.row].makeCell(in: tableView, indexPath: indexPath)
         }
     }
 
@@ -215,10 +227,8 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
             return
         }
 
-        if case let .custom(styles, section) = sections[indexPath.section] {
-            customCellConfigurator.configureCell(cell,
-                                                 style: styles[indexPath.row],
-                                                 viewModel: section.content[indexPath.row])
+        if case let .custom(configurators, section) = sections[indexPath.section] {
+            configurators[indexPath.row].configureCell(cell, viewModel: section.content[indexPath.row])
             if let stylizingView = cell as? StylizingView {
                 addViewForStylizing(stylizingView)
             }

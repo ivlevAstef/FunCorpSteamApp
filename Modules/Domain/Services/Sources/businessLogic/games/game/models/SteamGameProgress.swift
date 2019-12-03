@@ -9,7 +9,7 @@
 import Foundation
 
 public typealias SteamGameProgressResult = Result<SteamGameProgress, ServiceError>
-public typealias SteamGameProgressHistoryResult = Result<[SteamGameProgress], ServiceError>
+public typealias SteamGameProgressHistoryCompletion = Result<[SteamGameProgress], ServiceError>
 
 public struct SteamGameProgress: Equatable
 {

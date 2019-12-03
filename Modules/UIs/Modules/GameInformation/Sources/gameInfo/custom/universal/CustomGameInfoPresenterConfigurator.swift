@@ -11,11 +11,9 @@ import Services
 
 final class CustomGameInfoPresenterConfigurator
 {
-    private weak var view: CustomGameInfoViewContract?
     private let customPresenters: [CustomGameInfoPresenter]
 
-    init(view: CustomGameInfoViewContract, customPresenters: [CustomGameInfoPresenter]) {
-        self.view = view
+    init(customPresenters: [CustomGameInfoPresenter]) {
         self.customPresenters = customPresenters.sorted(by: { $0.priority > $1.priority })
     }
 

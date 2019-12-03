@@ -18,7 +18,7 @@ final class GameInfoDependency: DIFramework
         container.register(GameInfoScreen.init)
             .lifetime(.prototype)
 
-        container.register { GameInfoScreenView(cellConfigurator: $0) }
+        container.register { GameInfoScreenView() }
             .as(GameInfoScreenViewContract.self)
             .as(CustomGameInfoViewContract.self)
             .lifetime(.objectGraph)
@@ -28,19 +28,12 @@ final class GameInfoDependency: DIFramework
 
         // MARK: - customs
         container.register {
-            CustomGameInfoPresenterConfigurator(view: $0, customPresenters: many($1))
+            CustomGameInfoPresenterConfigurator(customPresenters: many($0))
         }.lifetime(.objectGraph)
-
-        container.register {
-            CustomTableCellConfiguratorComposite(configurators: many($0))
-        }.lifetime(.prototype)
 
         // MARK: - dota
         container.register(DotaGameInfoPresenter.init)
             .as(CustomGameInfoPresenter.self)
             .lifetime(.objectGraph)
-        container.register(DotaTableCellConfigurator.init)
-            .as(CustomTableCellConfigurator.self)
-            .lifetime(.prototype)
     }
 }

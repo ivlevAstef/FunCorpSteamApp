@@ -71,29 +71,32 @@ final class SteamAchievementServiceImpl: SteamAchievementService
         case .success(let gameProgress):
             // Тут локализация не имеет значения, поэтому пускай будет английская
             gameService.getScheme(for: gameProgress.gameId, loc: .en) { [weak self] schemeResult in
-                self?.processScheme(schemeResult, gameProgress: gameProgress, for: gameId, steamId: steamId)
+                self?.processSchemeResult(schemeResult, gameProgress: gameProgress, for: gameId, steamId: steamId)
             }
         }
     }
 
-    private func processScheme(_ schemeResult: SteamGameSchemeResult,
-                               gameProgress: SteamGameProgress,
-                               for gameId: SteamGameID,
-                               steamId: SteamID) {
-        switch schemeResult {
-        case .failure(let serviceError):
-            completeAchievementsSummary(.failure(serviceError), for: gameId, steamId: steamId)
-        case .success(let scheme):
-            let any = scheme.achivements.map { $0.id }
-            let onlyVisible = scheme.achivements.compactMap { $0.hidden ? nil : $0.id }
-            let current = gameProgress.achievements.compactMap { (key, value) in
-                value.achieved ? key: nil
-            }
-            let result = SteamAchievementsSummary(current: Set(current),
-                                                  any: Set(any),
-                                                  onlyVisible: Set(onlyVisible))
+    private func processSchemeResult(_ schemeResult: SteamGameSchemeCompletion,
+                                     gameProgress: SteamGameProgress,
+                                     for gameId: SteamGameID,
+                                     steamId: SteamID) {
+        if let scheme = schemeResult.content {
+            let result = processScheme(scheme, gameProgress: gameProgress)
             completeAchievementsSummary(.success(result), for: gameId, steamId: steamId)
+        } else if case .failure(let serviceError) = schemeResult {
+            completeAchievementsSummary(.failure(serviceError), for: gameId, steamId: steamId)
         }
+    }
+
+    private func processScheme(_ scheme: SteamGameScheme, gameProgress: SteamGameProgress) -> SteamAchievementsSummary {
+        let any = scheme.achivements.map { $0.id }
+        let onlyVisible = scheme.achivements.compactMap { $0.hidden ? nil : $0.id }
+        let current = gameProgress.achievements.compactMap { (key, value) in
+            value.achieved ? key: nil
+        }
+        return SteamAchievementsSummary(current: Set(current),
+                                        any: Set(any),
+                                        onlyVisible: Set(onlyVisible))
     }
 
     private func completeAchievementsSummary(_ result: SteamAchievementsSummaryResult, for gameId: SteamGameID, steamId: SteamID) {

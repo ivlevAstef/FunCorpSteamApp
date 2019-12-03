@@ -41,7 +41,7 @@ final class SteamProfileServiceImpl: SteamProfileService
         universalService.getNotifier(for: steamId)
     }
 
-    func getProfile(for steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void) {
+    func getProfile(for steamId: SteamID, completion: @escaping (SteamProfileCompletion) -> Void) {
         universalService.refresh(for: steamId, contentCompletion: completion)
     }
 }

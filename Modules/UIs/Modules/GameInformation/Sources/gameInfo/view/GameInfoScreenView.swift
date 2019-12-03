@@ -15,10 +15,9 @@ final class GameInfoScreenView: ApViewController, CustomGameInfoViewContract, Ga
 {
     let needUpdateNotifier = Notifier<Void>()
 
-    private let tableView: GameInfoTableView
+    private let tableView = GameInfoTableView()
 
-    init(cellConfigurator: CustomTableCellConfiguratorComposite) {
-        tableView = GameInfoTableView(cellConfigurator: cellConfigurator)
+    override init() {
         super.init()
     }
 
@@ -74,8 +73,8 @@ final class GameInfoScreenView: ApViewController, CustomGameInfoViewContract, Ga
 
     // MARK: - Custom
 
-    func addCustomSection(title: String?, order: UInt, styles: [CustomViewModelStyle]) {
-        tableView.addCustomSection(title: title, order: order, styles: styles)
+    func addCustomSection(title: String?, order: UInt, configurators: [CustomTableCellConfigurator]) {
+        tableView.addCustomSection(title: title, order: order, configurators: configurators)
     }
 
     func removeCustomSection(order: UInt) {
@@ -90,8 +89,8 @@ final class GameInfoScreenView: ApViewController, CustomGameInfoViewContract, Ga
         tableView.updateCustom(.failed, order: order, row: row)
     }
 
-    func showCustom(_ viewModel: CustomViewModel, order: UInt, row: UInt) {
-        tableView.updateCustom(.done(viewModel), order: order, row: row)
+    func showCustom(order: UInt, row: UInt) {
+        tableView.updateCustom(.done(()), order: order, row: row)
     }
 
     // MARK: - other

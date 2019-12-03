@@ -14,7 +14,7 @@ public protocol SteamProfileService: class
 
     func refresh(for steamId: SteamID, completion: ((Bool) -> Void)?)
 
-    func getProfile(for steamId: SteamID, completion: @escaping (SteamProfileResult) -> Void)
+    func getProfile(for steamId: SteamID, completion: @escaping (SteamProfileCompletion) -> Void)
 }
 
 extension SteamProfileService

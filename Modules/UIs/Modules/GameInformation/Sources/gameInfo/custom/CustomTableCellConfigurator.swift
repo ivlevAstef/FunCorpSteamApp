@@ -11,10 +11,8 @@ import UIComponents
 
 protocol CustomTableCellConfigurator
 {
-    var style: CustomViewModelStyle { get }
-
-    func registerCell(in tableView: UITableView)
+    var registeredCell: (type: UITableViewCell.Type, identifier: String) { get }
     func calculateHeightCell() -> CGFloat
     func makeCell(in tableView: UITableView, indexPath: IndexPath) -> UITableViewCell
-    func configureCell(_ cell: UITableViewCell, viewModel: SkeletonViewModel<CustomViewModel>)
+    func configureCell(_ cell: UITableViewCell, viewModel: SkeletonViewModel<Void>)
 }

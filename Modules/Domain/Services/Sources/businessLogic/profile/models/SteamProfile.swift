@@ -9,6 +9,7 @@
 import Foundation
 
 public typealias SteamProfileResult = Result<SteamProfile, ServiceError>
+public typealias SteamProfileCompletion = ServiceCompletion<SteamProfile>
 
 public struct SteamProfile: Equatable
 {

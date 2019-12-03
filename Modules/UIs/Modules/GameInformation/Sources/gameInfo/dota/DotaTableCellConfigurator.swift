@@ -11,10 +11,10 @@ import UIComponents
 
 final class DotaTableCellConfigurator: CustomTableCellConfigurator
 {
-    let style: CustomViewModelStyle = .dota
+    var realViewModel: Any?
 
-    func registerCell(in tableView: UITableView) {
-        tableView.register(CustomDotaCell.self, forCellReuseIdentifier: CustomDotaCell.identifier)
+    var registeredCell: (type: UITableViewCell.Type, identifier: String) {
+        return (type: CustomDotaCell.self, identifier: CustomDotaCell.identifier)
     }
 
     func calculateHeightCell() -> CGFloat {
@@ -25,7 +25,7 @@ final class DotaTableCellConfigurator: CustomTableCellConfigurator
         return tableView.dequeueReusableCell(withIdentifier: CustomDotaCell.identifier, for: indexPath)
     }
 
-    func configureCell(_ cell: UITableViewCell, viewModel: SkeletonViewModel<CustomViewModel>) {
+    func configureCell(_ cell: UITableViewCell, viewModel: SkeletonViewModel<Void>) {
         if let dotaCell = cell as? CustomDotaCell {
             //dotaCell.configure()
             return

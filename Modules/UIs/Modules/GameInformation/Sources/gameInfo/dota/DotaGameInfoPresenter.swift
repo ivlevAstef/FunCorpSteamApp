@@ -30,12 +30,16 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     }
 
     func configure(steamId: SteamID, gameId: SteamGameID) {
+        let configurators: [CustomTableCellConfigurator] = [
+            DotaTableCellConfigurator(),
+            DotaTableCellConfigurator(),
+        ]
 
-        view?.addCustomSection(title: "Dota2", order: orders[0], styles: [.dota, .dota])
-        view?.addCustomSection(title: "Team fortres", order: orders[1], styles: [.dota, .dota])
+        view?.addCustomSection(title: "Dota2", order: orders[0], configurators: configurators)
+        view?.addCustomSection(title: "Team fortres", order: orders[1], configurators: configurators)
 
         view?.failedCustomLoading(order: orders[0], row: 0)
-        view?.showCustom(CustomViewModel(), order: orders[1], row: 1)
+        view?.showCustom(order: orders[1], row: 1)
     }
 
     func refresh(steamId: SteamID, gameId: SteamGameID) {

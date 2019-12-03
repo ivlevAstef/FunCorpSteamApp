@@ -63,7 +63,7 @@ final class FriendsScreenPresenter
 
         if authService.steamId != steamId {
             profileService.getProfile(for: steamId) { [weak view] result in
-                if case .success(let profile) = result {
+                if let profile = result.content {
                     view?.setTitle(loc["SteamFriends.Title"] + " \(profile.nickName)")
                 }
             }
@@ -176,8 +176,8 @@ final class FriendsScreenPresenter
     }
 
 
-    private func processProfileResult(_ result: SteamProfileResult, steamId: SteamID) {
-        if case .success(let profile) = result {
+    private func processProfileResult(_ result: SteamProfileCompletion, steamId: SteamID) {
+        if let profile = result.content {
             processProfile(profile)
         } else {
             updateFriend(on: makeFriendViewModel(steamId: steamId, state: .failed))

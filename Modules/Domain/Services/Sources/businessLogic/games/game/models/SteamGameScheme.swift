@@ -9,6 +9,7 @@
 import Foundation
 
 public typealias SteamGameSchemeResult = Result<SteamGameScheme, ServiceError>
+public typealias SteamGameSchemeCompletion = ServiceCompletion<SteamGameScheme>
 
 public struct SteamGameScheme
 {
