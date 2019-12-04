@@ -18,6 +18,12 @@ public protocol SteamDotaService: class
     /// Возвращает информацию по последней сыгранной игре. nil если игр нет
     func lastMatch(for accountId: AccountID, completion: @escaping (SteamDotaCompletion<DotaMatchDetails?>) -> Void)
 
+    /// Возвращает детализацию за последние две недели
+    func detailsInLast2weeks(for accountId: AccountID, completion: @escaping (SteamDotaCompletion<[DotaMatchDetails]>) -> Void)
+
+    /// Возвращает описание героя. nil если по запрашиваему id героя нет
+    func getHero(for heroId: DotaHeroID, loc: SteamLocalization, completion: @escaping (SteamDotaCompletion<DotaHero?>) -> Void)
+
     /// Возвращает популярного героя, за последние 100 игр, или за две недели (в зависимости от того каких данных больше).
     func popularHero(for accountId: AccountID, completion: @escaping (SteamDotaCompletion<DotaPopularHero>) -> Void)
 }

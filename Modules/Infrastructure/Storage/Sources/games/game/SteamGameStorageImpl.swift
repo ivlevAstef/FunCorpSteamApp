@@ -23,7 +23,7 @@ class SteamGameStorageImpl: SteamGameStorage {
     // MARK: - scheme
 
     func put(scheme: SteamGameScheme, loc: SteamLocalization) {
-        _ = try? realm.threadSafeWrite { realm in
+        realm.threadSafeWrite { realm in
             let data = SteamGameSchemeData(scheme: scheme, loc: loc)
             realm.add(data, update: .all)
         }

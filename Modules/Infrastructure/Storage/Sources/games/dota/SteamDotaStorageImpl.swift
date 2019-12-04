@@ -23,7 +23,7 @@ final class SteamDotaStorageImpl: SteamDotaStorage
     // MARK: - matches
 
     func put(matches: [DotaMatch], for accountId: AccountID) {
-        _ = try? realm.threadSafeWrite { realm in
+        realm.threadSafeWrite { realm in
             let data = matches.map { SteamDotaMatchData(match: $0, accountId: accountId) }
             realm.add(data, update: .all)
         }
@@ -61,7 +61,7 @@ final class SteamDotaStorageImpl: SteamDotaStorage
     }
 
     func fetchDetailsList(for accountId: AccountID) -> [DotaMatchDetails] {
-        let optDataArray = realm.ts?.objects(SteamDotaMatchDetailsData.self).filter("_accountId", Int64(accountId))
+        let optDataArray = realm.ts?.objects(SteamDotaMatchDetailsData.self).filter("_accountId = %@", Int64(accountId))
         guard let dataArray = optDataArray, !dataArray.isEmpty else {
             return []
         }

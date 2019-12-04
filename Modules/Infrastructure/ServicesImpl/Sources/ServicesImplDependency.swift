@@ -47,6 +47,16 @@ final class ServicesImplDependency: DIFramework
         container.register(SteamDotaServiceImpl.init)
             .as(SteamDotaService.self)
             .lifetime(.perRun(.weak))
+        container.register(SteamDotaServiceCalculatorImpl.init)
+            .as(SteamDotaServiceCalculator.self)
+            .lifetime(.prototype)
+
+        container.register { SteamDotaHistorySynchronizer(network: $0, storage: $1, accountId: arg($2)) }
+            .lifetime(.prototype)
+        container.register { SteamDotaDetailsSynchronizer(network: $0, storage: $1, accountId: arg($2)) }
+            .lifetime(.prototype)
+        container.register(SteamDotaSynchronizers.init)
+            .lifetime(.perRun(.strong))
     }
 }
 

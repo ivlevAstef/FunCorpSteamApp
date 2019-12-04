@@ -8,7 +8,7 @@
 
 public enum DotaPopularHero
 {
-    case one(DotaHero)
+    case one(DotaHeroID)
     case multi
     case fewGames
 }
