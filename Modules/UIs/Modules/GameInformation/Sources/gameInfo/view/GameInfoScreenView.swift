@@ -67,10 +67,6 @@ final class GameInfoScreenView: ApViewController, CustomGameInfoViewContract, Ga
         tableView.updateAchievementSummary(.done(achievementsSummary))
     }
 
-    func showError(_ text: String) {
-        ErrorAlert.show(text, on: self)
-    }
-
     // MARK: - Custom
 
     func addCustomSection(title: String?, order: UInt, configurators: [CustomTableCellConfigurator]) {
@@ -81,19 +77,15 @@ final class GameInfoScreenView: ApViewController, CustomGameInfoViewContract, Ga
         tableView.removeCustomSection(order: order)
     }
 
-    func beginCustomLoading(order: UInt, row: UInt) {
-        tableView.updateCustom(.loading, order: order, row: row)
-    }
-
-    func failedCustomLoading(order: UInt, row: UInt) {
-        tableView.updateCustom(.failed, order: order, row: row)
-    }
-
-    func showCustom(order: UInt, row: UInt) {
-        tableView.updateCustom(.done(()), order: order, row: row)
+    func updateCustom(configurator: CustomTableCellConfigurator) {
+        tableView.updateCustom(configurator: configurator)
     }
 
     // MARK: - other
+
+    func showError(_ text: String) {
+        ErrorAlert.show(text, on: self)
+    }
 
     private func configureViews() {
         view.addSubview(tableView)

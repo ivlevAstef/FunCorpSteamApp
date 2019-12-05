@@ -50,8 +50,6 @@ final class AchievementsSummaryCell: ApTableViewCell
         summaryLabel.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(summaryLabel)
-
-        summaryLabel.text = " "
     }
 
     override func apply(use style: Style) {
@@ -70,6 +68,7 @@ final class AchievementsSummaryCell: ApTableViewCell
             maker.top.equalToSuperview().offset(8.0)
             maker.left.equalToSuperview().offset(layout.cellInnerInsets.left)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
+            maker.height.equalTo(summaryLabel.font.lineHeight)
         }
     }
 }

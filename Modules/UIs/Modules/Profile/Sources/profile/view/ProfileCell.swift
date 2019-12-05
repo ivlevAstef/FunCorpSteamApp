@@ -69,9 +69,6 @@ final class ProfileCell: ApTableViewCell
         contentView.addSubview(avatarView)
         contentView.addSubview(nickNameLabel)
         contentView.addSubview(realNameLabel)
-
-        nickNameLabel.text = " "
-        realNameLabel.text = " "
     }
 
     override func apply(use style: Style) {
@@ -106,12 +103,14 @@ final class ProfileCell: ApTableViewCell
             maker.top.equalToSuperview().offset(12.0)
             maker.left.equalTo(avatarView.snp.right).offset(16.0)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
+            maker.height.equalTo(nickNameLabel.font.lineHeight)
         }
 
         realNameLabel.snp.remakeConstraints { maker in
             maker.top.equalTo(nickNameLabel.snp.bottom).offset(8.0)
             maker.left.equalTo(nickNameLabel.snp.left)
             maker.right.equalTo(nickNameLabel.snp.right)
+            maker.height.equalTo(realNameLabel.font.lineHeight)
         }
     }
 }

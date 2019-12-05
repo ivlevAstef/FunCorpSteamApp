@@ -8,7 +8,7 @@
 
 import UIKit
 
-public struct Gradient
+public struct Gradient: Equatable
 {
     public let from: UIColor
     public let to: UIColor

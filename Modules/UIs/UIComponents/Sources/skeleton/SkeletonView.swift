@@ -10,17 +10,18 @@ import UIKit
 import Design
 
 public final class SkeletonView: UIView {
-    private enum State {
+    public enum State {
         case stopped
         case animated
         case failed
     }
 
     private let gradientLayer = CAGradientLayer()
+    private let failedLayer = CALayer()
     private var gradient: Gradient = Gradient(from: .brown, to: .brown)
     private var failedColor: UIColor = .red
 
-    private var state: State = .stopped
+    public private(set) var state: State = .stopped
     private var prevSize: CGSize = .zero
 
     public init() {
@@ -34,16 +35,28 @@ public final class SkeletonView: UIView {
     }
 
     public func start() {
+        if state == .animated {
+            return
+        }
+
         state = .animated
         update()
     }
 
     public func end() {
+        if state == .stopped {
+            return
+        }
+
         state = .stopped
         update()
     }
 
     public func failed() {
+        if state == .failed {
+            return
+        }
+
         state = .failed
         update()
     }
@@ -69,32 +82,40 @@ public final class SkeletonView: UIView {
         layer.cornerRadius = 5.0
         layer.masksToBounds = true
 
+        gradientLayer.opacity = 0.0
+        failedLayer.opacity = 0.0
+
         layer.addSublayer(gradientLayer)
+        layer.addSublayer(failedLayer)
     }
 
     private func update() {
-        gradientLayer.removeAllAnimations()
-
         if bounds.size.width.isEqual(to: .zero) || bounds.size.height.isEqual(to: .zero) {
             return
         }
 
         if state == .failed {
-            gradientLayer.colors = [failedColor.cgColor, failedColor.cgColor]
-            gradientLayer.locations = [0.0, 1.0]
+            failedLayer.opacity = 1.0
+            gradientLayer.opacity = 0.0
         } else if state == .stopped {
-            gradientLayer.colors = [UIColor.clear.cgColor, UIColor.clear.cgColor]
-            gradientLayer.locations = [0.0, 1.0]
+            failedLayer.opacity = 0.0
+            gradientLayer.opacity = 0.0
         } else {
-            gradientLayer.colors = [gradient.from.cgColor, gradient.to.cgColor, gradient.from.cgColor]
-            gradientLayer.locations = [0.0, 0.5, 1.0]
+            failedLayer.opacity = 0.0
+            gradientLayer.opacity = 1.0
         }
 
+        failedLayer.backgroundColor = failedColor.cgColor
+
+        gradientLayer.colors = [gradient.from.cgColor, gradient.to.cgColor, gradient.from.cgColor]
+        gradientLayer.locations = [0.0, 0.5, 1.0]
         gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.0)
         gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.05 * bounds.height / bounds.width)
 
+        failedLayer.frame = CGRect(origin: .zero, size: bounds.size)
         gradientLayer.frame = CGRect(origin: .zero, size: bounds.size)
 
+        gradientLayer.removeAnimation(forKey: "gradient_animations")
         if state == .animated {
             // TODO: конечно не идеальная, но времени делать её идеальной нет
             let animations = CAAnimationGroup()
@@ -116,7 +137,7 @@ public final class SkeletonView: UIView {
             animations.duration = 2 * duration
             animations.repeatCount = .infinity
 
-            gradientLayer.add(animations, forKey: "animations")
+            gradientLayer.add(animations, forKey: "gradient_animations")
         }
     }
 }
@@ -124,6 +145,10 @@ public final class SkeletonView: UIView {
 
 extension SkeletonView: StylizingView {
     public func apply(use style: Style) {
+        if gradient == style.colors.skeleton && failedColor == style.colors.skeletonFailed {
+            return
+        }
+
         gradient = style.colors.skeleton
         failedColor = style.colors.skeletonFailed
         update()

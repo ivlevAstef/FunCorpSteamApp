@@ -23,7 +23,4 @@ public protocol SteamDotaService: class
 
     /// Возвращает описание героя. nil если по запрашиваему id героя нет
     func getHero(for heroId: DotaHeroID, loc: SteamLocalization, completion: @escaping (SteamDotaCompletion<DotaHero?>) -> Void)
-
-    /// Возвращает популярного героя, за последние 100 игр, или за две недели (в зависимости от того каких данных больше).
-    func popularHero(for accountId: AccountID, completion: @escaping (SteamDotaCompletion<DotaPopularHero>) -> Void)
 }

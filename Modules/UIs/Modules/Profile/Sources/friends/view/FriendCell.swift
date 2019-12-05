@@ -67,8 +67,6 @@ final class FriendCell: ApTableViewCell
 
         contentView.addSubview(avatarView)
         contentView.addSubview(nickNameLabel)
-
-        nickNameLabel.text = " "
     }
 
     override func apply(use style: Style) {
@@ -97,6 +95,7 @@ final class FriendCell: ApTableViewCell
             maker.top.equalToSuperview().offset(6.0)
             maker.left.equalTo(avatarView.snp.right).offset(16.0)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
+            maker.height.equalTo(nickNameLabel.font.lineHeight)
         }
     }
 }

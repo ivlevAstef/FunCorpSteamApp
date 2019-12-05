@@ -36,14 +36,16 @@ final class SteamDotaServiceImpl: SteamDotaService
             // TODO: Пока парится не буду. Конечно в идеале, подобные фильтры надо в БД переносить.
             /// получаем все игры за последние две недели
             let last2WeeksMatches = storage.fetchMatches(for: accountId).filter { $0.startTime.timeIntervalSinceNow + twoWeeksTimeInterval > 0 }
-            switch result {
-            case .success:
-                completion(.actual(last2WeeksMatches.count))
-            case .failure(let error):
-                if last2WeeksMatches.isEmpty {
-                    completion(.failure(error))
-                } else {
-                    completion(.notActual(last2WeeksMatches.count))
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    completion(.actual(last2WeeksMatches.count))
+                case .failure(let error):
+                    if last2WeeksMatches.isEmpty {
+                        completion(.failure(error))
+                    } else {
+                        completion(.notActual(last2WeeksMatches.count))
+                    }
                 }
             }
         }
@@ -53,11 +55,13 @@ final class SteamDotaServiceImpl: SteamDotaService
         synchronizers.historySynchronizer(for: accountId).synchronize { [storage, weak self] result in
             guard let lastMatch = storage.fetchMatches(for: accountId).max(by: { $0.startTime < $1.startTime }) else {
                 /// Если игр нет, то или их вообще нет, или не удалось синхронизировать историю
-                switch result {
-                case .success:
-                    completion(.actual(nil))
-                case .failure(let error):
-                    completion(.failure(error))
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        completion(.actual(nil))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
                 }
                 return
             }
@@ -70,7 +74,9 @@ final class SteamDotaServiceImpl: SteamDotaService
                         return false
                     }
 
-                    completion(.actual(details))
+                    DispatchQueue.main.async {
+                        completion(.actual(details))
+                    }
 
                 case .response(let matchId, let result):
                     // Пришли данные, которые нас не интерисуют
@@ -78,12 +84,14 @@ final class SteamDotaServiceImpl: SteamDotaService
                         return false
                     }
 
-                    switch result {
-                    case .success(let details):
-                        assert(details.matchId == matchId, "returned details match id not equal requested match id")
-                        completion(.actual(details))
-                    case .failure(let error):
-                        completion(.failure(error))
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let details):
+                            assert(details.matchId == matchId, "returned details match id not equal requested match id")
+                            completion(.actual(details))
+                        case .failure(let error):
+                            completion(.failure(error))
+                        }
                     }
                 }
 
@@ -107,7 +115,9 @@ final class SteamDotaServiceImpl: SteamDotaService
             switch heroesResult {
             case .done(let heroes):
                 if let hero = heroes.first(where: { $0.id == heroId }) {
-                    completion(.actual(hero))
+                    DispatchQueue.main.async {
+                        completion(.actual(hero))
+                    }
                     return
                 }
             case .noRelevant(let heroes):
@@ -117,17 +127,19 @@ final class SteamDotaServiceImpl: SteamDotaService
             }
 
             network.requestHeroes(loc: loc) { result in
-                switch result {
-                case .success(let heroes):
-                    let optHero = heroes.first(where: { $0.id == heroId })
-                    completion(.actual(optHero))
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let heroes):
+                        let optHero = heroes.first(where: { $0.id == heroId })
+                        completion(.actual(optHero))
 
-                case .failure(let error):
-                    if let hero = notReleventHero {
-                        completion(.notActual(hero))
-                        return
+                    case .failure(let error):
+                        if let hero = notReleventHero {
+                            completion(.notActual(hero))
+                            return
+                        }
+                        completion(.failure(error))
                     }
-                    completion(.failure(error))
                 }
             }
         }
@@ -147,11 +159,13 @@ final class SteamDotaServiceImpl: SteamDotaService
             /// получаем все игры за последние две недели
             let matchIds = idsProvider()
             if matchIds.isEmpty {
-                switch result {
-                case .success:
-                    completion(.actual([]))
-                case .failure(let error):
-                    completion(.failure(error))
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        completion(.actual([]))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
                 }
                 return
             }
@@ -170,7 +184,9 @@ final class SteamDotaServiceImpl: SteamDotaService
                         return false
                     }
 
-                    completion(.actual(detailsList))
+                    DispatchQueue.main.async {
+                        completion(.actual(detailsList))
+                    }
 
                 case .response(let matchId, let result):
                     // Пришли данные, которые нас не интерисуют
@@ -184,7 +200,9 @@ final class SteamDotaServiceImpl: SteamDotaService
 
                     needLoadDetails.remove(matchId)
                     if needLoadDetails.isEmpty {
-                        completion(.actual(detailsList))
+                        DispatchQueue.main.async {
+                            completion(.actual(detailsList))
+                        }
                     }
                 }
 

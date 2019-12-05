@@ -16,9 +16,9 @@ public final class ErrorAlert
     public static func show(_ text: String, on viewController: UIViewController) {
         log.assert(Thread.isMainThread, "Thread.isMainThread")
 
-        let onShownVC = (viewController.navigationController ?? viewController)
+        let onShownVC = viewController
 
-        if onShownViewController.contains(where: { $0 === onShownVC}) {
+        if onShownViewController.contains(where: { $0 === onShownVC }) {
             return
         }
 

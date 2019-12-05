@@ -62,9 +62,6 @@ final class ProfileGameCell: ApTableViewCell {
         contentView.addSubview(iconImageView)
         contentView.addSubview(nameLabel)
         contentView.addSubview(timeLabel)
-
-        nameLabel.text = " "
-        timeLabel.text = " "
     }
 
     override func apply(use style: Style) {
@@ -95,12 +92,14 @@ final class ProfileGameCell: ApTableViewCell {
             maker.top.equalTo(iconImageView.snp.top)
             maker.left.equalTo(iconImageView.snp.right).offset(8.0)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
+            maker.height.equalTo(nameLabel.font.lineHeight)
         }
 
         timeLabel.snp.remakeConstraints { maker in
             maker.top.equalTo(nameLabel.snp.bottom).offset(4.0)
             maker.left.equalTo(iconImageView.snp.right).offset(8.0)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
+            maker.height.equalTo(timeLabel.font.lineHeight)
         }
     }
 }

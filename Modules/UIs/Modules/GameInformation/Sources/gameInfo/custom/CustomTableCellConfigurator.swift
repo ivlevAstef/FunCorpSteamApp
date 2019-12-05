@@ -9,10 +9,10 @@
 import UIKit
 import UIComponents
 
-protocol CustomTableCellConfigurator
+protocol CustomTableCellConfigurator: class
 {
     var registeredCell: (type: UITableViewCell.Type, identifier: String) { get }
     func calculateHeightCell() -> CGFloat
     func makeCell(in tableView: UITableView, indexPath: IndexPath) -> UITableViewCell
-    func configureCell(_ cell: UITableViewCell, viewModel: SkeletonViewModel<Void>)
+    func configureCell(_ cell: UITableViewCell)
 }

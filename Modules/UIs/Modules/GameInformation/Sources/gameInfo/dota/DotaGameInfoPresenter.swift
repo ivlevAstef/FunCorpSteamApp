@@ -6,6 +6,8 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
+import Foundation
+import Common
 import Services
 
 
@@ -19,6 +21,9 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     private let dotaCalculator: SteamDotaServiceCalculator
     private let imageService: ImageService
     private var isFirstRefresh: Bool = true
+
+    private let summaryConfigurator = Dota2WeeksSummaryConfigurator()
+    private let lastGameConfigurator = DotaLastGameConfigurator()
 
     init(view: CustomGameInfoViewContract,
          dotaService: SteamDotaService,
@@ -39,56 +44,120 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     }
 
     func configure(steamId: SteamID, gameId: SteamGameID) {
-        let configurators: [CustomTableCellConfigurator] = [
-            DotaTableCellConfigurator(),
-            DotaTableCellConfigurator(),
-        ]
+        view?.addCustomSection(title: loc["Games.Dota2.lastGame.title"],
+        order: orders[0],
+        configurators: [lastGameConfigurator])
 
-        view?.addCustomSection(title: "Dota2", order: orders[0], configurators: configurators)
-        view?.addCustomSection(title: "Team fortres", order: orders[1], configurators: configurators)
+        view?.addCustomSection(title: loc["Games.Dota2.2weeksStats.title"],
+                               order: orders[1],
+                               configurators: [summaryConfigurator])
 
-        view?.failedCustomLoading(order: orders[0], row: 0)
-        view?.showCustom(order: orders[1], row: 1)
+        /// Устанавливаем начальное состояние - обычно это прогресс
+        view?.updateCustom(configurator: lastGameConfigurator)
+        view?.updateCustom(configurator: summaryConfigurator)
     }
 
     func refresh(steamId: SteamID, gameId: SteamGameID) {
-        dotaService.matchesInLast2weeks(for: steamId.accountId) { result in
-            switch result {
-            case .actual(let count):
-                print("!!DOTA actual: \(count)")
-            case .notActual(let count):
-                print("!!DOTA not actual: \(count)")
+        dotaService.lastMatch(for: steamId.accountId) { [weak self] result in
+            self?.processLastMatchResult(result, for: steamId.accountId)
+        }
+
+        dotaService.matchesInLast2weeks(for: steamId.accountId) { [weak self] result in
+            self?.processMatchesIn2WeeksResult(result)
+        }
+        dotaService.detailsInLast2weeks(for: steamId.accountId) { [weak self] result in
+            self?.processDetailsIn2WeeksResult(result, for: steamId.accountId)
+        }
+    }
+
+    // MARK: - last match
+
+    private func processLastMatchResult(_ result: SteamDotaCompletion<DotaMatchDetails?>, for accountId: AccountID) {
+        switch result {
+            case .actual(let details):
+                print("!!DOTA LAST actual: \(details)")
+            case .notActual(let details):
+                print("!!DOTA LAST not actual: \(details)")
             case .failure(let error):
-            print("!!DOTA failure: \(error)")
-            }
+            print("!!DOTA LAST failure: \(error)")
+        }
+    }
+
+    // MARK: - summary
+
+    private func processMatchesIn2WeeksResult(_ result: SteamDotaCompletion<Int>) {
+        defer {
+            view?.updateCustom(configurator: summaryConfigurator)
         }
 
-        dotaService.lastMatch(for: steamId.accountId) { result in
-            switch result {
-                case .actual(let details):
-                    print("!!DOTA LAST actual: \(details)")
-                case .notActual(let details):
-                    print("!!DOTA LAST not actual: \(details)")
-                case .failure(let error):
-                print("!!DOTA LAST failure: \(error)")
-            }
+        let count: Int
+        switch result {
+        case .actual(let actualCount):
+            count = actualCount
+        case .notActual(let notActualCount):
+            count = notActualCount
+        case .failure(let error):
+            processFailureError(error)
+            summaryConfigurator.gamesCountViewModel = .failed
+            return
         }
 
-        dotaService.detailsInLast2weeks(for: steamId.accountId) { [dotaCalculator] result in
-            var resultDetails: [DotaMatchDetails] = []
-            switch result {
-                case .actual(let details):
-                    resultDetails = details
-                    print("!!DOTA Details actual: \(details.count)")
-                case .notActual(let details):
-                    resultDetails = details
-                    print("!!DOTA Details not actual: \(details.count)")
-                case .failure(let error):
-                print("!!DOTA WIN/LOSE failure: \(error)")
-            }
+        summaryConfigurator.gamesCountViewModel = .done(
+            Dota2WeeksGamesCountViewModel(prefix: loc["Games.Dota2.2weeksStats.count"], count: count)
+        )
+    }
 
-            let (win, lose, unknown) = dotaCalculator.winLoseCount(for: steamId.accountId, details: resultDetails)
-            print("!!DOTA w/s/u: \(win), \(lose), \(unknown)")
+    private func processDetailsIn2WeeksResult(_ result: SteamDotaCompletion<[DotaMatchDetails]>, for accountId: AccountID) {
+        defer {
+            view?.updateCustom(configurator: summaryConfigurator)
+        }
+
+        let details: [DotaMatchDetails]
+        switch result {
+        case .actual(let actualDetails):
+            details = actualDetails
+        case .notActual(let notActualDetails):
+            details = notActualDetails
+        case .failure(let error):
+            processFailureError(error)
+            summaryConfigurator.detailsViewModel = .failed
+            return
+        }
+
+        let winLose = dotaCalculator.winLoseCount(for: accountId, details: details)
+        let avgScores = dotaCalculator.avgScores(for: accountId, details: details)
+
+        // Такое весело округление, чтобы восхвалять игрока :D на самом деле, времени нет
+        summaryConfigurator.detailsViewModel = .done(Dota2WeeksDetailsViewModel(
+            winPrefix: loc["Games.Dota2.2weeksStats.wins"], win: winLose.win,
+            avgKillsPrefix: loc["Games.Dota2.2weeksStats.kills"], avgKills: Int(ceil(avgScores.kills)),
+            avgDeathsPrefix: loc["Games.Dota2.2weeksStats.deaths"], avgDeaths: Int(floor(avgScores.deaths)),
+            avgAssistsPrefix: loc["Games.Dota2.2weeksStats.assists"], avgAssists: Int(ceil(avgScores.assists)),
+            avgLastHitsPrefix: loc["Games.Dota2.2weeksStats.lastHits"], avgLastHits: Int(ceil(avgScores.lastHits)),
+            avgDeniesPrefix: loc["Games.Dota2.2weeksStats.denies"], avgDenies: Int(ceil(avgScores.denies)),
+            avgGPMPrefix: loc["Games.Dota2.2weeksStats.gpm"], avgGPM: Int(ceil(avgScores.gpm))
+        ))
+    }
+
+    // MARK: - support
+
+    private func processFailureError(_ error: ServiceError) {
+        switch error {
+        case .cancelled, .incorrectResponse:
+            break
+        case .notConnection:
+            view?.showError(loc["Errors.NotConnect"])
+
+        case .customError(let dotaError as SteamDotaError):
+            if dotaError == .notAllowed {
+                summaryConfigurator.gamesCountViewModel = .failed
+                summaryConfigurator.detailsViewModel = .failed
+                view?.updateCustom(configurator: summaryConfigurator)
+
+                view?.showError(loc["Games.Dota2.Errors.NotAllowed"])
+            }
+        case .customError:
+            break
         }
     }
 }

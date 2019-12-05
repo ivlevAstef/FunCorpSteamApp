@@ -27,18 +27,16 @@ extension UIView {
 
     public func startSkeleton() {
         let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
-        for subview in skeletonViews {
-            subview.start()
-        }
+        UIView.animate(withDuration: 0.15, animations: {
+            for subview in skeletonViews {
+                subview.start()
+            }
+        })
     }
 
     public func endSkeleton() {
         let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
         UIView.animate(withDuration: 0.15, animations: {
-            for subview in skeletonViews {
-                subview.alpha = 0.0
-            }
-        }, completion: { _ in
             for subview in skeletonViews {
                 subview.end()
             }
@@ -47,9 +45,11 @@ extension UIView {
 
     public func failedSkeleton() {
         let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
-        for subview in skeletonViews {
-            subview.failed()
-        }
+        UIView.animate(withDuration: 0.25, animations: {
+            for subview in skeletonViews {
+                subview.failed()
+            }
+        })
     }
 
     public func endSkeleton(success: Bool) {

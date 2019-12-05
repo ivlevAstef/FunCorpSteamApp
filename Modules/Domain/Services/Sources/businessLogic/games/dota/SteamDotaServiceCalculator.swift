@@ -10,5 +10,8 @@
 public protocol SteamDotaServiceCalculator: class
 {
     /// Подсчитывает статистику побед/поражений из переданных игр. unknown это то количество, в скольких играх не нашелся данный игрок
-    func winLoseCount(for accountId: AccountID, details: [DotaMatchDetails]) -> (win: Int, lose: Int, unknown: Int)
+    func winLoseCount(for accountId: AccountID, details: [DotaMatchDetails]) -> DotaWinLose
+
+    /// Подсчитывает статистику усредненных показателей из переданных игр.
+    func avgScores(for accountId: AccountID, details: [DotaMatchDetails]) -> DotaAvgScores
 }

@@ -70,10 +70,6 @@ final class GameInfoCell: ApTableViewCell
         contentView.addSubview(nameLabel)
         contentView.addSubview(timeForeverLabel)
         contentView.addSubview(time2weeksLabel)
-
-        nameLabel.text = " "
-        timeForeverLabel.text = " "
-        time2weeksLabel.text = " "
     }
 
     override func apply(use style: Style) {
@@ -108,18 +104,21 @@ final class GameInfoCell: ApTableViewCell
             maker.top.equalTo(iconImageView.snp.top)
             maker.left.equalTo(iconImageView.snp.right).offset(8.0)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
+            maker.height.equalTo(nameLabel.font.lineHeight)
         }
 
         timeForeverLabel.snp.remakeConstraints { maker in
             maker.top.equalTo(nameLabel.snp.bottom).offset(4.0)
             maker.left.equalTo(iconImageView.snp.right).offset(8.0)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
+            maker.height.equalTo(timeForeverLabel.font.lineHeight)
         }
 
         time2weeksLabel.snp.remakeConstraints { maker in
             maker.top.equalTo(timeForeverLabel.snp.bottom).offset(4.0)
             maker.left.equalTo(iconImageView.snp.right).offset(8.0)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
+            maker.height.equalTo(time2weeksLabel.font.lineHeight)
         }
     }
 }
