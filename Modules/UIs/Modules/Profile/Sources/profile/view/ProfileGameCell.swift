@@ -44,6 +44,7 @@ final class ProfileGameCell: ApTableViewCell {
         case .done(let viewModel):
             nameLabel.endSkeleton()
             timeLabel.endSkeleton()
+            iconImageView.startSkeleton() // на всякий случай, чтобы точно была анимация, а то там есть моменты
             
             viewModel.icon.join(imageView: iconImageView, completion: { [weak iconImageView] in
                 iconImageView?.endSkeleton(success: nil != iconImageView?.image)

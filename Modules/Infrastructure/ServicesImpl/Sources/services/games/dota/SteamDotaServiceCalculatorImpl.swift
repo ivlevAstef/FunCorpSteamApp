@@ -12,6 +12,10 @@ import Services
 
 final class SteamDotaServiceCalculatorImpl: SteamDotaServiceCalculator
 {
+    func player(for accountId: AccountID, in details: DotaMatchDetails) -> DotaMatchDetails.Player? {
+        return details.players.first(where: { $0.accountId == accountId })
+    }
+
     func winLoseCount(for accountId: AccountID, details detailsList: [DotaMatchDetails]) -> DotaWinLose {
         var win: Int = 0
         var lose: Int = 0

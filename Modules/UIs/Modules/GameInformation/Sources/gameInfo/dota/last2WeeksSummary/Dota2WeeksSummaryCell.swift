@@ -22,6 +22,7 @@ final class DotaLast2WeeksSummaryCell: ApTableViewCell
     private let gamesCountLabel = UILabel(frame: .zero)
 
     private var detailsSubviews: [UIView] = []
+    // TODO: это все конечно стоило бы переделать - сделать как в последней игре, в виде двух label - и таких два label в отдельную вьюшку даже.
     private let winLoseLabel = UILabel(frame: .zero)
     private let avgKillsLabel = UILabel(frame: .zero)
     private let avgDeathsLabel = UILabel(frame: .zero)

@@ -48,12 +48,13 @@ final class AchievementsSummaryCell: ApTableViewCell
 
     private func commonInit() {
         summaryLabel.translatesAutoresizingMaskIntoConstraints = false
-
         contentView.addSubview(summaryLabel)
     }
 
     override func apply(use style: Style) {
         super.apply(use: style)
+
+        selectionStyle = .none
 
         summaryLabel.font = style.fonts.title
         summaryLabel.textColor = style.colors.mainText

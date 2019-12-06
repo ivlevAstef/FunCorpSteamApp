@@ -75,6 +75,8 @@ final class GameInfoCell: ApTableViewCell
     override func apply(use style: Style) {
         super.apply(use: style)
 
+        selectionStyle = .none
+
         iconImageView.apply(use: style, size: Consts.iconSize)
 
         nameLabel.font = style.fonts.title

@@ -23,7 +23,7 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     private var isFirstRefresh: Bool = true
 
     private let summaryConfigurator = Dota2WeeksSummaryConfigurator()
-    private let lastGameConfigurator = DotaLastGameConfigurator()
+    private let lastMatchConfigurator = DotaLastMatchConfigurator()
 
     init(view: CustomGameInfoViewContract,
          dotaService: SteamDotaService,
@@ -46,14 +46,14 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     func configure(steamId: SteamID, gameId: SteamGameID) {
         view?.addCustomSection(title: loc["Games.Dota2.lastGame.title"],
         order: orders[0],
-        configurators: [lastGameConfigurator])
+        configurators: [lastMatchConfigurator])
 
         view?.addCustomSection(title: loc["Games.Dota2.2weeksStats.title"],
                                order: orders[1],
                                configurators: [summaryConfigurator])
 
         /// Устанавливаем начальное состояние - обычно это прогресс
-        view?.updateCustom(configurator: lastGameConfigurator)
+        view?.updateCustom(configurator: lastMatchConfigurator)
         view?.updateCustom(configurator: summaryConfigurator)
     }
 
@@ -73,14 +73,67 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     // MARK: - last match
 
     private func processLastMatchResult(_ result: SteamDotaCompletion<DotaMatchDetails?>, for accountId: AccountID) {
-        switch result {
-            case .actual(let details):
-                print("!!DOTA LAST actual: \(details)")
-            case .notActual(let details):
-                print("!!DOTA LAST not actual: \(details)")
-            case .failure(let error):
-            print("!!DOTA LAST failure: \(error)")
+        defer {
+            view?.updateCustom(configurator: lastMatchConfigurator)
         }
+
+        let optDetails: DotaMatchDetails?
+        switch result {
+        case .actual(let actualDetails):
+            optDetails = actualDetails
+        case .notActual(let notActualDetails):
+            optDetails = notActualDetails
+        case .failure(let error):
+            processFailureError(error)
+            lastMatchConfigurator.lastMatchViewModel = .failed
+            return
+        }
+
+        guard let details = optDetails, let player = dotaCalculator.player(for: accountId, in: details) else {
+            view?.removeCustomSection(order: orders[0])
+            return
+        }
+
+
+        dotaService.getHero(for: player.heroId, loc: .current, completion: { [weak self] result in
+            self?.processLastMatchResult(result, player: player, details: details)
+        })
+    }
+
+    private func processLastMatchResult(_ result: SteamDotaCompletion<DotaHero?>,
+                                        player: DotaMatchDetails.Player,
+                                        details: DotaMatchDetails) {
+        let hero: DotaHero?
+        switch result {
+        case .actual(let actualHero):
+            hero = actualHero
+        case .notActual(let actualHero):
+            hero = actualHero
+        default:
+            hero = nil
+        }
+
+        var lastHeroImage: ChangeableImage?
+        if case .done(let viewModel) = lastMatchConfigurator.lastMatchViewModel {
+            lastHeroImage = viewModel.heroImage
+        }
+
+        let viewModel = DotaLastMatchViewModel(
+            heroImage: lastHeroImage ?? ChangeableImage(placeholder: nil, image: nil),
+            heroName: hero?.name.uppercased() ?? "Не найден",
+            kdaText: "К / С / А: ",
+            kills: Int(player.kills), deaths: Int(player.deaths), assists: Int(player.assists),
+            startTime: details.startTime,
+            durationText: "Продолжительность: ", duration: details.duration,
+            resultText: "Результат: ",
+            isWin: player.side == details.winSide, winText: "ПОБЕДА", loseText: "поражение"
+        )
+
+        imageService.fetch(url: hero?.iconFullVerticalURL, to: viewModel.heroImage)
+
+        lastMatchConfigurator.lastMatchViewModel = .done(viewModel)
+
+        view?.updateCustom(configurator: lastMatchConfigurator)
     }
 
     // MARK: - summary
@@ -152,6 +205,7 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
             if dotaError == .notAllowed {
                 summaryConfigurator.gamesCountViewModel = .failed
                 summaryConfigurator.detailsViewModel = .failed
+                lastMatchConfigurator.lastMatchViewModel = .failed
                 view?.updateCustom(configurator: summaryConfigurator)
 
                 view?.showError(loc["Games.Dota2.Errors.NotAllowed"])

@@ -22,5 +22,21 @@ extension TimeInterval {
             return "\(hours) \(loc["TimeInterval.short.hours"])"
         }
     }
+
+    public var detailsAdaptiveString: String {
+        let hours: Int = Int(self / (60.0 * 60.0))
+        let minutes: Int = Int(self / 60.0) - (hours * 60)
+        let seconds: Int = Int(self.rounded()) % 60
+
+        if hours > 0 {
+            return "\(hours):\(minutes):\(seconds)"
+        }
+
+        if minutes > 0 {
+            return "\(minutes):\(seconds)"
+        }
+
+        return "\(seconds) \(loc["TimeInterval.short.seconds"])"
+    }
 }
 
