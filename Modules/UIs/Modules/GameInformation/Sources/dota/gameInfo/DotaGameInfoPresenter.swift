@@ -20,7 +20,7 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     private let dotaService: SteamDotaService
     private let dotaCalculator: SteamDotaServiceCalculator
     private let imageService: ImageService
-    private var isFirstRefresh: Bool = true
+    private let dotaNavigator: DotaNavigator?
 
     private let summaryConfigurator = Dota2WeeksSummaryConfigurator()
     private let lastMatchConfigurator = DotaLastMatchConfigurator()
@@ -28,11 +28,13 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     init(view: CustomGameInfoViewContract,
          dotaService: SteamDotaService,
          dotaCalculator: SteamDotaServiceCalculator,
-         imageService: ImageService) {
+         imageService: ImageService,
+         dotaNavigator: DotaNavigator?) {
         self.view = view
         self.dotaService = dotaService
         self.dotaCalculator = dotaCalculator
         self.imageService = imageService
+        self.dotaNavigator = dotaNavigator
     }
 
 
@@ -51,6 +53,10 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
         view?.addCustomSection(title: loc["Games.Dota2.2weeksStats.title"],
                                order: orders[1],
                                configurators: [summaryConfigurator])
+
+        summaryConfigurator.tapNotifier.weakJoin(listener: { (self, _) in
+            self.dotaNavigator?.showDotaStatistics(for: steamId)
+        }, owner: self)
 
         /// Устанавливаем начальное состояние - обычно это прогресс
         view?.updateCustom(configurator: lastMatchConfigurator)
@@ -120,13 +126,14 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
 
         let viewModel = DotaLastMatchViewModel(
             heroImage: lastHeroImage ?? ChangeableImage(placeholder: nil, image: nil),
-            heroName: hero?.name.uppercased() ?? "Не найден",
-            kdaText: "К / С / А: ",
+            heroName: hero?.name.uppercased() ?? loc["Games.Dota2.lastGame.heroNotFound"],
+            kdaText: loc["Games.Dota2.lastGame.kda"],
             kills: Int(player.kills), deaths: Int(player.deaths), assists: Int(player.assists),
             startTime: details.startTime,
-            durationText: "Продолжительность: ", duration: details.duration,
-            resultText: "Результат: ",
-            isWin: player.side == details.winSide, winText: "ПОБЕДА", loseText: "поражение"
+            durationText: loc["Games.Dota2.lastGame.duration"], duration: details.duration,
+            resultText: loc["Games.Dota2.lastGame.result"],
+            isWin: player.side == details.winSide,
+            winText: loc["Games.Dota2.lastGame.win"], loseText: loc["Games.Dota2.lastGame.lose"]
         )
 
         imageService.fetch(url: hero?.iconFullVerticalURL, to: viewModel.heroImage)

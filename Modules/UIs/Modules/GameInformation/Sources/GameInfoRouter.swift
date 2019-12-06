@@ -18,6 +18,7 @@ typealias GameInfoScreen = Screen<GameInfoScreenView, GameInfoScreenPresenter>
 final class GameInfoRouter: IRouter
 {
     /*dependency*/var gameInfoScreenProvider = Provider<GameInfoScreen>()
+    /*dependency*/var dotaNavigator = Lazy<DotaNavigatorImpl>()
 
     private let navigator: Navigator
 
@@ -49,5 +50,12 @@ final class GameInfoRouter: IRouter
 
         screen.presenter.configure(steamId: steamId, gameId: gameId)
         return screen
+    }
+}
+
+extension GameInfoRouter: DotaNavigator
+{
+    func showDotaStatistics(for steamId: SteamID) {
+        dotaNavigator.value.showDotaStatistics(for: steamId, on: navigator)
     }
 }

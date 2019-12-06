@@ -13,6 +13,8 @@ final class DotaLastMatchConfigurator: CustomTableCellConfigurator
 {
     var lastMatchViewModel: SkeletonViewModel<DotaLastMatchViewModel> = .loading
 
+    let isSelectable: Bool = false
+
     var registeredCell: (type: UITableViewCell.Type, identifier: String) {
         return (type: DotaLastMatchCell.self, identifier: DotaLastMatchCell.identifier)
     }
@@ -30,5 +32,8 @@ final class DotaLastMatchConfigurator: CustomTableCellConfigurator
             lastMatchCell.configure(lastMatchViewModel)
             return
         }
+    }
+
+    func select() {
     }
 }

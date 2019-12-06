@@ -46,6 +46,12 @@
 "Games.Dota2.Errors.NotAllowed" = "Пользователь не дал доступ к просмотру детальной информации об игре";
 
 "Games.Dota2.lastGame.title" = "Последняя игра:";
+"Games.Dota2.lastGame.heroNotFound" = "Не найден";
+"Games.Dota2.lastGame.kda" = "К / С / А:";
+"Games.Dota2.lastGame.duration" = "Продолжительность:";
+"Games.Dota2.lastGame.result" = "Результат:";
+"Games.Dota2.lastGame.win" = "ПОБЕДА";
+"Games.Dota2.lastGame.lose" = "поражение";
 
 "Games.Dota2.2weeksStats.title" = "Статистика за последние 2 недели:";
 "Games.Dota2.2weeksStats.count" = "Всего игр: ";
@@ -56,3 +62,5 @@
 "Games.Dota2.2weeksStats.lastHits" = "Среднее добиваний крипов: ";
 "Games.Dota2.2weeksStats.denies" = "Среднее добиваний башен: ";
 "Games.Dota2.2weeksStats.gpm" = "Средний показатель gpm: ";
+
+"Games.Dota2.GameStatistic.title" = "Статистика";

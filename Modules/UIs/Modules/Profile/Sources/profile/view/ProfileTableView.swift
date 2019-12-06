@@ -121,18 +121,29 @@ extension ProfileTableView: UITableViewDelegate, UITableViewDataSource {
         }
     }
 
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if indexPath.section == 0 {
-            if case .done = profileViewModel {
-                return indexPath
-            }
-            return nil
-        }
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return shouldHighlightRow(at: indexPath)
+    }
 
-        if case .done = gamesViewModels[indexPath.row] {
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if shouldHighlightRow(at: indexPath) {
             return indexPath
         }
         return nil
+    }
+
+    private func shouldHighlightRow(at indexPath: IndexPath) -> Bool {
+        if indexPath.section == 0 {
+            if case .done = profileViewModel {
+                return true
+            }
+            return false
+        }
+
+        if case .done = gamesViewModels[indexPath.row] {
+            return true
+        }
+        return false
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

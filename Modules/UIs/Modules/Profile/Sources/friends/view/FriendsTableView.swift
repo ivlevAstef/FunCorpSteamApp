@@ -86,11 +86,22 @@ extension FriendsTableView: UITableViewDelegate, UITableViewDataSource {
         }
     }
 
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return shouldHighlightRow(at: indexPath)
+    }
+
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if case .done = friendsViewModels[indexPath.row].state {
+        if shouldHighlightRow(at: indexPath) {
             return indexPath
         }
         return nil
+    }
+
+    private func shouldHighlightRow(at indexPath: IndexPath) -> Bool {
+        if case .done = friendsViewModels[indexPath.row].state {
+            return true
+        }
+        return false
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

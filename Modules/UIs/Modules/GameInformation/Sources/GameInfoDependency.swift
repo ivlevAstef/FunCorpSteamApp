@@ -14,6 +14,8 @@ final class GameInfoDependency: DIFramework
         container.register { GameInfoRouter(navigator: arg($0)) }
             .injection(\.gameInfoScreenProvider)
             .lifetime(.objectGraph)
+            .as(DotaNavigator.self)
+            .injection(\.dotaNavigator)
 
         container.register(GameInfoScreen.init)
             .lifetime(.prototype)
@@ -31,9 +33,6 @@ final class GameInfoDependency: DIFramework
             CustomGameInfoPresenterConfigurator(customPresenters: many($0))
         }.lifetime(.objectGraph)
 
-        // MARK: - dota
-        container.register(DotaGameInfoPresenter.init)
-            .as(CustomGameInfoPresenter.self)
-            .lifetime(.objectGraph)
+        container.append(part: DotaDependency.self)
     }
 }

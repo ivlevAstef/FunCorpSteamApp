@@ -115,8 +115,6 @@ final class DotaLastMatchCell: ApTableViewCell
     override func apply(use style: Style) {
         super.apply(use: style)
 
-        selectionStyle = .none
-
         heroAvatarView.apply(use: style)
         heroNameLabel.applyTitleAndMain(use: style)
         kdaTextLabel.applySubtitleAndContent(use: style)

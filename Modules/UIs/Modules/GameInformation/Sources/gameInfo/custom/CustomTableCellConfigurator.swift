@@ -12,7 +12,11 @@ import UIComponents
 protocol CustomTableCellConfigurator: class
 {
     var registeredCell: (type: UITableViewCell.Type, identifier: String) { get }
+    var isSelectable: Bool { get }
+
     func calculateHeightCell() -> CGFloat
     func makeCell(in tableView: UITableView, indexPath: IndexPath) -> UITableViewCell
     func configureCell(_ cell: UITableViewCell)
+
+    func select()
 }

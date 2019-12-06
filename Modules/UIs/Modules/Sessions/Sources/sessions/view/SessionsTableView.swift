@@ -70,11 +70,22 @@ extension SessionsTableView: UITableViewDelegate, UITableViewDataSource {
         }
     }
 
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return shouldHighlightRow(at: indexPath)
+    }
+
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        if case .done = sessionsViewModels[indexPath.row] {
+        if shouldHighlightRow(at: indexPath) {
             return indexPath
         }
         return nil
+    }
+
+    private func shouldHighlightRow(at indexPath: IndexPath) -> Bool {
+        if case .done = sessionsViewModels[indexPath.row] {
+            return true
+        }
+        return false
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

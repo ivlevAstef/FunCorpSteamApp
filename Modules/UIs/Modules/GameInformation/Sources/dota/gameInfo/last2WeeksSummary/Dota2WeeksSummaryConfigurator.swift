@@ -8,11 +8,22 @@
 
 import UIKit
 import UIComponents
+import Common
 
 final class Dota2WeeksSummaryConfigurator: CustomTableCellConfigurator
 {
     var gamesCountViewModel: SkeletonViewModel<Dota2WeeksGamesCountViewModel> = .loading
     var detailsViewModel: SkeletonViewModel<Dota2WeeksDetailsViewModel> = .loading
+
+    let tapNotifier = Notifier<Void>()
+
+    var isSelectable: Bool {
+        /// Пока не загрузилось количество игр, то нажимать нельзя. А детали, уже не обязательно - на следующем экране всеравно их больше чем две недели будет.
+        if case .done = gamesCountViewModel {
+            return tapNotifier.hasListeners()
+        }
+        return false
+    }
 
     var registeredCell: (type: UITableViewCell.Type, identifier: String) {
         return (type: DotaLast2WeeksSummaryCell.self, identifier: DotaLast2WeeksSummaryCell.identifier)
@@ -31,6 +42,12 @@ final class Dota2WeeksSummaryConfigurator: CustomTableCellConfigurator
             summaryCell.configure(gamesCountViewModel)
             summaryCell.configure(detailsViewModel)
             return
+        }
+    }
+
+    func select() {
+        DispatchQueue.main.async { [tapNotifier] in
+            tapNotifier.notify(())
         }
     }
 }

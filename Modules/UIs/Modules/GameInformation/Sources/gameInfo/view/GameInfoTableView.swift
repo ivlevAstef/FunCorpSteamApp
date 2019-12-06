@@ -233,4 +233,41 @@ extension GameInfoTableView: UITableViewDelegate, UITableViewDataSource {
             }
         }
     }
+
+    // MARK: - selection
+
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return shouldHighlightRow(at: indexPath)
+    }
+
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if shouldHighlightRow(at: indexPath) {
+            return indexPath
+        }
+        return nil
+    }
+
+    private func shouldHighlightRow(at indexPath: IndexPath) -> Bool {
+        switch sections[indexPath.section] {
+        case .gameInfo:
+            return false
+        case .achievementsSummary:
+            return false
+        case .custom(let configurators, _):
+            return configurators[indexPath.row].isSelectable
+        }
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch sections[indexPath.section] {
+        case .gameInfo:
+            break
+        case .achievementsSummary:
+            break
+        case .custom(let configurators, _):
+            configurators[indexPath.row].select()
+        }
+
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 }

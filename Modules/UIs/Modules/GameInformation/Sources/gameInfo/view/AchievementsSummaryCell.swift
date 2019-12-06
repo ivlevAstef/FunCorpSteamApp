@@ -54,8 +54,6 @@ final class AchievementsSummaryCell: ApTableViewCell
     override func apply(use style: Style) {
         super.apply(use: style)
 
-        selectionStyle = .none
-
         summaryLabel.font = style.fonts.title
         summaryLabel.textColor = style.colors.mainText
         summaryLabel.numberOfLines = 1
