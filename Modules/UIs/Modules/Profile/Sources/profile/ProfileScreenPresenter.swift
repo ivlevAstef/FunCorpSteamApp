@@ -117,6 +117,8 @@ final class ProfileScreenPresenter
             avatar: cachedProfileViewModel?.avatar ?? ChangeableImage(placeholder: nil, image: nil),
             avatarLetter: String(profile.nickName.prefix(2).uppercased()),
             nick: profile.nickName,
+            privateText: loc["SteamProfile.Private"],
+            notSetRealNameText: loc["SteamProfile.NotSetRealNameText"],
             tapNotifier: Notifier<Void>()
         )
         cachedProfileViewModel = viewModel
@@ -127,9 +129,11 @@ final class ProfileScreenPresenter
 
         switch profile.visibilityState {
         case .private:
-            break
+            viewModel.isPrivate = true
+            viewModel.realName = ""
         case .open(let data):
-            viewModel.realName = data.realName
+            viewModel.isPrivate = false
+            viewModel.realName = data.realName ?? ""
         }
 
         view.showProfile(viewModel)

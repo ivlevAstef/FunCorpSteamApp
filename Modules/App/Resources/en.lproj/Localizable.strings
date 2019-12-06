@@ -31,6 +31,9 @@
 "SteamProfile.Title" = "Профиль";
 "SteamProfile.Games" = "Игры";
 
+"SteamProfile.Private" = "Приватный";
+"SteamProfile.NotSetRealNameText" = "Имя не указано";
+
 "SteamFriends.Title" = "Друзья";
 
 "SteamGame.Title" = "Информация по игре";

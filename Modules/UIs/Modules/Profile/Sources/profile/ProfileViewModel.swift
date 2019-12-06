@@ -14,7 +14,11 @@ struct ProfileViewModel
     let avatarLetter: String
 
     let nick: String
-    var realName: String?
+
+    var isPrivate: Bool = true
+    var realName: String = ""
+    let privateText: String
+    let notSetRealNameText: String
 
     let tapNotifier: Notifier<Void>
 }

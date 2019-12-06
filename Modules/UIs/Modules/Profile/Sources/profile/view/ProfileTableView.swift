@@ -134,8 +134,8 @@ extension ProfileTableView: UITableViewDelegate, UITableViewDataSource {
 
     private func shouldHighlightRow(at indexPath: IndexPath) -> Bool {
         if indexPath.section == 0 {
-            if case .done = profileViewModel {
-                return true
+            if case .done(let viewModel) = profileViewModel {
+                return !viewModel.isPrivate
             }
             return false
         }

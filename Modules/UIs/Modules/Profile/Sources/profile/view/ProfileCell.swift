@@ -14,18 +14,19 @@ import AppUIComponents
 import SnapKit
 
 private enum Consts {
-    static let avatarSize: CGFloat = 76.0
+    static let avatarSize: CGFloat = 60.0
 }
 
 final class ProfileCell: ApTableViewCell
 {
-    static let preferredHeight: CGFloat = 96.0
+    static let preferredHeight: CGFloat = 84.0
     static let identifier = "\(ProfileCell.self)"
 
     private var placeholderUpdater: ((Style) -> Void)?
     private let avatarView = SteamAvatarView()
     private let nickNameLabel = UILabel(frame: .zero)
     private let realNameLabel = UILabel(frame: .zero)
+    private let realNameHelpLabel = UILabel(frame: .zero)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -57,7 +58,17 @@ final class ProfileCell: ApTableViewCell
             })
 
             nickNameLabel.text = viewModel.nick
-            realNameLabel.text = viewModel.realName
+
+            if viewModel.isPrivate {
+                realNameHelpLabel.text = viewModel.privateText
+                realNameLabel.text = nil
+            } else if viewModel.realName.isEmpty {
+                realNameHelpLabel.text = viewModel.notSetRealNameText
+                realNameLabel.text = nil
+            } else {
+                realNameHelpLabel.text = nil
+                realNameLabel.text = viewModel.realName
+            }
         }
     }
 
@@ -65,10 +76,12 @@ final class ProfileCell: ApTableViewCell
         avatarView.translatesAutoresizingMaskIntoConstraints = false
         nickNameLabel.translatesAutoresizingMaskIntoConstraints = false
         realNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        realNameHelpLabel.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(avatarView)
         contentView.addSubview(nickNameLabel)
         contentView.addSubview(realNameLabel)
+        realNameLabel.addSubview(realNameHelpLabel)
     }
 
     override func apply(use style: Style) {
@@ -83,11 +96,15 @@ final class ProfileCell: ApTableViewCell
         nickNameLabel.numberOfLines = 1
         nickNameLabel.lineBreakMode = .byTruncatingTail
 
-        realNameLabel.font = style.fonts.large
+        realNameLabel.font = style.fonts.title
         realNameLabel.textColor = style.colors.mainText
         realNameLabel.minimumScaleFactor = 0.5
         realNameLabel.numberOfLines = 1
         realNameLabel.lineBreakMode = .byTruncatingTail
+
+        realNameHelpLabel.font = style.fonts.title
+        realNameHelpLabel.textColor = style.colors.contentText
+        realNameHelpLabel.numberOfLines = 1
 
         relayout(use: style.layout)
     }
@@ -100,17 +117,24 @@ final class ProfileCell: ApTableViewCell
         }
 
         nickNameLabel.snp.remakeConstraints { maker in
-            maker.top.equalToSuperview().offset(12.0)
+            maker.top.equalToSuperview().offset(10.0)
             maker.left.equalTo(avatarView.snp.right).offset(16.0)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
             maker.height.equalTo(nickNameLabel.font.lineHeight)
         }
 
         realNameLabel.snp.remakeConstraints { maker in
-            maker.top.equalTo(nickNameLabel.snp.bottom).offset(8.0)
+            maker.top.equalTo(nickNameLabel.snp.bottom).offset(2.0)
             maker.left.equalTo(nickNameLabel.snp.left)
             maker.right.equalTo(nickNameLabel.snp.right)
             maker.height.equalTo(realNameLabel.font.lineHeight)
+        }
+
+        realNameHelpLabel.snp.remakeConstraints { maker in
+            maker.top.equalToSuperview()
+            maker.left.equalToSuperview()
+            maker.right.equalToSuperview()
+            maker.height.equalTo(realNameHelpLabel.font.lineHeight)
         }
     }
 }
