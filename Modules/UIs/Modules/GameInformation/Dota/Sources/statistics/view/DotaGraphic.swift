@@ -217,25 +217,26 @@ private class BarCell: UICollectionViewCell, StylizingView
     }
 
     func apply(use style: Style) {
+        dateLabel.numberOfLines = 2
         dateLabel.font = style.fonts.content
         dateLabel.textColor = style.colors.mainText
         dateLabel.textAlignment = .center
     }
 
     private func configureDateLabel(date: Date, interval: DotaStatisticViewModel.Interval) {
-        dateLabel.frame.size = CGSize(width: contentView.frame.width, height: 20.0)
+        dateLabel.frame.size = CGSize(width: contentView.frame.width, height: 35.0)
         dateLabel.frame.origin = CGPoint(x: 0, y: contentView.frame.height - dateLabel.frame.size.height)
 
         let dateFormatter = DateFormatter()
         switch interval {
         case .indicator:
-            dateFormatter.dateFormat = "HH:mm"
+            dateFormatter.dateFormat = "HH:mm\ndd.MM"
         case .day:
-            dateFormatter.dateFormat = "dd.MM"
+            dateFormatter.dateFormat = "dd.MM\nyyyy"
         case .week:
-            dateFormatter.dateFormat = "ww.yyyy"
+            dateFormatter.dateFormat = "ww\nyyyy"
         case .month:
-            dateFormatter.dateFormat = "LLL"
+            dateFormatter.dateFormat = "LLL\nyyyy"
         }
         dateLabel.text = dateFormatter.string(from: date)
     }
