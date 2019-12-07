@@ -30,21 +30,21 @@ final class DotaStatisticsScreenPresenter
     /// Два числа - первое количество побед, второе количество поражений. Индикатор не имеет смысла выводить - там или [1,0] или [0,1]
     private var winLoseStatistic: DotaStatisticViewModel = DotaStatisticViewModel(
         title: "Победы/Поражения:",
-        avgPrefix: "В среднем: ",
+        totalPrefix: "Всего в интервале: ",
         supportedIntervals: [.day, .week, .month],
         valueNames: ["Победы", "Поражения"]
     )
     /// Три числа - Убийства, Смерти, Ассисты
     private var kdaStatistic: DotaStatisticViewModel = DotaStatisticViewModel(
         title: "Убийства/Смерти/Ассисты:",
-        avgPrefix: "В среднем: ",
+        totalPrefix: "Всего в интервале: ",
         supportedIntervals: [.indicator, .day, .week, .month],
         valueNames: ["Убийства", "Смерти", "Ассисты"]
     )
     /// Одно число - количество добитых крипов
     private var lastHitsStatistic: DotaStatisticViewModel = DotaStatisticViewModel(
         title: "Добитых крипов",
-        avgPrefix: "В среднем",
+        totalPrefix: "Всего в интервале",
         supportedIntervals: [.indicator, .day, .week, .month],
         valueNames: ["Добитых крипов"]
     )
@@ -68,7 +68,7 @@ final class DotaStatisticsScreenPresenter
     }
 
     private func processDetailsResult(_ result: SteamDotaCompletion<[DotaMatchDetails]>, steamId: SteamID) {
-        let matches: [DotaMatchDetails]
+        var matches: [DotaMatchDetails]
         switch result {
         case .actual(let actualMatches):
             matches = actualMatches
@@ -78,6 +78,7 @@ final class DotaStatisticsScreenPresenter
             processError(error)
             return
         }
+        matches.sort(by: { $0.startTime < $1.startTime })
 
         var winLoseList: [DotaStatisticViewModel.Indicator] = []
         var kdaList: [DotaStatisticViewModel.Indicator] = []
@@ -102,9 +103,13 @@ final class DotaStatisticsScreenPresenter
             ))
         }
 
-        winLoseStatistic.state = .done(indicators: winLoseList)
-        kdaStatistic.state = .done(indicators: kdaList)
-        lastHitsStatistic.state = .done(indicators: lastHitsList)
+        winLoseStatistic.progressState = .done(indicators: winLoseList)
+        kdaStatistic.progressState = .done(indicators: kdaList)
+        lastHitsStatistic.progressState = .done(indicators: lastHitsList)
+
+        winLoseStatistic.updateInterval(on: winLoseStatistic.supportedIntervals[0], force: true)
+        kdaStatistic.updateInterval(on: kdaStatistic.supportedIntervals[0], force: true)
+        lastHitsStatistic.updateInterval(on: lastHitsStatistic.supportedIntervals[0], force: true)
 
         view?.setStatistics(statistics)
     }
@@ -117,9 +122,9 @@ final class DotaStatisticsScreenPresenter
             view?.showError(loc["Errors.NotConnect"])
         }
 
-        winLoseStatistic.state = .failed
-        kdaStatistic.state = .failed
-        lastHitsStatistic.state = .failed
+        winLoseStatistic.progressState = .failed
+        kdaStatistic.progressState = .failed
+        lastHitsStatistic.progressState = .failed
         view?.setStatistics(statistics)
     }
 }
