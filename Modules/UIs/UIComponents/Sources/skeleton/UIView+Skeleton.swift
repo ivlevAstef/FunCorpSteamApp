@@ -11,7 +11,9 @@ import SnapKit
 
 extension UIView {
     public var skeletonView: SkeletonView {
-        if let skeleton = subviews.compactMap({ $0 as? SkeletonView}).last {
+        let skeletons = subviews.compactMap { $0 as? SkeletonView}
+        if let skeleton = skeletons.last {
+            skeletons.forEach { bringSubviewToFront($0) }
             return skeleton
         }
 

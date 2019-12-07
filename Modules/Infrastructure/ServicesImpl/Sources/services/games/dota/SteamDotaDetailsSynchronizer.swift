@@ -30,6 +30,9 @@ final class SteamDotaDetailsSynchronizer
     private var waiters: [(DetailsWaiterResult) -> Bool] = []
     private let waitersMonitor = NSObject()
 
+    /// Позволяет ограничить количество одновременных загрузок, дабы сервер не отопнул
+    private var loadDetailsSemaphore = DispatchSemaphore(value: 2)
+
     private let network: SteamDotaNetwork
     private let storage: SteamDotaStorage
 
@@ -102,10 +105,10 @@ final class SteamDotaDetailsSynchronizer
     }
 
     private func loadDetails(matchId: DotaMatchID) {
-        /// Специально дожидаемся завершения запроса. Нужно чисто, чтобы сервер не заспамить...
-        let waitResultSemaphore = DispatchSemaphore(value: 0)
-        network.requestDetails(matchId: matchId) { [weak self] result in
-            defer { waitResultSemaphore.signal() }
+        loadDetailsSemaphore.wait()
+        network.requestDetails(matchId: matchId) { [weak self, loadDetailsSemaphore] result in
+            loadDetailsSemaphore.signal()
+
             guard let self = self else {
                 return
             }
@@ -120,7 +123,6 @@ final class SteamDotaDetailsSynchronizer
             self.inProgress.remove(matchId)
             self.inProgressLock.unlock()
         }
-        waitResultSemaphore.wait()
     }
 
     private func notifyDetails(matchId: DotaMatchID, result: DotaMatchDetailsResult) {

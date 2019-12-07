@@ -107,6 +107,13 @@ final class SteamDotaServiceImpl: SteamDotaService
         }, accountId: accountId, completion: completion)
     }
 
+    func detailsInPeriod(for accountId: AccountID, from: Date, to: Date, completion: @escaping (SteamDotaCompletion<[DotaMatchDetails]>) -> Void) {
+        detailsFromIds(idsProvider: { [storage] in
+            let matchesInPeriod = storage.fetchMatches(for: accountId).filter { from <= $0.startTime && $0.startTime <= to }
+            return Set(matchesInPeriod.map { $0.matchId })
+        }, accountId: accountId, completion: completion)
+    }
+
     func getHero(for heroId: DotaHeroID, loc: SteamLocalization, completion: @escaping (SteamDotaCompletion<DotaHero?>) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async { [storage, network] in
             let heroesResult = storage.fetchHeroes(loc: loc)
@@ -127,13 +134,15 @@ final class SteamDotaServiceImpl: SteamDotaService
             }
 
             network.requestHeroes(loc: loc) { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let heroes):
-                        let optHero = heroes.first(where: { $0.id == heroId })
+                switch result {
+                case .success(let heroes):
+                    storage.put(heroes: heroes, loc: loc)
+                    let optHero = heroes.first(where: { $0.id == heroId })
+                    DispatchQueue.main.async {
                         completion(.actual(optHero))
-
-                    case .failure(let error):
+                    }
+                case .failure(let error):
+                    DispatchQueue.main.async {
                         if let hero = notReleventHero {
                             completion(.notActual(hero))
                             return

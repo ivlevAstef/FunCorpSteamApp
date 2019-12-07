@@ -88,7 +88,7 @@ class GameInfoTableView: ApTableView
         endUpdates()
 
         /// Убираем подергивание при обновлении...
-        ..layer.removeAllAnimations()
+        layer.removeAllAnimations()
         setContentOffset(saveContentOffset, animated: false)
     }
 

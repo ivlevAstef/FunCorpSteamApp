@@ -6,6 +6,8 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
+import Foundation
+
 /// Позволяет получить более подробную информацию о Dota 2
 public protocol SteamDotaService: class
 {
@@ -20,6 +22,9 @@ public protocol SteamDotaService: class
 
     /// Возвращает детализацию за последние две недели
     func detailsInLast2weeks(for accountId: AccountID, completion: @escaping (SteamDotaCompletion<[DotaMatchDetails]>) -> Void)
+
+    /// Возвращает детализацию за период
+    func detailsInPeriod(for accountId: AccountID, from: Date, to: Date, completion: @escaping (SteamDotaCompletion<[DotaMatchDetails]>) -> Void)
 
     /// Возвращает описание героя. nil если по запрашиваему id героя нет
     func getHero(for heroId: DotaHeroID, loc: SteamLocalization, completion: @escaping (SteamDotaCompletion<DotaHero?>) -> Void)
