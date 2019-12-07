@@ -32,21 +32,24 @@ final class DotaStatisticsScreenPresenter
         title: "Победы/Поражения:",
         totalPrefix: "Всего в интервале: ",
         supportedIntervals: [.day, .week, .month],
-        valueNames: ["Победы", "Поражения"]
+        valueNames: ["Победы", "Поражения"],
+        valueColors: [.green, .red]
     )
     /// Три числа - Убийства, Смерти, Ассисты
     private var kdaStatistic: DotaStatisticViewModel = DotaStatisticViewModel(
         title: "Убийства/Смерти/Ассисты:",
         totalPrefix: "Всего в интервале: ",
         supportedIntervals: [.indicator, .day, .week, .month],
-        valueNames: ["Убийства", "Смерти", "Ассисты"]
+        valueNames: ["Убийства", "Смерти", "Ассисты"],
+        valueColors: [.green, .red, .blue]
     )
     /// Одно число - количество добитых крипов
     private var lastHitsStatistic: DotaStatisticViewModel = DotaStatisticViewModel(
         title: "Добитых крипов",
         totalPrefix: "Всего в интервале",
         supportedIntervals: [.indicator, .day, .week, .month],
-        valueNames: ["Добитых крипов"]
+        valueNames: ["Добитых крипов"],
+        valueColors: [.blue]
     )
 
     init(view: DotaStatisticsScreenViewContract,

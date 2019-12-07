@@ -22,7 +22,6 @@ final class DotaStatisticCell: ApTableViewCell
     private let totalPrefixLabel = UILabel(frame: .zero)
     private let totalLabel = UILabel(frame: .zero)
     private let dateLabel = UILabel(frame: .zero)
-    private let scrollGraphic = UIScrollView(frame: .zero)
     private let graphic = DotaGraphic()
 
     private var viewModel: DotaStatisticViewModel?
@@ -55,6 +54,7 @@ final class DotaStatisticCell: ApTableViewCell
             contentView.subviews.forEach { $0.startSkeleton() }
         case .done:
             contentView.subviews.forEach { $0.endSkeleton() }
+
             segmentedControl.isUserInteractionEnabled = true
             let selectedIndex = viewModel.supportedIntervals.firstIndex(of: viewModel.state.selectedInterval) ?? 0
             segmentedControl.selectedSegmentIndex = selectedIndex
@@ -69,42 +69,36 @@ final class DotaStatisticCell: ApTableViewCell
     }
 
     private func updateIntervalSize() {
-        guard let viewModel = viewModel else {
+        guard let viewModel = viewModel, !viewModel.state.groupedIndicators.isEmpty else {
             return
         }
 
         viewModel.updateInterval(on: viewModel.supportedIntervals[segmentedControl.selectedSegmentIndex])
 
         if let fromIndex = viewModel.state.fromIndex {
-            let indicatorWidth = self.frame.width / CGFloat(viewModel.state.count)
-            graphic.configure(indicators: viewModel.state.groupedIndicators, indicatorWidth: indicatorWidth)
+            graphic.configure(viewModel: viewModel, width: self.frame.width)
+            graphic.setOffset(fromIndex: fromIndex)
 
-            let offset = CGFloat(fromIndex) * indicatorWidth
-            scrollGraphic.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
+            graphic.updateFromIndexCallback = { [weak self] index in
+                self?.updateIntervalOffsetIndex(fromIndex: index)
+            }
+
         }
 
         updateIntervalInformation()
     }
 
-    private func updateIntervalOffset() {
+    private func updateIntervalOffsetIndex(fromIndex: Int) {
         guard let viewModel = viewModel, !viewModel.state.groupedIndicators.isEmpty else {
             return
         }
-
-        let offset = max(0, min(scrollGraphic.contentOffset.x, graphic.frame.width - scrollGraphic.frame.width))
-        let index = Int(round(offset / graphic.indicatorWidth))
-
-        viewModel.state.updateFromDate(use: index)
-
-        updateIntervalInformation()
-    }
-
-    private func aroundContentOffset(to offset: CGFloat) -> CGFloat {
-        guard let viewModel = viewModel, !viewModel.state.groupedIndicators.isEmpty else {
-            return offset
+        if viewModel.state.fromIndex == fromIndex {
+            return
         }
 
-        return graphic.indicatorWidth * round(offset / graphic.indicatorWidth)
+        viewModel.state.updateFromDate(use: fromIndex)
+
+        updateIntervalInformation()
     }
 
     private func updateIntervalInformation() {
@@ -133,16 +127,6 @@ final class DotaStatisticCell: ApTableViewCell
             }
         }
 
-        scrollGraphic.addSubview(graphic)
-        graphic.commonInit()
-
-        scrollGraphic.isScrollEnabled = true
-        scrollGraphic.showsHorizontalScrollIndicator = false
-        scrollGraphic.showsVerticalScrollIndicator = false
-        scrollGraphic.alwaysBounceHorizontal = true
-        scrollGraphic.alwaysBounceVertical = false
-        scrollGraphic.delegate = self
-
         segmentedControl.addTarget(self, action: #selector(changeSelection), for: .valueChanged)
 
         addSubviewsOnContentView([
@@ -150,7 +134,7 @@ final class DotaStatisticCell: ApTableViewCell
             totalPrefixLabel,
             totalLabel,
             dateLabel,
-            scrollGraphic
+            graphic
         ])
     }
 
@@ -184,7 +168,6 @@ final class DotaStatisticCell: ApTableViewCell
         dateLabel.font = style.fonts.subtitle
         dateLabel.textColor = style.colors.mainText
 
-        scrollGraphic.backgroundColor = style.colors.accent
         graphic.apply(use: style)
 
         relayout(use: style.layout)
@@ -218,24 +201,11 @@ final class DotaStatisticCell: ApTableViewCell
             maker.height.equalTo(dateLabel.font.lineHeight)
         }
 
-        scrollGraphic.snp.remakeConstraints { maker in
-            maker.top.equalTo(dateLabel.snp.bottom).offset(8.0)
+        graphic.snp.remakeConstraints { maker in
+            maker.top.equalTo(dateLabel.snp.bottom).offset(16.0)
             maker.left.equalToSuperview().offset(layout.cellInnerInsets.left)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
             maker.height.equalTo(200.0)
         }
-    }
-}
-
-extension DotaStatisticCell: UIScrollViewDelegate
-{
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        updateIntervalOffset()
-    }
-
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        var offset = targetContentOffset.pointee
-        offset.x = aroundContentOffset(to: offset.x)
-        targetContentOffset.pointee = offset
     }
 }

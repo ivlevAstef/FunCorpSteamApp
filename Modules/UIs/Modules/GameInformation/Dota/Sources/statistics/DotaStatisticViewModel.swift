@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct DotaStatisticViewModel
 {
@@ -44,6 +45,7 @@ struct DotaStatisticViewModel
     let totalPrefix: String
     let supportedIntervals: [Interval]
     let valueNames: [String]
+    let valueColors: [UIColor]
 
     var progressState: ProgressState = .loading
     let state: ViewState = ViewState()
@@ -71,7 +73,7 @@ extension DotaStatisticViewModel
                 lhs.day == rhs.day && lhs.month == rhs.month && lhs.year == rhs.year
             }
         case .week:
-            state.count = 4
+            state.count = 8
             state.groupedIndicators = grouped(indicators: indicators, by: [.weekOfYear, .year]) { lhs, rhs in
                 lhs.weekOfYear == rhs.weekOfYear && lhs.year == rhs.year
             }

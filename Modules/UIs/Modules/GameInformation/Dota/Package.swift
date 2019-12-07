@@ -10,7 +10,7 @@ let package = Package(
         .library(name: "Dota", targets: ["Dota"]),
     ],
     dependencies: [
-        .package(path: "../GameInformation"),
+        .package(path: "../GameInformation")
     ],
     targets: [
         .target(name: "Dota", dependencies: [
