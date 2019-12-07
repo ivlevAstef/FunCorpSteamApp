@@ -71,19 +71,25 @@ class GameInfoTableView: ApTableView
     }
 
     func updateCustom(configurator: CustomTableCellConfigurator) {
+        let saveContentOffset = contentOffset
+
         beginUpdates()
-
-        for (sectionIndex, section) in sections.enumerated() {
-            guard case .custom(let configurators, _) = section else {
-                continue
-            }
-
-            if let row = configurators.firstIndex(where: { $0 === configurator }) {
-                reloadRows(at: [IndexPath(row: Int(row), section: Int(sectionIndex))], with: .fade)
-            }
-        }
-
+// TODO: reload менее красиво, зато обновляет нормально - а то reloadRows с .none, чет подглючивает
+//        for (sectionIndex, section) in sections.enumerated() {
+//            guard case .custom(let configurators, _) = section else {
+//                continue
+//            }
+//
+//            if let row = configurators.firstIndex(where: { $0 === configurator }) {
+//                reloadRows(at: [IndexPath(row: Int(row), section: Int(sectionIndex))], with: .fade)
+//            }
+//        }
+        reloadData()
         endUpdates()
+
+        /// Убираем подергивание при обновлении...
+        ..layer.removeAllAnimations()
+        setContentOffset(saveContentOffset, animated: false)
     }
 
     private func updateSections() {

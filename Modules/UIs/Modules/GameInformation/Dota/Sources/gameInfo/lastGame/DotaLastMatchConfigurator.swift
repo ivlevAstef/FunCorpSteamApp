@@ -8,6 +8,7 @@
 
 import UIKit
 import UIComponents
+import GameInformation //TODO: CustomGameInformation
 
 final class DotaLastMatchConfigurator: CustomTableCellConfigurator
 {

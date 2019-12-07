@@ -8,7 +8,7 @@
 
 import Services
 
-protocol CustomGameInfoPresenter: class
+public protocol CustomGameInfoPresenter: class
 {
     var priority: Int { get }
 

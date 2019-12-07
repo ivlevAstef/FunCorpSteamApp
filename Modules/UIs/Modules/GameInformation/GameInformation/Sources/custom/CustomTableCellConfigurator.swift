@@ -9,7 +9,7 @@
 import UIKit
 import UIComponents
 
-protocol CustomTableCellConfigurator: class
+public protocol CustomTableCellConfigurator: class
 {
     var registeredCell: (type: UITableViewCell.Type, identifier: String) { get }
     var isSelectable: Bool { get }

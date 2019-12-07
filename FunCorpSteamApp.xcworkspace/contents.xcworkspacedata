@@ -26,6 +26,16 @@
       <Group
          location = "group:Modules/UIs/Modules"
          name = "Modules">
+         <Group
+            location = "group:GameInformation"
+            name = "GameInformation">
+            <FileRef
+               location = "group:Dota">
+            </FileRef>
+            <FileRef
+               location = "group:GameInformation">
+            </FileRef>
+         </Group>
          <FileRef
             location = "group:Menu">
          </FileRef>
@@ -37,9 +47,6 @@
          </FileRef>
          <FileRef
             location = "group:Sessions">
-         </FileRef>
-         <FileRef
-            location = "group:GameInformation">
          </FileRef>
          <FileRef
             location = "group:News">

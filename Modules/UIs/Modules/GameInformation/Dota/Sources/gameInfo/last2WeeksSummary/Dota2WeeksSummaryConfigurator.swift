@@ -9,6 +9,7 @@
 import UIKit
 import UIComponents
 import Common
+import GameInformation //TODO: CustomGameInformation
 
 final class Dota2WeeksSummaryConfigurator: CustomTableCellConfigurator
 {

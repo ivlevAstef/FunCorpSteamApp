@@ -15,9 +15,9 @@ protocol DotaStatisticsScreenViewContract: class
 
 final class DotaStatisticsScreenPresenter
 {
-    private weak var view: GameInfoScreenViewContract?
+    private weak var view: DotaStatisticsScreenViewContract?
 
-    init(view: GameInfoScreenViewContract) {
+    init(view: DotaStatisticsScreenViewContract) {
         self.view = view
     }
 

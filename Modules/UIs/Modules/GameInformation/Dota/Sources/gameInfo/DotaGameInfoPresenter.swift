@@ -9,18 +9,19 @@
 import Foundation
 import Common
 import Services
-
+import GameInformation //TODO: CustomGameInformation
 
 final class DotaGameInfoPresenter: CustomGameInfoPresenter
 {
     let priority: Int = 0
     var orders: [UInt] = []
 
+    let tapSummaryNotifier = Notifier<Void>()
+
     private weak var view: CustomGameInfoViewContract?
     private let dotaService: SteamDotaService
     private let dotaCalculator: SteamDotaServiceCalculator
     private let imageService: ImageService
-    private let dotaNavigator: DotaNavigator?
 
     private let summaryConfigurator = Dota2WeeksSummaryConfigurator()
     private let lastMatchConfigurator = DotaLastMatchConfigurator()
@@ -28,13 +29,11 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
     init(view: CustomGameInfoViewContract,
          dotaService: SteamDotaService,
          dotaCalculator: SteamDotaServiceCalculator,
-         imageService: ImageService,
-         dotaNavigator: DotaNavigator?) {
+         imageService: ImageService) {
         self.view = view
         self.dotaService = dotaService
         self.dotaCalculator = dotaCalculator
         self.imageService = imageService
-        self.dotaNavigator = dotaNavigator
     }
 
 
@@ -54,9 +53,7 @@ final class DotaGameInfoPresenter: CustomGameInfoPresenter
                                order: orders[1],
                                configurators: [summaryConfigurator])
 
-        summaryConfigurator.tapNotifier.weakJoin(listener: { (self, _) in
-            self.dotaNavigator?.showDotaStatistics(for: steamId)
-        }, owner: self)
+        summaryConfigurator.tapNotifier.join(tapSummaryNotifier)
 
         /// Устанавливаем начальное состояние - обычно это прогресс
         view?.updateCustom(configurator: lastMatchConfigurator)

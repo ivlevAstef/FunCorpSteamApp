@@ -23,6 +23,8 @@ import Profile
 import GameInformation
 import Sessions
 
+import Dota
+
 enum StartPoints
 {
     static let auth = AuthStartPoint()
@@ -41,7 +43,9 @@ enum StartPoints
         AppUIComponentsStartPoint(),
         StorageStartPoint(),
         NetworkStartPoint(),
-        ServicesImplStartPoint()
+        ServicesImplStartPoint(),
+
+        DotaStartPoint(),
     ]
 
     static let ui: [UIModuleName: UIStartPoint] = [

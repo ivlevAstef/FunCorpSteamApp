@@ -30,33 +30,33 @@ final class GameInfoScreenPresenter
 {
     private weak var view: GameInfoScreenViewContract?
 
-    private let customGameInfoPresenterConfigurator: CustomGameInfoPresenterConfigurator
     private let profileGamesService: SteamProfileGamesService
     private let gameService: SteamGameService
     private let achievementService: SteamAchievementService
     private let imageService: ImageService
 
+    private var presentersConfigurator: CustomGameInfoPresenterConfigurator?
+
     private var cachedGameInfoViewModel: GameInfoViewModel?
     private var isFirstRefresh: Bool = true
 
     init(view: GameInfoScreenViewContract,
-         customGameInfoPresenterConfigurator: CustomGameInfoPresenterConfigurator,
          profileGamesService: SteamProfileGamesService,
          gameService: SteamGameService,
          achievementService: SteamAchievementService,
          imageService: ImageService) {
         self.view = view
-        self.customGameInfoPresenterConfigurator = customGameInfoPresenterConfigurator
         self.profileGamesService = profileGamesService
         self.gameService = gameService
         self.achievementService = achievementService
         self.imageService = imageService
     }
 
-    func configure(steamId: SteamID, gameId: SteamGameID) {
+    func configure(steamId: SteamID, gameId: SteamGameID, presentersConfigurator: CustomGameInfoPresenterConfigurator) {
         view?.setTitles(gameInfo: "", achievementsSummary: loc["SteamGame.AchievementsSummaryTitle"])
 
-        customGameInfoPresenterConfigurator.configure(steamId: steamId, gameId: gameId)
+        self.presentersConfigurator = presentersConfigurator
+        presentersConfigurator.configure(steamId: steamId, gameId: gameId)
 
         profileGamesService.getGameNotifier(for: steamId, gameId: gameId).weakJoin(listener: { (self, result) in
             self.processProfileGameInfoResult(result)
@@ -74,8 +74,6 @@ final class GameInfoScreenPresenter
         if isFirstRefresh {
             view?.beginLoadingGameInfoAndAchievements()
 
-            customGameInfoPresenterConfigurator.refresh(steamId: steamId, gameId: gameId)
-
             profileGamesService.refreshGame(for: steamId, gameId: gameId) { [weak view] success in
                 if !success {
                     view?.failedLoadingGameInfo()
@@ -92,6 +90,8 @@ final class GameInfoScreenPresenter
             achievementService.refreshAchievementsSummary(for: gameId, steamId: steamId)
         }
         isFirstRefresh = false
+
+        presentersConfigurator?.refresh(steamId: steamId, gameId: gameId)
     }
 
     // MARK: - game

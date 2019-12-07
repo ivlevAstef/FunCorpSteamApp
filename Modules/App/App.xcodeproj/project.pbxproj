@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB0C206B239B6DC900FAF942 /* Dota in Frameworks */ = {isa = PBXBuildFile; productRef = AB0C206A239B6DC900FAF942 /* Dota */; };
 		AB89F4BD23830FDC00E4BCFF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB89F4AB23830FDB00E4BCFF /* Assets.xcassets */; };
 		AB89F4C023830FDC00E4BCFF /* LogFileDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB89F4B123830FDC00E4BCFF /* LogFileDestination.swift */; };
 		AB89F4C123830FDC00E4BCFF /* ConsoleLogDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB89F4B223830FDC00E4BCFF /* ConsoleLogDestination.swift */; };
@@ -86,6 +87,7 @@
 				AB89F4E4238310D400E4BCFF /* Storage in Frameworks */,
 				ABD97069238AFFBE00256437 /* Auth in Frameworks */,
 				AB89F4E6238310D400E4BCFF /* UIComponents in Frameworks */,
+				AB0C206B239B6DC900FAF942 /* Dota in Frameworks */,
 				ABD9706B238AFFBE00256437 /* Sessions in Frameworks */,
 				AB89F4E0238310D400E4BCFF /* Services in Frameworks */,
 				AB89F4D6238310D400E4BCFF /* Menu in Frameworks */,
@@ -205,6 +207,7 @@
 				ABD97068238AFFBE00256437 /* Auth */,
 				ABD9706A238AFFBE00256437 /* Sessions */,
 				ABD9706C238B0A2B00256437 /* AppUIComponents */,
+				AB0C206A239B6DC900FAF942 /* Dota */,
 			);
 			productName = App;
 			productReference = AB2B60A623830464006BF72A /* App.app */;
@@ -482,6 +485,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AB0C206A239B6DC900FAF942 /* Dota */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Dota;
+		};
 		AB89F4CB238310C500E4BCFF /* Common */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Common;

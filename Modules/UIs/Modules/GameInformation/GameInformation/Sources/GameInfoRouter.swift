@@ -13,12 +13,9 @@ import SwiftLazy
 import UIComponents
 import Services
 
-typealias GameInfoScreen = Screen<GameInfoScreenView, GameInfoScreenPresenter>
-
 final class GameInfoRouter: IRouter
 {
     /*dependency*/var gameInfoScreenProvider = Provider<GameInfoScreen>()
-    /*dependency*/var dotaNavigator = Lazy<DotaNavigatorImpl>()
 
     private let navigator: Navigator
 
@@ -48,14 +45,9 @@ final class GameInfoRouter: IRouter
         let screen = gameInfoScreenProvider.value
         screen.setRouter(self)
 
-        screen.presenter.configure(steamId: steamId, gameId: gameId)
-        return screen
-    }
-}
+        let presentersConfigurator = screen.configureRouters(navigator: navigator, steamId: steamId, gameId: gameId)
+        screen.presenter.configure(steamId: steamId, gameId: gameId, presentersConfigurator: presentersConfigurator)
 
-extension GameInfoRouter: DotaNavigator
-{
-    func showDotaStatistics(for steamId: SteamID) {
-        dotaNavigator.value.showDotaStatistics(for: steamId, on: navigator)
+        return screen
     }
 }

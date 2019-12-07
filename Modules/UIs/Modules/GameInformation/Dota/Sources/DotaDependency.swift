@@ -7,16 +7,17 @@
 //
 
 import DITranquillity
+import GameInformation //TODO: CustomGameInformation
 
-final class DotaDependency: DIPart
+public final class DotaDependency: DIFramework
 {
-    static func load(container: DIContainer) {
-        container.register(DotaNavigatorImpl.init)
+    public static func load(container: DIContainer) {
+        container.register(DotaRouter.init)
+            .as(CustomGameInfoRouter.self)
             .injection(\.statisticsProvider)
             .lifetime(.objectGraph)
 
         container.register(DotaGameInfoPresenter.init)
-            .as(CustomGameInfoPresenter.self)
             .lifetime(.objectGraph)
 
         container.register(DotaStatisticsScreen.init)

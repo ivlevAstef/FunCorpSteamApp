@@ -10,11 +10,11 @@ let package = Package(
         .library(name: "GameInformation", targets: ["GameInformation"]),
     ],
     dependencies: [
-        .package(path: "../../AppUIComponents"),
-        .package(path: "../../UIComponents"),
-        .package(path: "../../Design"),
-        .package(path: "../../../Core"),
-        .package(path: "../../../Common"),
+        .package(path: "../../../AppUIComponents"),
+        .package(path: "../../../UIComponents"),
+        .package(path: "../../../Design"),
+        .package(path: "../../../../Core"),
+        .package(path: "../../../../Common"),
     ],
     targets: [
         .target(name: "GameInformation", dependencies: [
