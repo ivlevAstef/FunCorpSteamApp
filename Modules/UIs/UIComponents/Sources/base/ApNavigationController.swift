@@ -10,6 +10,10 @@ import UIKit
 
 open class ApNavigationController: UINavigationController, UIGestureRecognizerDelegate
 {
+    open override var preferredStatusBarStyle: UIStatusBarStyle {
+        return (presentedViewController ?? topViewController)?.preferredStatusBarStyle ?? .default
+    }
+
     open override func viewDidLoad() {
         super.viewDidLoad()
 

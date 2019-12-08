@@ -28,6 +28,10 @@ extension UIView {
     }
 
     public func startSkeleton() {
+        if isHidden {
+            return
+        }
+
         let skeletonViews = subviews.compactMap { $0 as? SkeletonView }
         UIView.animate(withDuration: 0.15, animations: {
             for subview in skeletonViews {

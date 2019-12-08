@@ -39,6 +39,8 @@ public struct Style
         public let contentText: UIColor
         /// for blured views
         public let blurStyle: UIBlurEffect.Style
+        /// for status bar
+        public let preferredStatusBarStyle: UIStatusBarStyle
 
         public let shadowColor: UIColor
         public let shadowOpacity: Float

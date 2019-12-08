@@ -73,12 +73,12 @@ extension DotaStatisticViewModel
                 lhs.day == rhs.day && lhs.month == rhs.month && lhs.year == rhs.year
             }
         case .week:
-            state.count = 8
+            state.count = 6
             state.groupedIndicators = grouped(indicators: indicators, by: [.weekOfYear, .year]) { lhs, rhs in
                 lhs.weekOfYear == rhs.weekOfYear && lhs.year == rhs.year
             }
         case .month:
-            state.count = 12
+            state.count = 6
             state.groupedIndicators = grouped(indicators: indicators, by: [.month, .year]) { lhs, rhs in
                 lhs.month == rhs.month && lhs.year == rhs.year
             }
@@ -169,6 +169,32 @@ extension DotaStatisticViewModel.Interval
             return "Недели"
         case .month:
             return "Месяцы"
+        }
+    }
+
+    var twoLineFormat: String {
+        switch self {
+        case .indicator:
+            return "HH:mm\ndd.MM"
+        case .day:
+            return "dd.MM\nyyyy"
+        case .week:
+            return "ww\nyyyy"
+        case .month:
+            return "LLL\nyyyy"
+        }
+    }
+
+    var fullyFormat: String {
+        switch self {
+        case .indicator:
+            return "HH:mm dd LLLL yyyy"
+        case .day:
+            return "dd LLLL yyyy"
+        case .week:
+            return "ww LLLL yyyy"
+        case .month:
+            return "LLLL yyyy"
         }
     }
 }

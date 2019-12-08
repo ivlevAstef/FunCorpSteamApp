@@ -17,7 +17,7 @@ final class NewsDependency: DIFramework
 
         container.register(RibbonScreen.init)
             .lifetime(.prototype)
-        container.register { RibbonScreenView(nibName: nil, bundle: nil) }
+        container.register { RibbonScreenView() }
             .as(RibbonScreenViewContract.self)
             .lifetime(.objectGraph)
         container.register(RibbonScreenPresenter.init)

@@ -56,7 +56,7 @@
 "Games.Dota2.lastGame.win" = "ПОБЕДА";
 "Games.Dota2.lastGame.lose" = "поражение";
 
-"Games.Dota2.2weeksStats.title" = "Статистика за последние 2 недели:";
+"Games.Dota2.2weeksStats.title" = "Последние 2 недели:";
 "Games.Dota2.2weeksStats.count" = "Всего игр: ";
 "Games.Dota2.2weeksStats.wins" = "Из них выиграно: ";
 "Games.Dota2.2weeksStats.kills" = "В среднем убийств: ";

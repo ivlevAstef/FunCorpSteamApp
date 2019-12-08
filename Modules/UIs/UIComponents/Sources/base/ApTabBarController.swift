@@ -13,6 +13,13 @@ open class ApTabBarController: UITabBarController
 {
     public private(set) lazy var style: Style = styleMaker.makeStyle(for: self)
 
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        guard let tabVCs = viewControllers, !tabVCs.isEmpty else {
+            return style.colors.preferredStatusBarStyle
+        }
+        return tabVCs[selectedIndex].preferredStatusBarStyle
+    }
+
     private let styleMaker: StyleMaker = StyleMaker()
 
     open func styleDidChange(_ style: Style) {

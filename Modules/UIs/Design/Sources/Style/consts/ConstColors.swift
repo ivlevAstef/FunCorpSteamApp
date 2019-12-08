@@ -22,6 +22,7 @@ public enum ConstColors
         notAccentText: color(hex24: 0xc3c3c3),
         contentText: color(hex24: 0xc3c3c3),
         blurStyle: .dark,
+        preferredStatusBarStyle: .lightContent,
 
         shadowColor: color(hex24: 0x000000),
         shadowOpacity: 1.0
@@ -39,6 +40,7 @@ public enum ConstColors
         notAccentText: color(hex24: 0xc3c3c3),
         contentText: color(hex24: 0xc3c3c3),
         blurStyle: .dark,
+        preferredStatusBarStyle: .default,
 
         shadowColor: color(hex24: 0x000000),
         shadowOpacity: 1.0
@@ -56,6 +58,7 @@ public enum ConstColors
         notAccentText: color(hex24: 0x3c3c3c),
         contentText: color(hex24: 0x3c3c3c),
         blurStyle: .light,
+        preferredStatusBarStyle: .default,
 
         shadowColor: color(hex24: 0x000000),
         shadowOpacity: 1.0

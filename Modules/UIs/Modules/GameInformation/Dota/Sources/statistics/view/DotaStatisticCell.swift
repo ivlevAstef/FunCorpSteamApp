@@ -22,7 +22,8 @@ final class DotaStatisticCell: ApTableViewCell
     private let totalPrefixLabel = UILabel(frame: .zero)
     private let totalLabel = UILabel(frame: .zero)
     private let dateLabel = UILabel(frame: .zero)
-    private let graphic = DotaGraphic()
+    private let graphic = DotaGraphicWithAxis()
+    private let graphicHint = DotaGraphicHint()
 
     private var viewModel: DotaStatisticViewModel?
 
@@ -76,16 +77,42 @@ final class DotaStatisticCell: ApTableViewCell
         viewModel.updateInterval(on: viewModel.supportedIntervals[segmentedControl.selectedSegmentIndex])
 
         if let fromIndex = viewModel.state.fromIndex {
-            graphic.configure(viewModel: viewModel, width: self.frame.width)
+            graphic.configure(viewModel: viewModel)
             graphic.setOffset(fromIndex: fromIndex)
 
             graphic.updateFromIndexCallback = { [weak self] index in
                 self?.updateIntervalOffsetIndex(fromIndex: index)
             }
+            graphic.selectedCallback = { [weak self] indicator in
+                self?.updateSelection(indicator: indicator)
+            }
 
         }
 
         updateIntervalInformation()
+    }
+
+    private func updateSelection(indicator: DotaStatisticViewModel.Indicator?) {
+        if let indicator = indicator, let viewModel = viewModel {
+            graphicHint.configure(indicator: indicator,
+                                  interval: viewModel.state.selectedInterval,
+                                  names: viewModel.valueNames,
+                                  colors: viewModel.valueColors)
+
+            UIView.animate(withDuration: 0.15) {
+                self.totalPrefixLabel.alpha = 0.0
+                self.totalLabel.alpha = 0.0
+                self.dateLabel.alpha = 0.0
+                self.graphicHint.alpha = 1.0
+            }
+        } else {
+            UIView.animate(withDuration: 0.15) {
+                self.totalPrefixLabel.alpha = 1.0
+                self.totalLabel.alpha = 1.0
+                self.dateLabel.alpha = 1.0
+                self.graphicHint.alpha = 0.0
+            }
+        }
     }
 
     private func updateIntervalOffsetIndex(fromIndex: Int) {
@@ -127,6 +154,7 @@ final class DotaStatisticCell: ApTableViewCell
             }
         }
 
+        graphicHint.alpha = 0.0
         segmentedControl.addTarget(self, action: #selector(changeSelection), for: .valueChanged)
 
         addSubviewsOnContentView([
@@ -134,7 +162,8 @@ final class DotaStatisticCell: ApTableViewCell
             totalPrefixLabel,
             totalLabel,
             dateLabel,
-            graphic
+            graphic,
+            graphicHint
         ])
     }
 
@@ -169,6 +198,7 @@ final class DotaStatisticCell: ApTableViewCell
         dateLabel.textColor = style.colors.mainText
 
         graphic.apply(use: style)
+        graphicHint.apply(use: style)
 
         relayout(use: style.layout)
     }
@@ -206,6 +236,14 @@ final class DotaStatisticCell: ApTableViewCell
             maker.left.equalToSuperview().offset(layout.cellInnerInsets.left)
             maker.right.equalToSuperview().offset(-layout.cellInnerInsets.right)
             maker.height.equalTo(200.0)
+        }
+
+        graphicHint.snp.remakeConstraints { maker in
+            maker.left.greaterThanOrEqualToSuperview().offset(layout.cellInnerInsets.left)
+            maker.right.lessThanOrEqualToSuperview().offset(-layout.cellInnerInsets.right)
+            maker.centerX.equalToSuperview()
+            maker.top.equalTo(totalLabel.snp.top)
+            maker.bottom.equalTo(dateLabel.snp.bottom).offset(12.0)
         }
     }
 }

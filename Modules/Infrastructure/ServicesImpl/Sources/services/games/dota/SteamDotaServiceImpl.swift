@@ -196,6 +196,7 @@ final class SteamDotaServiceImpl: SteamDotaService
                     DispatchQueue.main.async {
                         completion(.actual(detailsList))
                     }
+                    return true
 
                 case .response(let matchId, let result):
                     // Пришли данные, которые нас не интерисуют
@@ -212,10 +213,11 @@ final class SteamDotaServiceImpl: SteamDotaService
                         DispatchQueue.main.async {
                             completion(.actual(detailsList))
                         }
+                        return true
                     }
-                }
 
-                return true
+                    return false
+                }
             }
         }
     }

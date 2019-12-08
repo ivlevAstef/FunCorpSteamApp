@@ -29,16 +29,16 @@ final class DotaStatisticsScreenPresenter
 
     /// Два числа - первое количество побед, второе количество поражений. Индикатор не имеет смысла выводить - там или [1,0] или [0,1]
     private var winLoseStatistic: DotaStatisticViewModel = DotaStatisticViewModel(
-        title: "Победы/Поражения:",
-        totalPrefix: "Всего в интервале: ",
+        title: "Победы/Поражения",
+        totalPrefix: "Всего: ",
         supportedIntervals: [.day, .week, .month],
         valueNames: ["Победы", "Поражения"],
         valueColors: [.green, .red]
     )
     /// Три числа - Убийства, Смерти, Ассисты
     private var kdaStatistic: DotaStatisticViewModel = DotaStatisticViewModel(
-        title: "Убийства/Смерти/Ассисты:",
-        totalPrefix: "Всего в интервале: ",
+        title: "Убийства/Смерти/Ассисты",
+        totalPrefix: "Всего: ",
         supportedIntervals: [.indicator, .day, .week, .month],
         valueNames: ["Убийства", "Смерти", "Ассисты"],
         valueColors: [.green, .red, .blue]
@@ -46,7 +46,7 @@ final class DotaStatisticsScreenPresenter
     /// Одно число - количество добитых крипов
     private var lastHitsStatistic: DotaStatisticViewModel = DotaStatisticViewModel(
         title: "Добитых крипов",
-        totalPrefix: "Всего в интервале",
+        totalPrefix: "Всего: ",
         supportedIntervals: [.indicator, .day, .week, .month],
         valueNames: ["Добитых крипов"],
         valueColors: [.blue]

@@ -12,6 +12,10 @@ import Design
 open class ApViewController: UIViewController {
     public private(set) lazy var style: Style = styleMaker.makeStyle(for: self)
 
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return style.colors.preferredStatusBarStyle
+    }
+
     private let styleMaker: StyleMaker = StyleMaker()
 
     private let stylizingViewsContainer = StylizingViewsContainer()

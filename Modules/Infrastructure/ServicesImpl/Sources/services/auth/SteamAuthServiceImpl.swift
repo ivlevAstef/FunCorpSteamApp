@@ -57,7 +57,7 @@ final class SteamAuthServiceImpl: SteamAuthService
             steamLoginVC?.dismiss(animated: true)
         })
 
-        let navController = UINavigationController(rootViewController: steamLoginVC)
+        let navController = SteamLoginNavController(rootViewController: steamLoginVC)
 
         steamLoginVC.title = loc["SteamAuth.Title"]
         steamLoginVC.navigationItem.leftBarButtonItem = UIBarButtonItem(
@@ -88,6 +88,16 @@ final class SteamAuthServiceImpl: SteamAuthService
 
         authStorage.steamId = nil
         completion(.success(steamId))
+    }
+}
+
+private final class SteamLoginNavController: UINavigationController
+{
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        if #available(iOS 13.0, *) {
+            return .default
+        }
+        return .lightContent
     }
 }
 

@@ -23,9 +23,10 @@ public final class ErrorAlert
         }
 
         // Да не модно и не молодежно, но зато писать или подключать ничего не надо
-        let alertController = UIAlertController(title: loc["Alert.Error"],
-                                                message: text,
-                                                preferredStyle: .alert)
+        let alertController = AlertController(title: loc["Alert.Error"],
+                                              message: text,
+                                              preferredStyle: .alert)
+        alertController.statusBarStyle = viewController.preferredStatusBarStyle
         alertController.addAction(UIAlertAction(
             title: loc["Alert.Ok"],
             style: .default,
@@ -37,4 +38,13 @@ public final class ErrorAlert
         onShownViewController.append(onShownVC)
         onShownVC.present(alertController, animated: true)
     }
+}
+
+private final class AlertController: UIAlertController
+{
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return statusBarStyle
+    }
+
+    var statusBarStyle: UIStatusBarStyle = .default
 }

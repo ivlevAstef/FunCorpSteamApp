@@ -78,6 +78,7 @@ public final class SkeletonView: UIView {
     }
 
     private func commonInit() {
+        isUserInteractionEnabled = false
         backgroundColor = .clear
         layer.cornerRadius = 5.0
         layer.masksToBounds = true
