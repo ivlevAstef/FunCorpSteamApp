@@ -8,7 +8,7 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
 
 final class SteamAuthData: Object {
     static let singlePrimaryKey = 1

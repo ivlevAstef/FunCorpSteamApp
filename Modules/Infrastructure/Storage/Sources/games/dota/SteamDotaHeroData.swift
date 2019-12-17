@@ -8,7 +8,8 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
 
 final class SteamDotaHeroData: Object, LimitedUpdated {
     static func generatePrimaryKey(heroId: DotaHeroID, loc: SteamLocalization) -> String {

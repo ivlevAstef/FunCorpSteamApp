@@ -8,7 +8,9 @@
 
 import Foundation
 import Common
-import Services
+import Entities
+import UseCases
+import UseCasesContracts
 
 final class SteamProfileNetworkImpl: SteamProfileNetwork
 {

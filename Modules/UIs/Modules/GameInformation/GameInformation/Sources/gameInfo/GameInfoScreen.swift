@@ -11,7 +11,8 @@ import Core
 import Common
 import SwiftLazy
 import UIComponents
-import Services
+import Entities
+import UseCases
 
 typealias EmbeddedGameInfoScreen = Screen<GameInfoScreenView, GameInfoScreenPresenter>
 

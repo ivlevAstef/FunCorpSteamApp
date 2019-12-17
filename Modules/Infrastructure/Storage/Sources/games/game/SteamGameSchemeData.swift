@@ -9,7 +9,8 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
 
 final class SteamGameSchemeData: Object, LimitedUpdated {
     static func generatePrimaryKey(gameId: SteamGameID, loc: SteamLocalization) -> String {

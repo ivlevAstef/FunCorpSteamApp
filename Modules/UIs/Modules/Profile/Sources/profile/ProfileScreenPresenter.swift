@@ -9,7 +9,8 @@
 import Foundation
 import Common
 import Core
-import Services
+import Entities
+import UseCases
 import UIComponents
 
 protocol ProfileScreenViewContract: class

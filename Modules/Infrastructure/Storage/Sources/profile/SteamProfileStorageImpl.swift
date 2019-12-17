@@ -8,7 +8,9 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
+import UseCasesContracts
 
 private let profileUpdateInterval: TimeInterval = .minutes(5)
 private let profileGameInfoUpdateInterval: TimeInterval = .minutes(15)

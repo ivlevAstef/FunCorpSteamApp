@@ -8,7 +8,9 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
+import UseCasesContracts
 
 private let heroesUpdateInterval: TimeInterval = .minutes(60)
 

@@ -7,7 +7,7 @@
 //
 
 import Common
-import Services
+import Entities
 
 final class CustomGameInfoPresenterConfigurator
 {

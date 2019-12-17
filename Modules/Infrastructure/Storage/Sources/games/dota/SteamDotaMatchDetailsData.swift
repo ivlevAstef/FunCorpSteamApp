@@ -8,7 +8,8 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
 
 final class DotaMatchDetailsPlayerItemsData: Object {
     @objc dynamic var _itemId: Int = 0

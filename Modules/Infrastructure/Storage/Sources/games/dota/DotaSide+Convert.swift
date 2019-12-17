@@ -6,7 +6,7 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
-import Services
+import UseCases
 
 extension DotaSide {
     init?(_ int: Int) {

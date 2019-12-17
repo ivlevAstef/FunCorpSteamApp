@@ -8,7 +8,7 @@
 
 import Foundation
 import Common
-import Services
+import Entities
 
 struct FriendViewModel: Equatable
 {

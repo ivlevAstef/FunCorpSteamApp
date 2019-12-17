@@ -6,7 +6,7 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
-import Services
+import Entities
 
 class SteamRequest<Content: Decodable, APIContent>: Request<Content> {
     init(interface: String,

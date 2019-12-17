@@ -8,7 +8,8 @@
 
 import Foundation
 import Common
-import Services
+import Entities
+import UseCases
 
 protocol DotaStatisticsScreenViewContract: class
 {

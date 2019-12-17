@@ -11,7 +11,7 @@ import Core
 import Common
 import SwiftLazy
 import UIComponents
-import Services
+import UseCases
 
 typealias AuthScreen = Screen<AuthScreenView, AuthScreenPresenter>
 

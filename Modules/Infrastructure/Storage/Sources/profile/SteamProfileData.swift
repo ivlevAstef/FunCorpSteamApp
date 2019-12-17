@@ -8,7 +8,8 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
 
 final class SteamProfileData: Object, LimitedUpdated {
     @objc dynamic var _steamId: String = ""
@@ -105,40 +106,3 @@ extension SteamProfileData {
         )
     }
 }
-
-//
-//public enum State: Equatable {
-//       case offline
-//       case online
-//       case busy
-//       case away
-//       case snooze
-//       case lookingToTrade
-//       case lookingToPlay
-//   }
-//
-//   public struct OpenData: Equatable {
-//       public let state: State
-//       public let realName: String?
-//       /// Когда был создан аккаунт
-//       public let timeCreated: Date?
-//
-//       private init() { fatalError("Not support empty initialization") }
-//   }
-//
-//   /// Профиль пользователя может быть открыт или скрыт. В открытом состоянии доступно больше информации
-//   public enum VisibilityState: Equatable {
-//       case `private`
-//       case `open`(OpenData)
-//   }
-//
-//   public let steamId: SteamID
-//   public let profileURL: URL?
-//
-//   public let nickName: String
-//   public let avatarURL: URL?
-//   public let mediumAvatarURL: URL?
-//   /// Когда пользователь был последний раз онлайн
-//   public let lastlogoff: Date
-//
-//   public let visibilityState: VisibilityState

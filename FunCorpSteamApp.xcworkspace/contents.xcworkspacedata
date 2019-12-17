@@ -11,7 +11,7 @@
       location = "container:"
       name = "Infrastructure">
       <FileRef
-         location = "group:Modules/Infrastructure/ServicesImpl">
+         location = "group:Modules/Infrastructure/UseCasesImpl">
       </FileRef>
       <FileRef
          location = "group:Modules/Infrastructure/Network">
@@ -66,7 +66,13 @@
       location = "container:"
       name = "Domain">
       <FileRef
-         location = "group:Modules/Domain/Services">
+         location = "group:Modules/Domain/UseCasesContracts">
+      </FileRef>
+      <FileRef
+         location = "group:Modules/Domain/UseCases">
+      </FileRef>
+      <FileRef
+         location = "group:Modules/Domain/Entities">
       </FileRef>
    </Group>
    <FileRef

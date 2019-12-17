@@ -8,7 +8,8 @@
 
 import Common
 import Core
-import Services
+import Entities
+import UseCases
 import SwiftLazy
 import GameInformation
 

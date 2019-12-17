@@ -6,7 +6,7 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
-import Services
+import Entities
 
 public protocol CustomGameInfoPresenter: class
 {

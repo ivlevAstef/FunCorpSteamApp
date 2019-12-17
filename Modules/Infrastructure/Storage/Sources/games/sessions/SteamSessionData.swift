@@ -8,7 +8,8 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
 
 final class SteamSessionsData: Object, LimitedUpdated {
     @objc dynamic var _steamId: String = ""

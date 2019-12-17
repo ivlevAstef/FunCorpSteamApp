@@ -10,7 +10,7 @@ let package = Package(
         .library(name: "AppUIComponents", targets: ["AppUIComponents"]),
     ],
     dependencies: [
-        .package(path: "../../Domain/Services"),
+        .package(path: "../../Domain/UseCases"),
         .package(path: "../UIComponents"),
         .package(path: "../Design"),
         .package(path: "../../Core"),
@@ -18,7 +18,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "AppUIComponents", dependencies: [
-            .product(name: "Services"),
+            .product(name: "UseCases"),
             .product(name: "UIComponents"),
             .product(name: "Design"),
             .product(name: "Core"),

@@ -10,13 +10,13 @@ let package = Package(
         .library(name: "Network", targets: ["Network"]),
     ],
     dependencies: [
-        .package(path: "../../Domain/Services"),
+        .package(path: "../../Domain/UseCasesContracts"),
         .package(path: "../../Core"),
         .package(path: "../../Common"),
     ],
     targets: [
         .target(name: "Network", dependencies: [
-            "Services",
+            "UseCasesContracts",
             "Core",
             "Common"
         ], path: "./Sources"),

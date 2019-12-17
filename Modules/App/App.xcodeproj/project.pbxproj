@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		AB0C206B239B6DC900FAF942 /* Dota in Frameworks */ = {isa = PBXBuildFile; productRef = AB0C206A239B6DC900FAF942 /* Dota */; };
+		AB0DC49E23A8B18A00D1F281 /* Entities in Frameworks */ = {isa = PBXBuildFile; productRef = AB0DC49D23A8B18A00D1F281 /* Entities */; };
+		AB0DC4A023A8B18F00D1F281 /* UseCases in Frameworks */ = {isa = PBXBuildFile; productRef = AB0DC49F23A8B18F00D1F281 /* UseCases */; };
+		AB0DC4A223A8B19500D1F281 /* UseCasesImpl in Frameworks */ = {isa = PBXBuildFile; productRef = AB0DC4A123A8B19500D1F281 /* UseCasesImpl */; };
+		AB0DC4A423A93C2600D1F281 /* UseCasesContracts in Frameworks */ = {isa = PBXBuildFile; productRef = AB0DC4A323A93C2600D1F281 /* UseCasesContracts */; };
 		AB89F4BD23830FDC00E4BCFF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB89F4AB23830FDB00E4BCFF /* Assets.xcassets */; };
 		AB89F4C023830FDC00E4BCFF /* LogFileDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB89F4B123830FDC00E4BCFF /* LogFileDestination.swift */; };
 		AB89F4C123830FDC00E4BCFF /* ConsoleLogDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB89F4B223830FDC00E4BCFF /* ConsoleLogDestination.swift */; };
@@ -27,11 +31,9 @@
 		AB89F4DA238310D400E4BCFF /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4D9238310D400E4BCFF /* Network */; };
 		AB89F4DC238310D400E4BCFF /* News in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4DB238310D400E4BCFF /* News */; };
 		AB89F4DE238310D400E4BCFF /* Profile in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4DD238310D400E4BCFF /* Profile */; };
-		AB89F4E0238310D400E4BCFF /* Services in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4DF238310D400E4BCFF /* Services */; };
 		AB89F4E4238310D400E4BCFF /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4E3238310D400E4BCFF /* Storage */; };
 		AB89F4E6238310D400E4BCFF /* UIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = AB89F4E5238310D400E4BCFF /* UIComponents */; };
 		AB89F4E7238311CB00E4BCFF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB89F4AC23830FDB00E4BCFF /* LaunchScreen.storyboard */; };
-		ABD970602386375B00256437 /* ServicesImpl in Frameworks */ = {isa = PBXBuildFile; productRef = ABD9705F2386375B00256437 /* ServicesImpl */; };
 		ABD970632386EEF200256437 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = ABD970652386EEF200256437 /* Localizable.strings */; };
 		ABD97069238AFFBE00256437 /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = ABD97068238AFFBE00256437 /* Auth */; };
 		ABD9706B238AFFBE00256437 /* Sessions in Frameworks */ = {isa = PBXBuildFile; productRef = ABD9706A238AFFBE00256437 /* Sessions */; };
@@ -77,20 +79,22 @@
 			files = (
 				AB89F4D0238310C600E4BCFF /* Design in Frameworks */,
 				AB89F4DA238310D400E4BCFF /* Network in Frameworks */,
+				AB0DC4A423A93C2600D1F281 /* UseCasesContracts in Frameworks */,
 				AB89F4DC238310D400E4BCFF /* News in Frameworks */,
 				AB89F4CC238310C500E4BCFF /* Common in Frameworks */,
+				AB0DC4A023A8B18F00D1F281 /* UseCases in Frameworks */,
 				ABD9706D238B0A2B00256437 /* AppUIComponents in Frameworks */,
-				ABD970602386375B00256437 /* ServicesImpl in Frameworks */,
 				AB89F4CE238310C600E4BCFF /* Core in Frameworks */,
 				AB89F4D4238310D400E4BCFF /* GameInformation in Frameworks */,
 				AB89F4DE238310D400E4BCFF /* Profile in Frameworks */,
+				AB0DC4A223A8B19500D1F281 /* UseCasesImpl in Frameworks */,
 				AB89F4E4238310D400E4BCFF /* Storage in Frameworks */,
 				ABD97069238AFFBE00256437 /* Auth in Frameworks */,
 				AB89F4E6238310D400E4BCFF /* UIComponents in Frameworks */,
 				AB0C206B239B6DC900FAF942 /* Dota in Frameworks */,
 				ABD9706B238AFFBE00256437 /* Sessions in Frameworks */,
-				AB89F4E0238310D400E4BCFF /* Services in Frameworks */,
 				AB89F4D6238310D400E4BCFF /* Menu in Frameworks */,
+				AB0DC49E23A8B18A00D1F281 /* Entities in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,14 +204,16 @@
 				AB89F4D9238310D400E4BCFF /* Network */,
 				AB89F4DB238310D400E4BCFF /* News */,
 				AB89F4DD238310D400E4BCFF /* Profile */,
-				AB89F4DF238310D400E4BCFF /* Services */,
 				AB89F4E3238310D400E4BCFF /* Storage */,
 				AB89F4E5238310D400E4BCFF /* UIComponents */,
-				ABD9705F2386375B00256437 /* ServicesImpl */,
 				ABD97068238AFFBE00256437 /* Auth */,
 				ABD9706A238AFFBE00256437 /* Sessions */,
 				ABD9706C238B0A2B00256437 /* AppUIComponents */,
 				AB0C206A239B6DC900FAF942 /* Dota */,
+				AB0DC49D23A8B18A00D1F281 /* Entities */,
+				AB0DC49F23A8B18F00D1F281 /* UseCases */,
+				AB0DC4A123A8B19500D1F281 /* UseCasesImpl */,
+				AB0DC4A323A93C2600D1F281 /* UseCasesContracts */,
 			);
 			productName = App;
 			productReference = AB2B60A623830464006BF72A /* App.app */;
@@ -489,6 +495,22 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Dota;
 		};
+		AB0DC49D23A8B18A00D1F281 /* Entities */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Entities;
+		};
+		AB0DC49F23A8B18F00D1F281 /* UseCases */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UseCases;
+		};
+		AB0DC4A123A8B19500D1F281 /* UseCasesImpl */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UseCasesImpl;
+		};
+		AB0DC4A323A93C2600D1F281 /* UseCasesContracts */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UseCasesContracts;
+		};
 		AB89F4CB238310C500E4BCFF /* Common */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Common;
@@ -521,10 +543,6 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Profile;
 		};
-		AB89F4DF238310D400E4BCFF /* Services */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Services;
-		};
 		AB89F4E3238310D400E4BCFF /* Storage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Storage;
@@ -532,10 +550,6 @@
 		AB89F4E5238310D400E4BCFF /* UIComponents */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UIComponents;
-		};
-		ABD9705F2386375B00256437 /* ServicesImpl */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ServicesImpl;
 		};
 		ABD97068238AFFBE00256437 /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -13,7 +13,7 @@ import AppUIComponents
 
 import Storage
 import Network
-import ServicesImpl
+import UseCasesImpl
 
 import Auth
 import Menu
@@ -43,7 +43,7 @@ enum StartPoints
         AppUIComponentsStartPoint(),
         StorageStartPoint(),
         NetworkStartPoint(),
-        ServicesImplStartPoint(),
+        UseCasesImplStartPoint(),
 
         DotaStartPoint(),
     ]

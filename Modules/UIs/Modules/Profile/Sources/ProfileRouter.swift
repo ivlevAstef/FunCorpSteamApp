@@ -12,7 +12,8 @@ import Common
 import SwiftLazy
 import AppUIComponents
 import UIComponents
-import Services
+import Entities
+import UseCases
 
 typealias ProfileScreen = Screen<ProfileScreenView, ProfileScreenPresenter>
 typealias FriendsScreen = Screen<FriendsScreenView, FriendsScreenPresenter>

@@ -6,7 +6,7 @@
 //  Copyright © 2019 ApostleLife. All rights reserved.
 //
 
-import Services
+import Entities
 import Core
 
 // TODO: весь custom лучше бы в отдельный модуль, дабы Dota и другие кастомные модули не завязывались на прямую на GameInformation

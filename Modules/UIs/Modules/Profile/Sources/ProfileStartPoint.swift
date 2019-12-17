@@ -10,7 +10,7 @@ import Common
 import Core
 import DITranquillity
 import SwiftLazy
-import Services
+import Entities
 
 public final class ProfileStartPoint: UIStartPoint
 {

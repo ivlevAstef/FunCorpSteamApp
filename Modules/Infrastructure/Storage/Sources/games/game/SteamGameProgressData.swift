@@ -8,7 +8,8 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
 
 final class SteamLastGameProgressData: Object {
     static func generatePrimaryKey(steamId: SteamID, gameId: SteamGameID) -> String {

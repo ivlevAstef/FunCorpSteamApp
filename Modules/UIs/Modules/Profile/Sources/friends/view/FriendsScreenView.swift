@@ -12,7 +12,7 @@ import UIComponents
 import Common
 import Design
 import SnapKit
-import Services
+import UseCases
 
 final class FriendsScreenView: ApViewController, FriendsScreenViewContract
 {

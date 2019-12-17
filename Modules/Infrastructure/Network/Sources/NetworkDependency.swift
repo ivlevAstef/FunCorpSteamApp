@@ -7,7 +7,7 @@
 //
 
 import DITranquillity
-import Services
+import UseCasesContracts
 
 final class NetworkDependency: DIFramework
 {

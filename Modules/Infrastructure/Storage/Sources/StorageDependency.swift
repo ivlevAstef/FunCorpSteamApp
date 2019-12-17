@@ -7,7 +7,7 @@
 //
 
 import DITranquillity
-import Services
+import UseCasesContracts
 import RealmSwift
 
 final class StorageDependency: DIFramework

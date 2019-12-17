@@ -8,7 +8,8 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
 
 final class DotaMatchPlayerData: Object {
     @objc dynamic var _accountId: Int64 = 0

@@ -10,14 +10,14 @@ let package = Package(
         .library(name: "Storage", targets: ["Storage"]),
     ],
     dependencies: [
-        .package(path: "../../Domain/Services"),
+        .package(path: "../../Domain/UseCasesContracts"),
         .package(path: "../../Core"),
         .package(path: "../../Common"),
         .package(url: "https://github.com/realm/realm-cocoa.git", from: "4.1.1")
     ],
     targets: [
         .target(name: "Storage", dependencies: [
-            "Services",
+            "UseCasesContracts",
             "Core",
             "Common",
             "RealmSwift"

@@ -8,7 +8,9 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCases
+import UseCasesContracts
 
 private let gameSchemeUpdateInterval: TimeInterval = .minutes(60)
 private let gameProgressUpdateInterval: TimeInterval = .minutes(5)

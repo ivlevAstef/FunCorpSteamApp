@@ -8,7 +8,8 @@
 
 import Foundation
 import RealmSwift
-import Services
+import Entities
+import UseCasesContracts
 
 class SteamAuthStorageImpl: SteamAuthStorage {
     //var steamId: SteamID? = 76561198073561699 // my steam id

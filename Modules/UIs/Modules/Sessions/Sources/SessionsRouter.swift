@@ -10,7 +10,8 @@ import UIKit
 import Core
 import UIComponents
 import Common
-import Services
+import Entities
+import UseCases
 import SwiftLazy
 
 typealias SessionsScreen = Screen<SessionsScreenView, SessionsScreenPresenter>
